@@ -44,6 +44,6 @@ jspm_packages
 *.env
 *.env.local
 
-# pycache
-*__pycache__
-backend/apl_config_gend.yml
+# Pycache
+**/__pycache__
+out
