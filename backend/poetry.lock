@@ -531,17 +531,6 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
-name = "pytz"
-version = "2023.3.post1"
-description = "World timezone definitions, modern and historical"
-optional = false
-python-versions = "*"
-files = [
-    {file = "pytz-2023.3.post1-py2.py3-none-any.whl", hash = "sha256:ce42d816b81b68506614c11e8937d3aa9e41007ceb50bfdcb0749b921bf646c7"},
-    {file = "pytz-2023.3.post1.tar.gz", hash = "sha256:7b4fddbeb94a1eba4b557da24f19fdf9db575192544270a9101d8509f9f43d7b"},
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.1"
 description = "YAML parser and emitter for Python"
@@ -693,18 +682,18 @@ test = ["pylint", "pytest", "pytest-black", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "supabase"
-version = "2.2.0"
+version = "2.3.1"
 description = "Supabase client for Python."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "supabase-2.2.0-py3-none-any.whl", hash = "sha256:e1417b4a5067cbec153494a455b15fea29c110d0e96788ed4e5f81d260045dbd"},
-    {file = "supabase-2.2.0.tar.gz", hash = "sha256:93f2754182451a5a5d75e957eb1ee41ecb5f5d0e28055870dbaa0598e63dd6bb"},
+    {file = "supabase-2.3.1-py3-none-any.whl", hash = "sha256:ea2fee6c9fccdb323faa42e33db38290b842a474e6f6358722b8ce906f8ef8e3"},
+    {file = "supabase-2.3.1.tar.gz", hash = "sha256:c1700e5b1b78ac84d6adb2fe444e6f3bac9f716d3dc1c1d32d0d678849299266"},
 ]
 
 [package.dependencies]
 gotrue = ">=1.3,<3.0"
-httpx = ">=0.24.0,<0.25.0"
+httpx = ">=0.24,<0.26"
 postgrest = ">=0.10.8,<0.14.0"
 realtime = ">=1.0.0,<2.0.0"
 storage3 = ">=0.5.3,<0.8.0"
@@ -875,4 +864,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f047afc70ebab155214fc0338e2f0d14e8e909c65f85cbc4fbbee72ff22479ea"
+content-hash = "8b4ba6f637cd1e286fb5bfad3d8aeb1f88ee116e36599190c9dcfdf78c91a1db"
