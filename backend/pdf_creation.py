@@ -173,9 +173,19 @@ def main():
     # TODO: assert phase id!
     question_table_sorted = sp['question_table'].sort_values('questionorder')
 
+    all_emails = []
+    applications_complete_emails = []
     application_complete = 0
     for ii, application in tqdm(sp['application_table'].iterrows(), desc='Creating pdfs',
                                 total=len(sp['application_table'])):
+        try:
+            email = sp['users'][sp['users']['id'] == application['userid']]['email'].values[0]
+            all_emails.append(email)
+        except Exception as e:
+            print('Did you forget to update the view?\n' + \
+                  'create view public.users as select * from auth.users;' + \
+                  'revoke all on public.users from anon, authenticated;')
+            raise e
 
         application_id = application['applicationid']
         user_id = application['userid']
@@ -222,8 +232,10 @@ def main():
         html = HTML(string=file_content, base_url="/")
         css = CSS(string='@page { size: A3; margin: 0; }')
         html.write_pdf(file_name, stylesheets=[css])
-        print()
+        applications_complete_emails.append(email)
     print(f'Application complete: {application_complete} of {len(sp["application_table"])}')
+    print()
+    print(f'All emails non-completed: {list(set(all_emails) - set(applications_complete_emails))}')
 
 
 if __name__ == '__main__':
