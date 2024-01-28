@@ -47,3 +47,6 @@ jspm_packages
 # Pycache
 **/__pycache__
 out
+bewerbungen_pdf/*
+*.pdf
+
