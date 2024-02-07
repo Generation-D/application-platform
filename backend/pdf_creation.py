@@ -206,7 +206,7 @@ def main():
         if answers is None:
             continue  # skip this application as it is not complete!
         # text = ''
-        answers = {k: v for k, v in sorted(answers.items(), key=lambda item: item[1][1].split(' ')[1])}
+        answers = {k: v for k, v in sorted(answers.items(), key=lambda item: int(item[1][1].split(' ')[1]))}
         for (question_type, question_text, answer) in answers.values():
             text += '<h3> ' + str_to_html(question_text) + '</h3>    <br>\n\n'
 

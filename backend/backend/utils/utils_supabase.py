@@ -10,7 +10,7 @@ from supabase.lib.client_options import ClientOptions
 def init_supabase(schema: Optional[str] = None):
     # use SUPABASE_SERVICE_KEY to ignore Row Level Security
     # export SUPABASE_SERVICE_KEY="
-    # eexport SUPABASE_SERVICE_KEY="xport SUPABASE_URL="
+    # export SUPABASE_URL="
     options = ClientOptions().replace(schema=schema) if schema else ClientOptions(storage=SyncMemoryStorage())
     return create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_SERVICE_KEY'), options=options)
 
