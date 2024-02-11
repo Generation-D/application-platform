@@ -79,8 +79,8 @@ QUESTION_TYPES_DB_TABLE = {
     QuestionType.PDF_UPLOAD: "pdf_upload_question_table",
     QuestionType.IMAGE_UPLOAD: "image_upload_question_table",
     QuestionType.DROPDOWN: "dropdown_question_table",
-    QuestionType.CHECKBOX: "checkbox_question_table",
     QuestionType.CONDITIONAL: "conditional_question_table",
+    QuestionType.CHECKBOX: "checkbox_question_table",
 }
 
 
