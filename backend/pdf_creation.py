@@ -5,7 +5,7 @@ import pandas as pd
 from weasyprint import HTML, CSS
 from collections import defaultdict
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 import supabase
 from backend.utils.utils_supabase import init_supabase, init_supabase_bucket_client
@@ -43,6 +43,7 @@ class SupabaseTable:
             'application_table': pd.DataFrame(schema.table('application_table').select('*').execute().data),
             'question_table': pd.DataFrame(schema.table('question_table').select('*').execute().data),
         }
+        # TODO: add check, that the loaded data is as long as the number of rows in the table in supabase!
         self.schema = schema
 
     def __getitem__(self, key):
@@ -88,7 +89,7 @@ def get_question_type(sp, question_id) -> QuestionType:
     return QuestionType.str_to_enum(question_type_str)
 
 
-def get_answer(sp, application_id, question) -> Dict[Optional[pd.core.frame.DataFrame], bool]:
+def get_answer(sp: SupabaseTable, application_id, question) -> Dict[Optional[pd.core.frame.DataFrame], bool]:
     '''
     Get the answer for a given question id and application id and dependent questions.
     '''
@@ -119,18 +120,34 @@ def get_answer(sp, application_id, question) -> Dict[Optional[pd.core.frame.Data
     return answer
 
 
-def get_dependent_questions(sp):
+def get_dependent_questions(sp: SupabaseTable) -> dict:
     result = defaultdict(list)
     for ii, question in sp['question_table'].iterrows():
         question_id = question['questionid']
+        question_type = get_question_type(sp, question_id)
+        question_text = f'Frage {ii} [{question_type.value}]: ' + question['questiontext']
         if question['depends_on'] is not None:
-            result[question_id].append(question['depends_on'])
+            cqct = sp['conditional_question_choice_table']
+            res = cqct[cqct['choiceid'] == question['depends_on']]
+
+            depends_on_choice = res['choicevalue'].values[0]
+            depends_on_question_id = res['questionid'].values[0]
+
+            result[question_id].append({
+                'depends_on_question_id': depends_on_question_id,
+                'choice_value': depends_on_choice
+            })
     return result
 
 
-def retrieve_answers(question_table_sorted, sp, application_id):
+def retrieve_answers(question_table_sorted, sp, application_id, conditional_dependence) -> tuple:
+    '''
+    Retrieve the answers for a given application id and dependent questions. Return a tuple, where the first element is
+    a dictionary with the question id as key and a tuple of the question type, question text and answer as value.
+    The second element is a boolean indicating if the application is complete.
+    '''
 
-    conditional_dependence = get_dependent_questions(sp)
+    application_complete = True
     result = {}
     for jj, question in question_table_sorted.iterrows():
         question_id = question['questionid']
@@ -142,24 +159,28 @@ def retrieve_answers(question_table_sorted, sp, application_id):
         if len(conditional_dependence[question_id]) != 0:
             # if this question is mandatory dependent on another question
             assert len(conditional_dependence[question_id]) == 1, 'Multiple dependencies not supported!'
-            sub_question_id = sp['conditional_question_choice_table'][
-                sp['conditional_question_choice_table']['choiceid'] == conditional_dependence[question_id]
-                [0]]['questionid'].values[0]
+            sub_question_id = conditional_dependence[question_id][0]['depends_on_question_id']
             sub_question = sp['question_table'][sp['question_table']['questionid'] == sub_question_id].iloc[0]
+            sub_question_text = f'Frage {jj} [{question_type.value}]: ' + sub_question['questiontext']
             answer_sub = get_answer(sp, application_id, sub_question)
             if answer_sub is None and sub_question['mandatory']:
-                return None
+                assert answer is None, 'Conditional questions cannot be dependent!'
+                application_complete = False
+                result[question_id] = None
+                continue
             conditional_result = parse_conditional_answer(sp, answer_sub)
             assert len(conditional_dependence[sub_question_id]) == 0, 'Conditional questions cannot be dependent!'
             assert conditional_result in ['Ja', 'Nein'], 'Conditional questions can only be yes or no!'
-            if conditional_result == 'Nein':
+            if conditional_result != conditional_dependence[question_id][0]['choice_value']:
                 continue
 
         if answer is None and question['mandatory']:
-            return None  # Application not complete!
+            application_complete = False
+            result[question_id] = None
+            continue
 
         result[question_id] = (question_type, question_text, answer)
-    return result
+    return result, application_complete
 
 
 def main():
@@ -172,10 +193,22 @@ def main():
 
     # TODO: assert phase id!
     question_table_sorted = sp['question_table'].sort_values('questionorder')
+    conditional_dependence = get_dependent_questions(sp)
+
+    # create log file
+    save_dir = 'bewerbungen_pdf'
+    os.makedirs(save_dir, exist_ok=True)
+    # empty log file and csv
+
+    # create or empty the log file
+    open(os.path.join(save_dir, 'log.txt'), 'w').close()
+    open(os.path.join(save_dir, 'completed.csv'), 'w').close()
+
+    title_question_id = 'f5f03483-66d3-4e6d-8c26-4d17e8d53a8b'
 
     all_emails = []
-    applications_complete_emails = []
-    application_complete = 0
+    applications_complete_emails = []  # TODO: these are not the mentioned contact emails!
+    applications_complete = 0
     for ii, application in tqdm(sp['application_table'].iterrows(), desc='Creating pdfs',
                                 total=len(sp['application_table'])):
         try:
@@ -190,20 +223,31 @@ def main():
         application_id = application['applicationid']
         user_id = application['userid']
 
-        title_question = sp['question_table'][sp['question_table']['questionid'] ==
-                                              'f5f03483-66d3-4e6d-8c26-4d17e8d53a8b']
+        title_question = sp['question_table'][sp['question_table']['questionid'] == title_question_id]
         title = get_answer(sp, application_id, title_question.iloc[0])
-        if title is None:
-            continue  # skip this application as no title is given!
-        title_text = title['answertext']
+        # if title is None:
+        #     continue  # skip this application as no title is given!
+        title_text = title['answertext'].values[0] if title is not None else ' ~ NO ANSWER GIVEN! ~ '
         text = f'<h3> Teamname </h3>'
         text += f'{title_text}<br><br>\n\n\n'
-        question_table_sorted = question_table_sorted[~(
-            'f5f03483-66d3-4e6d-8c26-4d17e8d53a8b' == question_table_sorted['questionid'])]
+        question_table_sorted = question_table_sorted[~(title_question_id == question_table_sorted['questionid'])]
 
-        answers = retrieve_answers(question_table_sorted, sp, application_id)
+        answers, application_complete = retrieve_answers(question_table_sorted, sp, application_id,
+                                                         conditional_dependence)
 
-        if answers is None:
+        missing_answer_ids = [question for question, answer in answers.items() if answer is None]
+        missing_questions = question_table_sorted[question_table_sorted['questionid'].isin(missing_answer_ids)][[
+            'questiontext', 'mandatory'
+        ]]
+        print('Answers missing: ', len(missing_answer_ids))
+        with open(os.path.join(save_dir, 'log.txt'), 'a') as f:
+            f.write(f'User: {user_id}{"_INCOMPLETE" * (not application_complete)}   {email}\n')
+            f.write(
+                f'Answers missing: {len(missing_answer_ids)} {[(ii, f"mandatory: {mandatory}") for ii, (text, mandatory) in missing_questions.iterrows()]}\n'
+            )
+            f.write('\n')
+
+        if not application_complete:
             continue  # skip this application as it is not complete!
         # text = ''
         answers = {k: v for k, v in sorted(answers.items(), key=lambda item: int(item[1][1].split(' ')[1]))}
@@ -222,10 +266,8 @@ def main():
                 text += '    <br><br>\n\n\n'
 
         file_content = create_html_file_content(text)
-        save_dir = 'bewerbungen_pdf'
-        os.makedirs(save_dir, exist_ok=True)
-        # file_name = os.path.join(save_dir, f'{user_id}{"_INCOMPLETE" * (not application_complete)}.pdf')
-        application_complete += 1
+        # file_name = os.path.join(save_dir, f'{user_id}{"_INCOMPLETE" * (not applications_complete)}.pdf')
+        applications_complete += 1
         name_title = "".join(i for i in title_text if i not in "\/:*?<>|")
         file_name = os.path.join(save_dir, f'{user_id}_{name_title}.pdf')
 
@@ -233,9 +275,16 @@ def main():
         css = CSS(string='@page { size: A3; margin: 0; }')
         html.write_pdf(file_name, stylesheets=[css])
         applications_complete_emails.append(email)
-    print(f'Application complete: {application_complete} of {len(sp["application_table"])}')
+
+        # write a csv with key, name, e-mail, pdf_name
+        with open(os.path.join(save_dir, 'completed.csv'), 'a') as f:
+            f.write(f'{user_id},{name_title},{email},{os.path.basename(file_name)}\n')
+
+    print(f'Application complete: {applications_complete} of {len(sp["application_table"])}')
     print()
     print(f'All emails non-completed: {list(set(all_emails) - set(applications_complete_emails))}')
+    print()
+    print(f'All emails completed: {applications_complete_emails}')
 
 
 if __name__ == '__main__':
