@@ -9,7 +9,6 @@ readme = "README.md"
 logging_test = 'backend.logger:run'
 validate_test = 'backend.validate_config:validate_config_structure'
 process_test = 'backend.process_config:process_config'
-add_phase_test = 'backend.process_config:add_phase_questions'
 create_bucket_test = 'backend.process_config:create_file_storage'
 helper = 'backend.helper'
 
@@ -23,7 +22,6 @@ python-dateutil = "^2.8.2"
 supabase = "^2.0.0"
 pytest = "^7.4.3"
 yapf = "^0.40.2"
-pytz = "^2023.3.post1"
 
 
 [build-system]
