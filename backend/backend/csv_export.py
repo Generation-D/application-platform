@@ -2,8 +2,8 @@ import csv
 
 from backend.utils.utils_supabase import init_supabase
 
+
 class SupabaseUser:
-    
     def __init__(self, id, email, role=None, isactive=None, applicationid=None):
         self.id = id
         self.email = email
@@ -83,7 +83,6 @@ def run():
     #fetch_all_answers()
     all_users = fetch_users()
     all_questions = fetch_questions()
-    print(all_questions)
     all_answers = fetch_answers("answer_table")
     all_long_text_answers = fetch_answers("long_text_answer_table")
     all_short_text_answers = fetch_answers("short_text_answer_table")
@@ -92,14 +91,11 @@ def run():
     all_conditional_answers = fetch_answers("conditional_answer_table")
     all_choice_conditions = fetch_choices("conditional_question_choice_table")
     all_checkbox_answers = fetch_answers("checkbox_answer_table")
-    
+
     header = ["userid", "email"]
     for question in all_questions.values():
         header.append(question["questiontext"])
-        
-    print(header)
-    print(all_mc_choices)
-    
+
     with open("answer_export.csv", 'w', encoding="utf8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(header)
@@ -126,6 +122,6 @@ def run():
                         elif question["questiontype"] == "checkBox":
                             answer_for_this_question = all_checkbox_answers[answerid]['checked']
                         else:
-                            print(f"QUESTIONTYPE '{question['questiontype']}' IS MISSING!!!!")
+                            raise ValueError(f"QUESTIONTYPE '{question['questiontype']}' IS MISSING!!!!")
                 new_row.append(answer_for_this_question)
             writer.writerow(new_row)
