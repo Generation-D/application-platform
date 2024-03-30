@@ -14,6 +14,7 @@ create_bucket_test = 'backend.process_config:create_file_storage'
 helper = 'backend.helper'
 add_test_users = 'backend.process_config:add_test_user'
 run_script = 'backend.manage_applications:manage_users'
+export = 'backend.csv_export:run'
 
 [tool.poetry.dependencies]
 python = "^3.11"
