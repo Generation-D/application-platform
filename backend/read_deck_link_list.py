@@ -142,22 +142,17 @@ def get_dependent_questions(sp: SupabaseTable) -> dict:
     return result
 
 
-def retrieve_answers(question_table_sorted, sp, application_id, conditional_dependence,
-                     skip=['f47e99dd-b360-4f8f-88c9-c0257c35e860']) -> tuple:
+def retrieve_answers(question_table_sorted, sp, application_id, conditional_dependence) -> tuple:
     '''
     Retrieve the answers for a given application id and dependent questions. Return a tuple, where the first element is
     a dictionary with the question id as key and a tuple of the question type, question text and answer as value.
     The second element is a boolean indicating if the application is complete.
-
-    Skip the "Read-Deck".
     '''
 
     application_complete = True
     result = {}
     for jj, question in question_table_sorted.iterrows():
         question_id = question['questionid']
-        if question_id in skip:
-            continue
         question_type = get_question_type(sp, question_id)
         question_text = f'Frage {jj} [{question_type.value}]: ' + question['questiontext']
 
@@ -191,138 +186,59 @@ def retrieve_answers(question_table_sorted, sp, application_id, conditional_depe
 
 
 def csv_add_colnames(file, colnames):
+    colnames_sanitized = [str(x).replace(',', ';') for x in colnames]
     with open(file, 'w') as f:
-        f.write(','.join(colnames) + '\n')
+        f.write(','.join(colnames_sanitized) + '\n')
 
 
-def add_to_csv(file, answers_formatted: dict, credentials: dict):
-    if not os.path.exists(file):
-        creadentials_colnames = list(credentials.keys())
-        questions = list(answers_formatted.keys())
-        csv_add_colnames(file, creadentials_colnames + questions)
-    csv_text = ''
+# def add_to_csv(file, answers_formatted: dict, credentials: dict):
+#     if not os.path.exists(file):
+#         creadentials_colnames = list(credentials.keys())
+#         questions = list(answers_formatted.keys())
+#         csv_add_colnames(file, creadentials_colnames + questions)
+#     csv_text = ''
+#     with open(file, 'a') as f:
+#         csv_text += ','.join([str(x) for x in credentials.values()])
+#         for question, answer in answers_formatted.items():
+#             csv_text += ',' + str(answer).replace(
+#                 '', ';')  # TODO: the problem with text is that it can contain commas and newlines and so on!
+#         f.write(csv_text + '\n')
+
+
+def add_to_csv(file, row: list):
+    row_sanitized = [str(x).replace(',', ';') for x in row]
     with open(file, 'a') as f:
-        csv_text += ','.join([str(x) for x in credentials.values()])
-        for question, answer in answers_formatted.items():
-            csv_text += ',' + str(answer).replace(
-                '', ';')  # TODO: the problem with text is that it can contain commas and newlines and so on!
-        f.write(csv_text + '\n')
+        f.write(','.join([str(x) for x in row_sanitized]) + '\n')
 
 
 def main():
 
     supabase_public = init_supabase(schema='public')
     storage_client = init_supabase_bucket_client()
-
-    # TODO: take snapshot of the dB and then do the pdfs!
     sp = SupabaseTable(supabase_public)
 
-    # TODO: assert phase id!
-    question_table_sorted = sp['question_table'].sort_values('questionorder')
-    conditional_dependence = get_dependent_questions(sp)
-
-    # create save_dirs:
-    save_dir = 'bewerbungen_pdf'
-    os.makedirs(save_dir, exist_ok=True)
-
-    save_dir_incomplete = os.path.join(save_dir, 'incomplete')
-    os.makedirs(save_dir_incomplete, exist_ok=True)
-
-    save_dir_complete = os.path.join(save_dir, 'complete')
-    os.makedirs(save_dir_complete, exist_ok=True)
-    # empty log file and csv
-
-    # create or empty the log file
-    open(os.path.join(save_dir, 'completed.csv'), 'w').close()
-    full_data_path = os.path.join(save_dir, 'full_data.csv')
-    if os.path.exists(full_data_path):
-        os.remove(full_data_path)
+    pdf_read_deck_bucket = storage_client.get_bucket('pdf-f47e99dd-b360-4f8f-88c9-c0257c35e860')
+    read_decks = pdf_read_deck_bucket.list()
 
     title_question_id = 'f5f03483-66d3-4e6d-8c26-4d17e8d53a8b'
 
-    all_emails = []
-    applications_complete_emails = []  # TODO: these are not the mentioned contact emails!
-    applications_complete_count = 0
-    for ii, application in tqdm(sp['application_table'].iterrows(), desc='Creating pdfs',
-                                total=len(sp['application_table'])):
+    read_deck_csv = 'bewerbungen_pdf/read_deck_overview.csv'
+    csv_add_colnames(read_deck_csv, ['team_name', 'user_id', 'pdf_link'])
 
-        try:
-            email = sp['users'][sp['users']['id'] == application['userid']]['email'].values[0]
-            all_emails.append(email)
-        except Exception as e:
-            print('Did you forget to update the view?\n' + \
-                  'create view public.users as select * from auth.users;' + \
-                  'revoke all on public.users from anon, authenticated;')
-            raise e
+    for read_deck in read_decks:
+        user_id_deck = read_deck['name'].split('_')[0]
+        application_id = sp['application_table'][sp['application_table']['userid'] ==
+                                                 user_id_deck]['applicationid'].values[0]
 
-        application_id = application['applicationid']
-        user_id = application['userid']
-
+        # team title name
         title_question = sp['question_table'][sp['question_table']['questionid'] == title_question_id]
-        title = get_answer(sp, application_id, title_question.iloc[0])
-        # if title is None:
-        #  continue  # skip this application as no title is given!
+        title = get_answer(sp, application_id, title_question.iloc[0])['answertext'].values[0]
 
-        title_text = title['answertext'].values[0] if title is not None else MISSING_ANSWER
-        text = f'<h3> Teamname </h3>'
-        text += f'{title_text}<br><br>\n\n\n'
-        question_table_sorted = question_table_sorted[~(title_question_id == question_table_sorted['questionid'])]
+        days_to_seconds = 24 * 60 * 60
+        download_url = pdf_read_deck_bucket.create_signed_url(read_deck['name'], 365 * days_to_seconds)
+        add_to_csv(read_deck_csv, [title, user_id_deck, download_url['signedURL']])
 
-        answers, application_complete = retrieve_answers(question_table_sorted, sp, application_id,
-                                                         conditional_dependence)
-
-        missing_answer_ids = [question for question, answer in answers.items() if answer is None]
-        missing_questions = question_table_sorted[question_table_sorted['questionid'].isin(missing_answer_ids)][[
-            'questionid', 'mandatory'
-        ]]
-        print('Answers missing: ', len(missing_answer_ids))
-        with open(os.path.join(save_dir, 'log.txt'), 'a') as f:
-            f.write(f'User: {user_id}{"_INCOMPLETE" * (not application_complete)}   {email}\n')
-            f.write(
-                f'Answers missing: {len(missing_answer_ids)} {[(id, f"mandatory: {mandatory}") for _, (id, mandatory) in missing_questions.iterrows()]}\n'
-            )
-            f.write('\n')
-
-        answers = {k: v for k, v in sorted(answers.items(), key=lambda item: int(item[1][1].split(' ')[1]))}
-
-        answers_formatted = {}
-        for (question_type, question_text, answer) in answers.values():
-            if answer is None:
-                answer_parsed = MISSING_ANSWER
-            else:
-                answer_parsed = ANSWER_TO_PARSER[question_type](sp, answer, storage_client)
-            answers_formatted[question_text] = answer_parsed
-
-        for question_text, answer_parsed in answers_formatted.items():
-            text += '<h3> ' + str_to_html(question_text) + '</h3>    <br>\n\n'
-            text += str_to_html(answer_parsed)
-            if text[-3:] == 'ul>':  # print one line break less if preceded by list
-                text += '    <br>\n\n\n'
-            else:
-                text += '    <br><br>\n\n\n'
-
-        file_content = create_html_file_content(text)
-        name_title = "".join(i for i in title_text if i not in "\/:*?<>|") if title_text != MISSING_ANSWER else "NaN"
-        file_name = f'{user_id}_{name_title}{"_INCOMPLETE" * (not application_complete)}.pdf'
-        file_path = os.path.join(save_dir, file_name)
-
-        html = HTML(string=file_content, base_url="/")
-        css = CSS(string='@page { size: A3; margin: 0; }')
-        html.write_pdf(file_path, stylesheets=[css])
-
-        if application_complete:
-            applications_complete_count += 1
-            applications_complete_emails.append(email)
-
-        # write a csv with key, name, e-mail, pdf_name
-        with open(os.path.join(save_dir, 'completed.csv'), 'a') as f:
-            f.write(f'{user_id},{name_title},{email},{file_name}\n')
-
-    print(f'Application complete: {applications_complete_count} of {len(sp["application_table"])}')
-    print()
-    print(f'All emails non-completed: {list(set(all_emails) - set(applications_complete_emails))}')
-    print()
-    print(f'All emails completed: {applications_complete_emails}')
+    print(f'All read decks completed {len(read_decks)}')
 
 
 if __name__ == '__main__':
