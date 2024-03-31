@@ -1,9 +1,6 @@
-
-
 from backend.utils.utils_supabase import init_supabase
 
 import csv
-
 
 
 def manage_users():
@@ -29,13 +26,23 @@ def manage_users():
     supabase = init_supabase()
     for candidate in next_candidates_emails:
         cand_id = email_id_dict[candidate]
-        supabase.table("phase_outcome_table").insert({"phase_id": phase_id, "user_id": cand_id, "outcome": True, "reviewed_by": reviewer}).execute()
+        supabase.table("phase_outcome_table").insert({
+            "phase_id": phase_id,
+            "user_id": cand_id,
+            "outcome": True,
+            "reviewed_by": reviewer
+        }).execute()
 
     for cand_email, cand_id in email_id_dict.items():
         print(cand_email, cand_id)
         if cand_email.lower() not in next_candidates_emails:
             try:
-                supabase.table("phase_outcome_table").insert({"phase_id": phase_id, "user_id": cand_id, "outcome": False, "reviewed_by": reviewer}).execute()
+                supabase.table("phase_outcome_table").insert({
+                    "phase_id": phase_id,
+                    "user_id": cand_id,
+                    "outcome": False,
+                    "reviewed_by": reviewer
+                }).execute()
             except Exception as error_message:
                 print("ERROR:", error_message)
         else:

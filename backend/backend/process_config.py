@@ -209,7 +209,7 @@ def add_test_user():
     passwort = "HalloWelt2341"
     supabase = init_supabase()
     for user in users:
-        res_user  = supabase.auth.sign_up({"email": user, "password": passwort})
+        res_user = supabase.auth.sign_up({"email": user, "password": passwort})
         user_id = res_user.user.id
         supabase.table("application_table").insert({"userid": user_id}).execute()
         supabase.table("user_profiles_table").insert({"userid": user_id, "userrole": 1, "isactive": True}).execute()

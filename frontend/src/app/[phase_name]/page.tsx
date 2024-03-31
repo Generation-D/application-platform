@@ -91,7 +91,7 @@ export default async function Page({
             <div>
               <strong>
                 Die Phase ist bereits um, du kannst deine Eingaben nur noch
-                einlesen!
+                einsehen!
               </strong>
             </div>
           )}
