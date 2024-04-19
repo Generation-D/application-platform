@@ -6,7 +6,7 @@ Glückwunsch, das war beeindruckend! Ihr habt die zweite Runde von Generation-D 
 
 Aktuell läuft die **dritte Bewerbungsphase**, in der wir euch als Team persönlich besser kennenlernen wollen. Dazu laden wir euch zu einem kurzen Videointerview und -pitch ein und bitten euch, eure Lebensläufe hochzuladen.
 
-Zeitnah wird sich ein Mitglied unseres Teams bei euch melden mit mindestens zwei Terminvorschlägen für das circa 30-minütige Videointerview. ihr vereinbart dann individuell mit euren Juror\*innen den Termin. 
+Zeitnah wird sich ein Mitglied unseres Teams bei euch melden mit mindestens zwei Terminvorschlägen für das circa 30-minütige Videointerview. Ihr vereinbart dann individuell mit euren Juror\*innen den Termin. 
 
 Am Anfang des Interviews erwartet euch eine kurze Begrüßung. Danach stellt ihr uns eure Idee in einem **zweiminütigen** Pitch vor. Nach 1:45 Minuten erhaltet ihr von euren Juror\*innen ein visuelles oder akustisches Signal, das ihr zuvor mit Ihnen vereinbart habt. 
 
