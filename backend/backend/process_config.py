@@ -194,10 +194,10 @@ def add_phase_questions():
     supabase = init_supabase()
 
     for phase_counter, (phase_name, phase) in enumerate(config_data['questions'].items()):
-        if phase_counter != 1:
+        if phase_counter != 2:
             continue
         phase_sections = {}
-        phase_id = "5b103429-48cd-4f11-b081-d85fb496c520"
+        phase_id = "2a7c1a2c-9cb5-4bc4-8101-b2adf89972af"
 
         for question in phase['questions']:
             process_question(question, phase_id, phase_sections, supabase)
