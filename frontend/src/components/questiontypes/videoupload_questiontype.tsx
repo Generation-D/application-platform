@@ -153,7 +153,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     setTempAnswer("");
     setUploadedFile(null);
     setWasUploaded(true);
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {

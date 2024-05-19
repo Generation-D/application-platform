@@ -1,6 +1,7 @@
 # application-platform
 
 ## Naming Convention
+
 Everything in English (naming, comments, commits, ...)
 - we strictly follow [PEP8](https://peps.python.org/pep-0008) naming convention for everything <https://peps.python.org/pep-0008/#prescriptive-naming-conventions>
 - names end with the top-level relation, e.g.:
@@ -24,7 +25,9 @@ Everything in English (naming, comments, commits, ...)
 | db| database |
 
 --> short_text_question_table for the db table containing all short questions
+
 ## Python Formatting:
+
 We use the following yapf config style:
 
 ```
@@ -136,6 +139,7 @@ Routing:
 - /admin
 
 ## Logging
+
 Using Pino and Logflare for logging.
 Set the following Environment Variables:
 - NEXT_PUBLIC_LOGFLARE_API_TOKEN
@@ -153,13 +157,55 @@ const log = new Logger("CURRENT_MODULE")
 log.debug("MSG", "USER_ID");
 ```
 
-## Next Steps
+## Git Hooks
 
-Marib: Erstellt Github Issues
-Gereon: Baut Worker, kümmert sich um Supabase, Docker Compose
+1. Clone Repository
+2. navigate to .git/hooks/: `cd .git/hooks/`
+3. Create pre-push file: `nano pre-push`
+4. Insert commands:
+
+```
+#!/bin/sh
+# This hook script runs "npm run format:fix", "npm run lint", and "npm run format"
+# in the /frontend directory before pushing, aborting the push if any of these commands fail.
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+FRONTEND_DIR="$REPO_ROOT/frontend"
+
+echo "Changing to frontend directory..."
+cd "$FRONTEND_DIR" || exit
+echo "In frontend directory, running format:fix..."
+npm run format:fix
+if [ $? -ne 0 ]; then
+  echo "format:fix failed, aborting push."
+  exit 1
+fi
+
+echo "Running lint..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "Linting failed, aborting push."
+  exit 1
+fi
+
+echo "Running format..."
+npm run format
+if [ $? -ne 0 ]; then
+  echo "Formatting failed, aborting push."
+  exit 1
+fi
+
+echo "All checks passed. Proceeding with push."
+cd -  # Return to the original directory
+exit 0
+```
+5. Make Hook Executable: `chmod +x pre-push`
+6. Navigate back: `cd ../../`
+7. Test your git Hook: `git push`
 
 
 ## Frontend Deployment
+
 1. Prerequisites:
 - Ubuntu Server with Docker Image and Docker Compose
 - 2 URLs (one for Frontend and one for your proxy)
