@@ -84,7 +84,7 @@ const Apl_Footer: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="items-center justify-center text-secondary font-nunito flex flex-col ">
+      <div className="items-center justify-center text-secondary font-nunito flex flex-col">
         ©{new Date(Date.now()).getFullYear()} Generation-D. All rights
         reserved.
       </div>

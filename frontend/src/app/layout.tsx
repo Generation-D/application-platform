@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 
 import Apl_Footer from "@/components/layout/footer";
 import { ReduxProvider } from "@/store/provider";
+import Credits from "@/components/layout/credits";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
               </main>
             </div>
             <Apl_Footer />
+            <Credits/>
           </div>
         </ReduxProvider>
       </body>
