@@ -13,11 +13,14 @@ const Credits: React.FC = () => {
       >
         Open Source Projekt
       </Link>
-      &nbsp;von&nbsp; <Link
+      &nbsp;von&nbsp;{" "}
+      <Link
         href="https://generation-d.org"
         target="_blank"
         className="m-0 p-0 hover:underline"
-      >Generation-D</Link>
+      >
+        Generation-D
+      </Link>
     </div>
   );
 };

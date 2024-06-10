@@ -34,7 +34,7 @@ export default function RootLayout({
               </main>
             </div>
             <Apl_Footer />
-            <Credits/>
+            <Credits />
           </div>
         </ReduxProvider>
       </body>
