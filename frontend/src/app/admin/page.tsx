@@ -6,7 +6,7 @@ import InternalHeader from "@/components/layout/internalHeader";
 import UserList from "@/components/userslist";
 
 export default async function Page() {
-  await checkAccessRights("/admin")
+  await checkAccessRights("/admin");
   const users = await fetchAllUsers();
   const applicantsStatus = await fetchAllApplicantsStatus();
   const phases = await fetch_all_phases();

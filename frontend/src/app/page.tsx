@@ -10,7 +10,7 @@ import getOverviewPageText from "@/utils/getMarkdownText";
 import "github-markdown-css/github-markdown-light.css";
 
 export default async function Home() {
-  await checkAccessRights("/")
+  await checkAccessRights("/");
   const log = new Logger("Overview Page");
   log.debug("Render Overview Page");
   const contentHtml = await getOverviewPageText();

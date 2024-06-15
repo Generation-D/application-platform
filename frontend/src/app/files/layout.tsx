@@ -5,6 +5,6 @@ export default async function SubLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await checkAccessRights("/files")
-  return <section>{children}</section>
+  await checkAccessRights("/files");
+  return <section>{children}</section>;
 }
