@@ -1,10 +1,12 @@
 import { fetchAllApplicantsStatus, fetchAllUsers } from "@/actions/admin";
 import { fetch_all_phases } from "@/actions/phase";
+import { checkAccessRights } from "@/actions/checkAccessRights";
 import ApplicantsList from "@/components/applicantslist";
 import InternalHeader from "@/components/layout/internalHeader";
 import UserList from "@/components/userslist";
 
 export default async function Page() {
+  await checkAccessRights("/admin")
   const users = await fetchAllUsers();
   const applicantsStatus = await fetchAllApplicantsStatus();
   const phases = await fetch_all_phases();

@@ -17,12 +17,14 @@ import {
   cached_fetch_phase_questions,
 } from "@/utils/cached";
 import { createCurrentTimestamp } from "@/utils/helpers";
+import { checkAccessRights } from "@/actions/checkAccessRights";
 
 export default async function Page({
   params,
 }: {
   params: { phase_name: string };
 }) {
+  await checkAccessRights("/phase_name")
   const phaseName = params.phase_name;
   const phaseData = await cached_fetch_phase_by_name(phaseName);
   const phasesOutcome = await fetch_phases_status();

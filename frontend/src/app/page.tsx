@@ -1,4 +1,5 @@
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
+import { checkAccessRights } from "@/actions/checkAccessRights";
 import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import ApplicationOverview from "@/components/applicationOverview";
 import Apl_Header from "@/components/layout/header";
@@ -9,6 +10,7 @@ import getOverviewPageText from "@/utils/getMarkdownText";
 import "github-markdown-css/github-markdown-light.css";
 
 export default async function Home() {
+  await checkAccessRights("/")
   const log = new Logger("Overview Page");
   log.debug("Render Overview Page");
   const contentHtml = await getOverviewPageText();

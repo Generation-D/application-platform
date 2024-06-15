@@ -378,9 +378,9 @@ alter table PUBLIC.USER_PROFILES_TABLE enable row level security;
 CREATE TABLE PHASE_OUTCOME_TABLE (
     outcome_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     phase_id UUID NOT NULL REFERENCES PHASE_TABLE (phaseid),
-    user_id UUID NOT NULL REFERENCES USER_PROFILES_TABLE (userid),
+    user_id UUID NOT NULL REFERENCES USER_PROFILES_TABLE (userid) on delete cascade,
     outcome BOOLEAN NOT NULL, -- TRUE for pass, FALSE for fail
-    reviewed_by UUID NOT NULL REFERENCES USER_PROFILES_TABLE (userid), -- Admin who reviewed
+    reviewed_by UUID NOT NULL REFERENCES USER_PROFILES_TABLE (userid) on delete restrict, -- Admin who reviewed
     review_date TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -391,8 +391,8 @@ CREATE TABLE PHASE_ASSIGNMENT_TABLE (
     phase_id UUID NOT NULL REFERENCES PHASE_TABLE (phaseid),
     user_role_1_id UUID NOT NULL, --applicant
     user_role_2_id UUID NOT NULL, --reviewer
-    FOREIGN KEY (user_role_1_id) REFERENCES USER_PROFILES_TABLE (userid),
-    FOREIGN KEY (user_role_2_id) REFERENCES USER_PROFILES_TABLE (userid),
+    FOREIGN KEY (user_role_1_id) REFERENCES USER_PROFILES_TABLE (userid) on delete cascade,
+    FOREIGN KEY (user_role_2_id) REFERENCES USER_PROFILES_TABLE (userid) on delete cascade,
     CHECK (user_role_1_id != user_role_2_id)
 );
 
