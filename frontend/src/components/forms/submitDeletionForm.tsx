@@ -9,6 +9,7 @@ import { deleteUser } from "@/actions/auth";
 import { RESET_STATE } from "@/store/actionTypes";
 import { useAppDispatch } from "@/store/store";
 import { supabase } from "@/utils/supabaseBrowserClient";
+import { checkRelevanceOfUser } from "@/actions/phase";
 
 interface messageType {
   message: string;
@@ -32,6 +33,9 @@ export default function SubmitDeletionForm({
   const { pending } = useFormStatus();
   const router = useRouter();
 
+  const [isPartOfCompetition, setIsPartOfCompetition] = useState<boolean>(false);
+  const [reason, setReason] = useState<string>("");
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (countdown > 0) {
@@ -47,10 +51,18 @@ export default function SubmitDeletionForm({
     return () => clearTimeout(timer);
   }, [countdown, router]);
 
+  useEffect(() => {
+    const checkCompetitionStatus = async () => {
+      const isRelevant = await checkRelevanceOfUser()
+      setIsPartOfCompetition(isRelevant);
+    };
+    checkCompetitionStatus();
+  });
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     dispatch({ type: RESET_STATE });
-    const new_state = await deleteUser();
+    const new_state = await deleteUser(isRelevant, reason);
     if (new_state.status == "SUCCESS") {
       setCountdown(10);
     }
@@ -64,8 +76,26 @@ export default function SubmitDeletionForm({
         <div>
           Bist du dir sicher, dass du den folgenden User löschen willst?
         </div>
-        <div>{email}</div>
+        <div className="font-semibold">{email}</div>
         <div>Dies ist endgültig und kann nicht wiederhergestellt werden!</div>
+        {isPartOfCompetition && (
+          <div className="text-red-600">
+            Der Wettbewerb ist noch in vollem Gange und du bist noch Teil davon. Mit der Löschung dieses Users schließt du dich automatisch aus!
+          </div>
+        )}
+        <div className="mb-3">
+          <label htmlFor="reason" className="block text-secondary py-3">
+            Grund für das Löschen des Users an (optional):
+          </label>
+          <input
+            type="text"
+            name="reason"
+            id="reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            className="shadow appearance-none border rounded-md w-full py-2 px-3 text-secondary leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-primary focus:border-primary transition duration-150 ease-in-out"
+          />
+        </div>
         <div
           className={`italic ${
             state?.status == "SUCCESS" ? "text-green-600" : "text-red-600"

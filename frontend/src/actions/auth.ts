@@ -11,6 +11,7 @@ import {
   initSupabaseActions,
   supabaseServiceRole,
 } from "@/utils/supabaseServerClients";
+import { sendEmail } from "./smtp";
 
 const log = new Logger("actions/auth");
 
@@ -221,7 +222,7 @@ export async function sendResetPasswordLink(
   }
 }
 
-export async function deleteUser(): Promise<{
+export async function deleteUser(isRelevant: boolean, reason: string): Promise<{
   message: string;
   status: string;
 }> {
@@ -238,6 +239,10 @@ export async function deleteUser(): Promise<{
     if (deleteUserError) {
       log.error(JSON.stringify(deleteUserError));
       return { message: deleteUserError.message, status: "ERROR" };
+    }
+    if(isRelevant){
+      const mailText = `The following User deleted himself: '${userData.user.email}'; \nReason: '${reason}'`
+      await sendEmail("marib.aldoais@generation-d.org", "User was deleted", mailText)
     }
     revalidatePath("/");
   } catch (error) {

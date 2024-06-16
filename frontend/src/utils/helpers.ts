@@ -14,6 +14,10 @@ export function createCurrentTimestamp() {
   return moment().tz("Europe/Berlin").format("YYYY-MM-DDTHH:mm:ss.SSS");
 }
 
+export function getCurrentTimeUTC(): Date {
+  return new Date(new Date().toISOString());
+}
+
 export function setToPrefferedTimeZone(dateString: string) {
   if (dateString == "") {
     return "";

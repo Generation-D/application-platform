@@ -11,6 +11,7 @@ import Logger from "@/logger/logger";
 import { PhaseData, SectionData } from "@/store/slices/phaseSlice";
 import {
   createCurrentTimestamp,
+  getCurrentTimeUTC,
   setToPrefferedTimeZone,
 } from "@/utils/helpers";
 import { initSupabaseActions } from "@/utils/supabaseServerClients";
@@ -428,4 +429,46 @@ export async function fetch_phases_status(): Promise<PhaseOutcome[]> {
 
   transformedData?.sort((a, b) => a.phase?.phaseorder - b.phase?.phaseorder);
   return (transformedData as PhaseOutcome[]) || [];
+}
+
+export async function checkRelevanceOfUser(): Promise<boolean> {
+  try {
+    const supabase = initSupabaseActions();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      log.error(JSON.stringify(userError));
+      return false;
+    }
+    const { data: phaseData, error: phaseError } = await supabase
+      .from("phase_table")
+      .select("enddate")
+      .eq("phaseorder", 0);
+    if (phaseError) {
+      log.error(JSON.stringify(phaseError));
+      return false;
+    }
+    const dt_end_date = new Date(phaseData[0].enddate)
+    const dt_now = getCurrentTimeUTC()
+    if (dt_end_date.getTime() >  dt_now.getTime()){
+      return false
+    }
+    const { data: phaseOutcomeData, error: phaseOutcomeError } = await supabase
+      .from("phase_outcome_table")
+      .select("outcome_id, outcome, review_date, phase_id")
+      .eq("user_id", userData.user.id)
+      .eq("outcome", false);
+    if (phaseOutcomeError) {
+      log.error(JSON.stringify(phaseOutcomeError));
+      return false;
+    }
+    console.log(phaseOutcomeData)
+    if (phaseOutcomeData.length){
+      console.log("WRONG")
+      return false
+    }
+    return true
+  } catch (error) {
+    log.info(JSON.stringify(error));
+    return false;
+  }
 }
