@@ -222,7 +222,10 @@ export async function sendResetPasswordLink(
   }
 }
 
-export async function deleteUser(isRelevant: boolean, reason: string): Promise<{
+export async function deleteUser(
+  isRelevant: boolean,
+  reason: string,
+): Promise<{
   message: string;
   status: string;
 }> {
@@ -240,9 +243,13 @@ export async function deleteUser(isRelevant: boolean, reason: string): Promise<{
       log.error(JSON.stringify(deleteUserError));
       return { message: deleteUserError.message, status: "ERROR" };
     }
-    if(isRelevant){
-      const mailText = `The following User deleted himself: '${userData.user.email}'; \nReason: '${reason}'`
-      await sendEmail("marib.aldoais@generation-d.org", "User was deleted", mailText)
+    if (isRelevant) {
+      const mailText = `The following User deleted himself: '${userData.user.email}'; \nReason: '${reason}'`;
+      await sendEmail(
+        "marib.aldoais@generation-d.org",
+        "User was deleted",
+        mailText,
+      );
     }
     revalidatePath("/");
   } catch (error) {

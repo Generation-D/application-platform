@@ -447,10 +447,10 @@ export async function checkRelevanceOfUser(): Promise<boolean> {
       log.error(JSON.stringify(phaseError));
       return false;
     }
-    const dt_end_date = new Date(phaseData[0].enddate)
-    const dt_now = getCurrentTimeUTC()
-    if (dt_end_date.getTime() >  dt_now.getTime()){
-      return false
+    const dt_end_date = new Date(phaseData[0].enddate);
+    const dt_now = getCurrentTimeUTC();
+    if (dt_end_date.getTime() > dt_now.getTime()) {
+      return false;
     }
     const { data: phaseOutcomeData, error: phaseOutcomeError } = await supabase
       .from("phase_outcome_table")
@@ -461,12 +461,12 @@ export async function checkRelevanceOfUser(): Promise<boolean> {
       log.error(JSON.stringify(phaseOutcomeError));
       return false;
     }
-    console.log(phaseOutcomeData)
-    if (phaseOutcomeData.length){
-      console.log("WRONG")
-      return false
+    console.log(phaseOutcomeData);
+    if (phaseOutcomeData.length) {
+      console.log("WRONG");
+      return false;
     }
-    return true
+    return true;
   } catch (error) {
     log.info(JSON.stringify(error));
     return false;

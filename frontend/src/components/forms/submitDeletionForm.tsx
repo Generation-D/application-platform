@@ -33,7 +33,8 @@ export default function SubmitDeletionForm({
   const { pending } = useFormStatus();
   const router = useRouter();
 
-  const [isPartOfCompetition, setIsPartOfCompetition] = useState<boolean>(false);
+  const [isPartOfCompetition, setIsPartOfCompetition] =
+    useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export default function SubmitDeletionForm({
 
   useEffect(() => {
     const checkCompetitionStatus = async () => {
-      const isRelevant = await checkRelevanceOfUser()
+      const isRelevant = await checkRelevanceOfUser();
       setIsPartOfCompetition(isRelevant);
     };
     checkCompetitionStatus();
@@ -80,7 +81,8 @@ export default function SubmitDeletionForm({
         <div>Dies ist endgültig und kann nicht wiederhergestellt werden!</div>
         {isPartOfCompetition && (
           <div className="text-red-600">
-            Der Wettbewerb ist noch in vollem Gange und du bist noch Teil davon. Mit der Löschung dieses Users schließt du dich automatisch aus!
+            Der Wettbewerb ist noch in vollem Gange und du bist noch Teil davon.
+            Mit der Löschung dieses Users schließt du dich automatisch aus!
           </div>
         )}
         <div className="mb-3">
