@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import Apl_Header from "@/components/layout/header";
 import Apl_Footer from "@/components/layout/footer";
 import { ReduxProvider } from "@/store/provider";
 
@@ -26,10 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-primary`}>
         <ReduxProvider>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen w-full">
+            <Apl_Header />
             <div className="flex-grow">
-              <main className="flex flex-col rounded items-center p-8 justify-center space-y-6 mx-auto max-w-4xl bg-white">
-                {children}
+              <main className="flex flex-col rounded items-center p-8 justify-center space-y-6 mx-auto max-w-full bg-white">
+            {children}
               </main>
             </div>
             <Apl_Footer />

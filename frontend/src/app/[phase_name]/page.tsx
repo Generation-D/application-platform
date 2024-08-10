@@ -2,7 +2,6 @@ import { RedirectType, redirect } from "next/navigation";
 
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
 import { fetch_phases_status, fetch_sections_by_phase } from "@/actions/phase";
-import Apl_Header from "@/components/layout/header";
 import {
   SectionQuestionsMap,
   SectionView,
@@ -76,27 +75,23 @@ export default async function Page({
     />
   );
   return (
-    <span className="w-full">
-      <div className="flex flex-col items-start justify-between space-y-4">
-        <Apl_Header />
+    <div className="w-full flex flex-col justify-center items-center">
         <OverviewButton />
-        <div className="w-full">
+        <div className="w-full flex flex-col justify-center max-w-screen-xl">
           <h2 className="p-4 rounded text-secondary">
             <b>
-              Bewerbungs-Phase {phaseData.phaseorder + 1}:{" "}
-              {phaseData.phaselabel}
+                Bewerbungs-Phase {phaseData.phaseorder + 1}:{" "} {phaseData.phaselabel}
             </b>
           </h2>
           {!isEditable && (
             <div>
               <strong>
-                Die Phase ist bereits um, du kannst deine Eingaben nur noch
-                einsehen!
+                Die Phase ist bereits um, du kannst deine Eingaben nur noch einsehen!
               </strong>
             </div>
           )}
           {progressBarComponent}
-          <div className="space-y-4 max-w-screen-xl">
+          <div className="space-y-4 max-w-screen-xl flex justify-center">
             {phaseData.sectionsenabled ? (
               <SectionView
                 phaseData={phaseData}
@@ -121,6 +116,5 @@ export default async function Page({
         </div>
         <OverviewButton />
       </div>
-    </span>
   );
 }

@@ -6,6 +6,7 @@ const config: Config = {
     extend: {
       colors: {
         primary: "var(--primary-color)",
+        primary_bright: "var(--primary-color-bright)",
         secondary: "var(--secondary-color)",
       },
       backgroundImage: {

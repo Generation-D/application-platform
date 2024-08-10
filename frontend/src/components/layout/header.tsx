@@ -20,7 +20,7 @@ const Apl_Header: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-white h-24 flex items-center justify-between p-4 md:p-6">
+    <div className="w-full bg-primary h-24 flex items-center justify-between p-4 md:p-6">
       <div className="min-w-[20px] max-w-[200px] h-auto">
         <Link href="https://generation-d.org" target="_blank">
           <Image
@@ -48,7 +48,7 @@ const Apl_Header: React.FC = () => {
       <div
         className={`${
           isMenuOpen
-            ? "border space-y-2 absolute bg-white right-10 top-24 z-10 p-4 flex flex-col justify-center"
+            ? "border space-y-2 absolute bg-primary right-10 top-24 z-10 p-4 flex flex-col justify-center"
             : "hidden md:flex items-center"
         } space-x-4`}
       >
