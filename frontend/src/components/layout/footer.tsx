@@ -6,8 +6,7 @@ import Link from "next/link";
 
 const Apl_Footer: React.FC = () => {
   return (
-    <footer className="bg-primary h-[256px] items-center justify-center space-y-8 mt-4">
-
+    <footer className="bg-primary h-[256px] items-center justify-center space-y-8">
       <div className="items-end md:items-center justify-center h-full flex flex-row md:flex-col space-y-8 md:space-x-8">
         <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-4 md:space-y-0 text-secondary font-nunito">
           <Link
@@ -85,8 +84,8 @@ const Apl_Footer: React.FC = () => {
           </Link>
         </div>
         <div className="items-center justify-center text-secondary font-nunito flex flex-col ">
-            ©{new Date(Date.now()).getFullYear()} Generation-D. All rights
-            reserved.
+          ©{new Date(Date.now()).getFullYear()} Generation-D. All rights
+          reserved.
         </div>
       </div>
     </footer>

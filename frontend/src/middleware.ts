@@ -84,7 +84,7 @@ export async function middleware(request: NextRequest) {
 
   if (redirectUrl) {
     console.log(
-      `The User ${user.email} is not authorized to access ${pathname}. Redirect to ${redirectUrl}`
+      `The User ${user.email} is not authorized to access ${pathname}. Redirect to ${redirectUrl}`,
     );
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }

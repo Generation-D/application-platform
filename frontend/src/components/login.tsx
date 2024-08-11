@@ -46,7 +46,7 @@ export const LoginComponent: React.FC<{ signUpPossible: boolean }> = ({
           </div>
         </>
       ) : (
-        <div className="py-12 px-8 max-w-xl bg-[#FFFFFF] text-secondary rounded text-center">
+        <div className="py-12 px-8 m-2 max-w-xl bg-[#FFFFFF] text-secondary rounded text-center">
           Die erste Bewerbungsphase ist bereits vorbei und es können keine
           weiteren Accounts erstellt werden. Wir freuen uns auf eure Bewerbung
           im nächsten Jahr. Für weitere Informationen bitte besucht unsere

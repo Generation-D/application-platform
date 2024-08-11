@@ -1,40 +1,19 @@
-import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
-import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
-import ApplicationOverview from "@/components/applicationOverview";
-import { Question } from "@/components/questions";
-import Logger from "@/logger/logger";
-import { cached_fetch_phase_questions } from "@/utils/cached";
-import getOverviewPageText from "@/utils/getMarkdownText";
-import "github-markdown-css/github-markdown-light.css";
+import { fetch_first_phase_over } from "@/actions/phase";
+import Apl_Footer from "@/components/layout/footer";
+import { LoginComponent } from "@/components/login";
 
-export default async function Home() {
-  const log = new Logger("Overview Page");
-  log.debug("Render Overview Page");
-  const contentHtml = await getOverviewPageText();
-  const phasesData = await fetch_all_phases();
-  const phasesOutcome = await fetch_phases_status();
-  const phasesQuestions: Record<string, Question[]> = {};
-  for (const phase of phasesData) {
-    phasesQuestions[phase.phaseid] = await cached_fetch_phase_questions(
-      phase.phaseid,
-    );
-  }
-  const phaseAnswers = await fetchAllAnswersOfApplication();
-
-    return (
-    <>
-      <div className="flex flex-col items-start justify-between space-y-4">
-        <div
-          className="markdown-body"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
+export default async function Login() {
+  const signUpPossible = await fetch_first_phase_over();
+  return (
+    <div className="flex flex-col min-h-screen w-full">
+      <div className="flex-grow">
+        <div className="flex items-center justify-center m-12">
+          <div className="flex flex-col rounded-lg items-center justify-center bg-white p-8 border-solid border-2 border-grey-500">
+            <LoginComponent signUpPossible={signUpPossible} />
+          </div>
+        </div>
       </div>
-      <ApplicationOverview
-        phasesData={phasesData}
-        phasesQuestions={phasesQuestions}
-        phaseAnswers={phaseAnswers}
-        phasesOutcome={phasesOutcome}
-      />
-    </>
+      <Apl_Footer />
+    </div>
   );
 }
