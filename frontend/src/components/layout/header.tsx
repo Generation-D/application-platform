@@ -55,7 +55,7 @@ const Apl_Header: React.FC = () => {
         <Link href="https://generation-d.org/faq/" target="_blank">
           <span className="text-secondary block text-center">FAQs</span>
         </Link>
-        <Link href="/settings">
+        <Link href="/application/settings">
           <span className="text-secondary block text-center">
             Einstellungen
           </span>

@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <>
-      <div className="flex flex-col items-start justify-between space-y-4">
+      <div className="flex flex-col items-start justify-between">
         <div
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: contentHtml }}

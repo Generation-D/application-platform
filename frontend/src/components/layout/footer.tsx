@@ -6,32 +6,32 @@ import Link from "next/link";
 
 const Apl_Footer: React.FC = () => {
   return (
-    <footer className="bg-primary h-[256px] items-center justify-center space-y-8">
-      <div className="items-end md:items-center justify-center h-full flex flex-row md:flex-col space-y-8 md:space-x-8">
-        <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-4 md:space-y-0 text-secondary font-nunito">
+    <footer className="bg-primary h-[256px] items-center justify-center  md:space-y-8">
+      <div className="flex flex-col items-center justify-center h-full  md:space-y-8 ">
+        <div className="flex flex-col items-center justify-center md:flex-row text-secondary font-nunito">
           <Link
             href="https://generation-d.org/legal/"
             target="_blank"
-            className="m-0 p-0"
+            className="ml-4 mr-4 p-0"
           >
             Impressum
           </Link>
           <Link
             href="https://generation-d.org/legal/"
             target="_blank"
-            className="m-0 p-0"
+            className="ml-4 mr-4 p-0"
           >
             Disclaimer
           </Link>
           <Link
             href="https://generation-d.org/legal/"
             target="_blank"
-            className="m-0 p-0"
+            className="ml-4 mr-4  p-0"
           >
             Datenschutzerklärung
           </Link>
         </div>
-        <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-4 md:space-y-0 ml-3 md:ml-0">
+        <div className="flex flex-col m-3 space-x-0 md:flex-row md:space-x-8 ">
           {/*
           <Link href="https://de-de.facebook.com/GenerationD/" target="_blank"  className="m-0 p-0">
             <Image

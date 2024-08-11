@@ -27,7 +27,7 @@ export default function RootLayout({
     <div className="flex flex-col min-h-screen w-full">
       <Apl_Header />
       <div className="flex-grow">
-        <div className="flex flex-col rounded items-center p-0 justify-center m-0 mx-auto max-w-full bg-white">
+        <div className="flex flex-col rounded items-center p-0 justify-center m-0 mx-auto max-w-full bg-white m-12">
           {children}
         </div>
       </div>

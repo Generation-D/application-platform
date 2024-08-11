@@ -45,7 +45,7 @@ const PhaseOverview: React.FC<{
 }) => {
   const router = useRouter();
   const handleRedirect = () => {
-    router.push(`/${phaseName}`);
+    router.push(`/application/${phaseName}`);
   };
   const phaseStatus = calcPhaseStatus(phaseStart, phaseEnd);
   const previousFailed = phaseOutcome == undefined && failedPhase;
