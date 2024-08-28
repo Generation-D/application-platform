@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
           });
         },
       },
-    },
+    }
   );
 
   const {
@@ -92,7 +92,7 @@ export async function middleware(request: NextRequest) {
     if (pathname.startsWith(prefix) && userRole < requiredRole) {
       const redirectUrl = redirectRoutes[userRole];
       console.log(
-        `User ${user.email} is not authorized to access ${pathname}. Redirecting to ${redirectUrl}`,
+        `User ${user.email} is not authorized to access ${pathname}. Redirecting to ${redirectUrl}`
       );
       return NextResponse.redirect(new URL(redirectUrl, request.url));
     }
@@ -113,12 +113,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/403", request.url));
     }
 
-    // if user is signed in and the current path is / (login) redirect the user to /application
+    // if user is signed in and the current path is / (login) redirect the user to respective path
     if (request.nextUrl.pathname === "/") {
       return NextResponse.redirect(
-        new URL(redirectRoutes[userRole], request.url),
+        new URL(redirectRoutes[userRole], request.url)
       );
     }
   }
   return response;
 }
+
+export const config = {
+  matcher: ["/", "/review", "/admin", "/settings", "/application"],
+};
