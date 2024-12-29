@@ -1,17 +1,18 @@
 name: Build and Push Docker Image
 
+permissions: write-all
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - tst
-      - prd
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to trigger the workflow on (default: tst)'
-        required: false
-        default: tst
+    pull_request:
+        types: [closed]
+        branches:
+        - tst
+        - prd
+    workflow_dispatch:
+        inputs:
+            branch:
+                description: 'Branch to trigger the workflow on (default: tst)'
+                required: false
+                default: tst
 
 jobs:
   build-and-push:
