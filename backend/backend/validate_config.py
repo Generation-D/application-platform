@@ -1,8 +1,8 @@
-from datetime import datetime, date
-from backend.utils.consts import DATETIME_FORMAT, REGEX_JS
-from backend.enums.question_type import QuestionType
+from datetime import date, datetime
 from typing import Any, Dict
 
+from backend.enums.question_type import QuestionType
+from backend.utils.consts import DATETIME_FORMAT, REGEX_JS
 from backend.utils.utils_file import read_yaml_file
 
 DEFAULT_PARAMS = {
@@ -200,10 +200,10 @@ def run_structure_checks(yaml_data: Dict[str, Any]) -> None:
 
 
 def validate_config_structure():
-    yaml_content = read_yaml_file("apl_config.yml")
+    yaml_content = read_yaml_file("apl_config_gend_all_phases.yml")
     # Validate the structure of the YAML content
     try:
         run_structure_checks(yaml_content)
-        print("YAML is valid.")
+        print("YAML and structure is valid.")
     except ValueError as e:
         print(f"YAML validation error: {e}")

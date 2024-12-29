@@ -21,7 +21,7 @@ class QuestionType(Enum):
         return [member.value for member in cls]
 
     @classmethod
-    def from_str(cls, string: str) -> 'QuestionType' | None:
+    def from_str(cls, string: str) -> 'QuestionType | None':
         mapping = {member.value: member for member in cls}
         return mapping.get(string)
 

@@ -59,13 +59,13 @@ USING (
         JOIN ANSWER_TABLE as at ON {table_name}.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
