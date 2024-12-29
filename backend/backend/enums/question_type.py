@@ -13,24 +13,17 @@ class QuestionType(Enum):
     DATETIME_PICKER = "datetimePicker"
     NUMBER_PICKER = "numberPicker"
     DROPDOWN = "dropdown"
-    CHECKBOX = "checkBox"
     CONDITIONAL = "conditional"
+    CHECKBOX = "checkBox"
 
     @classmethod
-    def list_enums(cls):
-        """Return a list of all enum members."""
-        # Return all enum members in a list
-        return list(cls.__members__.values())
+    def list_values(cls):
+        return [member.value for member in cls]
 
     @classmethod
-    def str_to_enum(cls, str_value):
-        """Convert a string to the corresponding Enum value."""
-        # Look up the enum by name. If not found, default to None.
-        for member in cls.__members__.values():
-            if member.value == str_value:
-                return member
-        # If not found, return None
-        return None
+    def from_str(cls, string: str) -> 'QuestionType' | None:
+        mapping = {member.value: member for member in cls}
+        return mapping.get(string)
 
     def __str__(self):
         return self.value

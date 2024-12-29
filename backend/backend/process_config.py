@@ -18,7 +18,7 @@ def process_nested_questions(nested_questions, phase_id, phase_sections, supabas
 
 
 def process_question(question, phase_id, phase_sections, supabase, depends_on=None):
-    question_type = QuestionType.str_to_enum(question['questionType'])
+    question_type = QuestionType.from_str(question['questionType'])
 
     section_number = question.get('sectionNumber')
     data_question_table = create_data_questions_table(question_type, question['order'], phase_id, question['mandatory'],
@@ -76,7 +76,7 @@ def process_question(question, phase_id, phase_sections, supabase, depends_on=No
 
 
 def process_config():
-    config_data = read_yaml_file('apl_config_gend.yml')
+    config_data = read_yaml_file('apl_config_gend_all_phases.yml')
     run_structure_checks(config_data)
 
     supabase = init_supabase()

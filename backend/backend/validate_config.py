@@ -97,10 +97,10 @@ def validate_question_structure(question, phase_name, seen_orders: set, phase_se
     if 'questionType' not in question:
         raise ValueError("A question is missing the 'questionType' field.")
 
-    this_question_type = QuestionType.str_to_enum(question['questionType'])
+    this_question_type = QuestionType.from_str(question['questionType'])
     if not this_question_type:
         raise ValueError(
-            f"Invalid 'questionType': {question['questionType']}. Has to be one of the followings: {QuestionType.list_enums()}"
+            f"Invalid 'questionType': {question['questionType']}. Has to be one of the followings: {QuestionType.list_values()}"
         )
 
     order = question.get('order')
