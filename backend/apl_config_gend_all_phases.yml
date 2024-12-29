@@ -1,0 +1,295 @@
+
+### Uncomment to configure additional attributes of Application
+# application:
+#   timezone: Europe/Berlin  #default
+#   admin_email: string
+#   admin_password: string
+
+# application_table:
+questions:
+  phase-1:
+    phaseLabel: "Kurzbewerbung"
+    startDate: 2024-12-23  # format: %Y-%m-%d
+    endDate: 2024-01-10  # format: %Y-%m-%d
+    sections:
+      - name: Allgemein
+        description: "Bitte beantwortet folgende Fragen so ausführlich, dass wir Euer Projekt bestmöglich nachvollziehen können, achtet dabei jedoch bitte auf die Zeichenbegrenzungen:"
+      - name: Euer Team
+        description: "Folgende Fragen gehen <b>nicht</b> in die Bewertung mit ein, sondern dienen dazu, Euch während des Wettbewerbsverlaufs kontaktieren (Frage 9) oder Ausschlusskriterien zu überprüfen (Fragen 10-11). Die restlichen Fragen sind für unsere Statistik, damit wir den Wettbewerb stets weiter verbessern können (Fragen 12-16)."
+
+    questions:
+      # Section 1
+      - questionType: shortText
+        order: 1
+        question: "Bitte nennt den Namen Eurer Idee, des Projekts oder des Start-ups."
+        mandatory: true
+        maxTextLength: 60
+        note: "Beispiel: \"Unsere Initiative trägt den Namen 'GreenHarbor'.\""
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 2
+        question: "Was ist das gesellschaftliche Problem, das Ihr lösen möchtet? Warum ist es besonders wichtig dieses Problem zu lösen?"
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Wir möchten die hohe Plastikverschmutzung der Ozeane reduzieren, da dies eine akute Bedrohung für die Meeresbewohner und das globale Ökosystem darstellt…\""
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 3
+        question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet ihr euch gerade in der Projektumsetzung?"
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Unsere Idee ist die Entwicklung biologisch abbaubarer Verpackungen und die Implementierung eines Recycling-Netzwerks für Küstenregionen. Wir haben vor 2 Monaten unsere GmbH gegründet und erste Interviews mit Stakeholdern geführt…\""
+        sectionNumber: 1
+
+      - questionType: multipleChoice
+        order: 4
+        question: "Welche(s) der SDG(s) adressiert Ihr damit primär? (max. 3)"
+        minAnswers: 1
+        maxAnswers: 3
+        Answers:
+          - "1. Keine Armut"
+          - "2. Kein Hunger"
+          - "3. Gesundheit und Wohlergehen"
+          - "4. Hochwertige Bildung"
+          - "5. Geschlechtergleichstellung"
+          - "6. Sauberes Wasser und Sanitäreinrichtungen"
+          - "7. Bezahlbare und saubere Energie"
+          - "8. Menschenwürdige Arbeit und Wirtschaftswachstum"
+          - "9. Industrie, Innovation und Infrastruktur"
+          - "10. Weniger Ungleichheiten"
+          - "11. Nachhaltige Städte und Gemeinden"
+          - "12. Verantwortungsvolle Konsum- und Produktionsmuster"
+          - "13. Maßnahmen zum Klimaschutz"
+          - "14. Leben unter Wasser"
+          - "15. Leben an Land"
+          - "16. Frieden, Gerechtigkeit und starke Institutionen"
+          - "17. Partnerschaften zur Erreichung der Ziele"
+        mandatory: true
+        userInput: false
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 5
+        question: "Inwiefern erfüllt ihr die ausgewählten SDGs?"
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Durch die Reduzierung von Plastikverpackungen tragen wir zum Wohl der Lebewesen unter und im Wasser bei, was zur Erreichung des SDGs 17 beiträgt. Darüber hinaus…\""
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 6
+        question: "Was ist Euer persönlicher Bezug zu diesem Problem und wie seid Ihr zu diesem Projekt gekommen?"
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Als passionierte Taucher haben wir die Umweltauswirkungen hautnah erlebt und beschlossen, aktiv zur Lösung beizutragen…\""
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 7
+        question: "Bitte erläutert Euer Geschäftsmodell bzw. wie Ihr Einnahmen generieren möchtet. Es geht hierbei besonders um das Konzept, ihr müsst noch keine genauen Zahlen nennen."
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Unser Geschäftsmodell basiert auf dem Verkauf der nachhaltigen Verpackungen an Unternehmen sowie auf Partnerschaften mit Recyclingunternehmen…\""
+        sectionNumber: 1
+
+      - questionType: longText
+        order: 8
+        question: "Wie hebt Ihr Euch als Team ab und was ist das Besondere an Eurer Idee?"
+        mandatory: true
+        maxTextLength: 500
+        note: "Beispiel: \"Unser interdisziplinäres Team vereint Expertise in Umweltwissenschaften, Ingenieurwesen und Unternehmensführung. Die Integration von Technologie in unsere Lösung macht uns einzigartig….\""
+        sectionNumber: 1
+
+      - questionType: imageUpload
+        order: 9
+        question: "Welches Bild habt Ihr im Kopf, wenn Ihr an Eure Idee denkt? Ladet dazu genau ein Bild hoch. (Lasst Eurer Kreativität freien Lauf und verzichtet wenn möglich auf KI! Das Bild wird in die Bewertung nicht mit einbezogen)"
+        maxFileSizeInMB: 2.0  # in Mega Byte
+        note: "Beispiel: [Bild hochladen: \"Strand mit sauberem Wasser und glücklichen Meeresbewohnern.\"]"
+        mandatory: false
+        sectionNumber: 1
+
+
+      # Section 2
+      - questionType: shortText
+        order: 10
+        preInformationBox: "Wir benötigen für den Wettbewerb Kontaktdaten zu einer Person im Gründerteam. Falls ihr ein größeres Team seid, möchtet ihr vielleicht einen Hauptansprechpartner außerhalb des Gründerteams benennen. Dies ist hier möglich, jedoch rein optional. "
+        question: "Bitte gib die E-Mailadresse einer Person im Gründerteam an."
+        mandatory: true
+        maxTextLength: 60
+        formattingRegex: EMAIL
+        sectionNumber: 2
+
+      - questionType: shortText
+        order: 11
+        question: "Bitte gib die Telefonnummer einer Person im Gründerteam an."
+        mandatory: true
+        maxTextLength: 60
+        formattingRegex: PHONE_NUMBER
+        sectionNumber: 2
+
+      - questionType: shortText
+        order: 12
+        question: "Bitte gib die E-Mailadresse Eures Hauptansprechpartners an."
+        mandatory: false
+        maxTextLength: 60
+        formattingRegex: EMAIL
+        sectionNumber: 2
+
+      - questionType: shortText
+        order: 13
+        question: "Bitte gib die Telefonnummer Eures Hauptansprechpartners an."
+        mandatory: false
+        maxTextLength: 60
+        formattingRegex: PHONE_NUMBER
+        sectionNumber: 2
+
+      - questionType: conditional
+        order: 14
+        mandatory: true
+        sectionNumber: 2
+        question: "Ist Euer Start-Up schon im Handelsregister eingetragen?"
+        Answers:
+          - value: "Ja"
+            questions:
+              - questionType: shortText
+                question: "Was ist Eure Handelsregisternummer?"
+                mandatory: true
+                maxTextLength: 100
+              - questionType: pdfUpload
+                question: "Bitte ladet ein Dokument hoch, in dem erkennbar ist, dass Eure Handelsregistereintragung nicht vor 2020 geschehen ist (max. 5 Jahre)"
+                maxFileSizeInMB: 2.0  # in Mega Byte
+                mandatory: true
+                note: "[Dokument hochladen: Handelsregistereintragung]"
+          - value: "Nein"
+            questions: []
+
+      - questionType: conditional
+        order: 15
+        mandatory: true
+        sectionNumber: 2
+        question: "Habt ihr eine Webseite?"
+        Answers:
+          - value: "Ja"
+            questions:
+              - questionType: shortText
+                question: "Wenn ja: Gibt gerne die Webadresse an."
+                mandatory: true
+                maxTextLength: 60
+          - value: "Nein"
+            questions: []
+
+      - questionType: multipleChoice
+        order: 16
+        question: "Ist eine Person aus Eurem Team Mitglied der Bayerischen EliteAkademie?"
+        minAnswers: 1
+        maxAnswers: 1
+        Answers:
+          - "Ja"
+          - "Nein"
+        mandatory: true
+        userInput: false
+        sectionNumber: 2
+
+      - questionType: shortText
+        order: 17
+        question: "In welcher Stadt lokalisiert Ihr Euch hauptsächlich?"
+        mandatory: true
+        maxTextLength: 60
+        note: "Beispiel: \"München.\""
+        sectionNumber: 2
+
+
+
+      - questionType: conditional
+        order: 18
+        mandatory: true
+        sectionNumber: 2
+        question: "Habt Ihr Euch mit Eurem Start-up zuvor schon einmal bei Generation-D beworben?"
+        Answers:
+          - value: "Ja"
+            questions:
+              - questionType: shortText
+                question: "In welchem Jahr?"
+                mandatory: true
+                maxTextLength: 60
+                note: "Beispiel: \"2022\""
+              - questionType: multipleChoice
+                question: "Wart Ihr schon einmal im Finale von Generation-D?"
+                minAnswers: 1
+                maxAnswers: 1
+                Answers:
+                  - "Ja"
+                  - "Nein"
+                mandatory: true
+                userInput: false
+          - value: "Nein"
+            questions: []
+
+
+      - questionType: multipleChoice
+        order: 19
+        question: "Wie seid Ihr zum ersten Mal auf Generation-D aufmerksam geworden? (Mehrfachauswahl möglich) "
+        minAnswers: 1
+        maxAnswers: 3
+        Answers:
+        - "Generation-D LinkedIn"
+        - "Generation-D Instagram"
+        - "Social Media Post bei einem Partner"
+        - "Slack Channel Beitrag"
+        - "Website/Suchanfrage (Google, etc.)"
+        - "Pressemitteilung"
+        - "Flyer & Plakate in einer Hochschuleinrichtung"
+        - "Flyer & Plakate in einem Gründungszentrum/-initiative"
+        - "Flyer & Plakate woanders ausgehängt"
+        - "Empfehlung von Freunden und Bekannten Sonstiges"
+        mandatory: true
+        userInput: false
+        sectionNumber: 2
+
+
+      - questionType: shortText
+        order: 20
+        question: "Welche Staatsbürgerschaften haben Eure Teammitglieder?"
+        mandatory: false
+        maxTextLength: 60
+        sectionNumber: 2
+
+      - questionType: multipleChoice
+        order: 21
+        question: "Gibt es eine Frau oder nicht-binäre Person bei Euch im Gründerteam?"
+        minAnswers: 1
+        maxAnswers: 1
+        Answers:
+          - "Wir sind ein Team, das nur aus Frauen und non-binären Personen besteht"
+          - "Wir sind mind. paritätisch besetzt"
+          - "Wir haben mind. eine Frau/ non-binäre Person"
+          - "Wir haben keine Frau/ non-binäre Person"
+        mandatory: false
+        userInput: false
+        sectionNumber: 2
+
+      - questionType: checkBox
+        order: 22
+        question: "Ich habe die Einverständnis-Erklärung zur Teilnahme am Wettbewerb gelesen und stimme dieser zu."
+        mandatory: true
+        sectionNumber: 2
+
+  phase-2:
+    phaseLabel: "Read-Deck"
+    startDate: 2025-03-10
+    endDate: 2025-04-06
+    questions: []
+
+  phase-3:
+    phaseLabel: "Lebensläufe & Interviews"
+    startDate: 2025-05-05
+    endDate: 2025-05-25
+    questions: []
+
+  phase-4:
+    phaseLabel: "LinkedIn Voting"
+    startDate: 2025-06-02
+    endDate: 2025-06-08
+    questions: []
