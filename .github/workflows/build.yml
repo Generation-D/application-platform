@@ -1,5 +1,8 @@
 name: Build and Push Docker Image
 
+permissions:
+    packages: write
+
 on:
     pull_request:
         types: [closed]
@@ -17,8 +20,6 @@ jobs:
   build-and-push:
     if: github.event_name == 'pull_request' || github.event.inputs.branch == 'tst'
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
