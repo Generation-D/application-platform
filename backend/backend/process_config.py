@@ -1,12 +1,18 @@
 from datetime import datetime
-from backend.utils.utils_datetime import convert_to_timezone
+
+from backend.enums.question_type import QuestionType
 from backend.logger import Logger
-from backend.utils.consts import REGEX_TO_DESCRIPTION
+from backend.utils.consts import REGEX_JS, REGEX_TO_DESCRIPTION
+from backend.utils.utils_datetime import convert_to_timezone
 from backend.utils.utils_file import read_yaml_file
 from backend.utils.utils_supabase import init_supabase
-from backend.enums.question_type import QuestionType
-from backend.validate_config import DEFAULT_PARAMS, MANDATORY_PARAMS, OPTIONAL_PARAMS, QUESTION_TYPES_DB_TABLE, run_structure_checks
-from backend.utils.consts import REGEX_JS
+from backend.validate_config import (
+    DEFAULT_PARAMS,
+    MANDATORY_PARAMS,
+    OPTIONAL_PARAMS,
+    QUESTION_TYPES_DB_TABLE,
+    run_structure_checks,
+)
 
 log = Logger(__name__)
 
