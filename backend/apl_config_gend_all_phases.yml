@@ -197,7 +197,7 @@ questions:
         question: "In welcher Stadt lokalisiert Ihr Euch hauptsächlich?"
         mandatory: true
         maxTextLength: 60
-        note: "Beispiel: \"München.\""
+        note: "Beispiel: \"München\"."
         sectionNumber: 2
 
 

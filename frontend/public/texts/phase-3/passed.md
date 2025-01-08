@@ -18,4 +18,4 @@ Wir sind gespannt auf eure Präsentationen und wünschen Euch viel Erfolg für d
 
 **Noch Fragen?**
 
-Weitere Details zum Ablauf und der Bewertung könnt ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](files/Ablauf_des_Bewerbungsprozesses_2024.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Sollten danach noch Fragen offen bleiben, meldet Euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).
+Weitere Details zum Ablauf und der Bewertung könnt ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](files/Ablauf_des_Bewerbungsprozesses_2025.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Sollten danach noch Fragen offen bleiben, meldet Euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).
