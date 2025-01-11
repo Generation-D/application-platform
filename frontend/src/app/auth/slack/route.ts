@@ -11,7 +11,7 @@ export async function GET() {
     redirectTo: `${getURL()}/auth/admin/callback`,
   };
 
-  const supabase = initSupabaseRouteNew();
+  const supabase = await initSupabaseRouteNew();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "slack",
     options,

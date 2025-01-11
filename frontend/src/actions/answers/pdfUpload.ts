@@ -71,7 +71,7 @@ export async function savePdfUploadAnswer(
 }
 
 export async function deletePdfUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const { data: pdfUploadData, error: pdfUploadError } = await supabase
     .rpc("fetch_pdf_upload_answer_table", {
@@ -98,7 +98,7 @@ interface PdfAnswerResponse {
 }
 
 export async function fetchPdfUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
     log.error(JSON.stringify(userError));

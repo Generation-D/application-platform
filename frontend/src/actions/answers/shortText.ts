@@ -53,7 +53,7 @@ const initialstate: ShortTextAnswerResponse = {
 export async function fetchShortTextAnswer(
   questionid: string,
 ): Promise<ShortTextAnswerResponse> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

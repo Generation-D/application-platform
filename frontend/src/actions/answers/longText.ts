@@ -52,7 +52,7 @@ const initialstate: LongTextAnswerResponse = {
 export async function fetchLongTextAnswer(
   questionid: string,
 ): Promise<LongTextAnswerResponse> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

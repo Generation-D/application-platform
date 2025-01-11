@@ -13,8 +13,8 @@ export const supabaseServiceRole = createClient(
   },
 );
 
-export function initSupabaseRoute() {
-  const cookieStore = cookies();
+export async function initSupabaseRoute() {
+  const cookieStore = await cookies();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,8 +36,8 @@ export function initSupabaseRoute() {
   return supabase;
 }
 
-export function initSupabaseActions() {
-  const cookieStore = cookies();
+export async function initSupabaseActions() {
+  const cookieStore = await cookies();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,8 +59,8 @@ export function initSupabaseActions() {
   return supabase;
 }
 
-export function initSupabaseRouteNew() {
-  const cookieStore = cookies();
+export async function initSupabaseRouteNew() {
+  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
