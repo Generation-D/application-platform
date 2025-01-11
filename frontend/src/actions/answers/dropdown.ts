@@ -53,7 +53,7 @@ const initialstate: DropdownAnswerResponse = {
 export async function fetchDropdownAnswer(
   questionid: string,
 ): Promise<DropdownAnswerResponse> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -52,7 +52,7 @@ const initialstate: NumberPickerAnswerResponse = {
 export async function fetchNumberPickerAnswer(
   questionid: string,
 ): Promise<NumberPickerAnswerResponse> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

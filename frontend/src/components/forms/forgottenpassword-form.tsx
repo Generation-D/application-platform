@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { sendResetPasswordLink } from "@/actions/auth";
 
@@ -18,7 +18,7 @@ const initialState: messageType = {
 };
 
 export default function SignUpForm() {
-  const [state, formAction] = useFormState(sendResetPasswordLink, initialState);
+  const [state, formAction] = useActionState(sendResetPasswordLink, initialState);
   const [timer, setTimer] = useState(0);
   const [buttonVisible, setButtonVisible] = useState(true);
 

@@ -4,17 +4,17 @@ import { getURL } from "@/utils/helpers";
 import { initSupabaseRoute } from "@/utils/supabaseServerClients";
 
 export async function POST() {
-    const supabase = initSupabaseRoute();
+  const supabase = await initSupabaseRoute();
 
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-    if (session) {
-        await supabase.auth.signOut();
-    }
+  if (session) {
+    await supabase.auth.signOut();
+  }
 
-    return NextResponse.redirect(`${getURL()}/login`, {
-        status: 302,
-    });
+  return NextResponse.redirect(`${getURL()}/login`, {
+    status: 302,
+  });
 }

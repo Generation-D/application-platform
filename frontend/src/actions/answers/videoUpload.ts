@@ -71,7 +71,7 @@ export async function saveVideoUploadAnswer(
 }
 
 export async function deleteVideoUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const { data: videoUploadData, error: videoUploadError } = await supabase
     .rpc("fetch_video_upload_answer_table", {
@@ -98,7 +98,7 @@ interface VideoAnswerResponse {
 }
 
 export async function fetchVideoUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
     log.error(JSON.stringify(userError));

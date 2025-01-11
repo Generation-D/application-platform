@@ -55,7 +55,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
     return { message: `Passwörter stimmen nicht überein!`, status: "ERROR" };
   }
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const { data: userData, error: userError } = await supabase.auth.signUp({
       email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
       password: signUpFormData.data.password,
@@ -133,7 +133,7 @@ export async function signInUser(prevState: any, formData: FormData) {
   }
 
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
         email: signInFormData.data.email.replace(
@@ -193,7 +193,7 @@ export async function sendResetPasswordLink(
     return { message: "Passwort zurücksetzen fehlgeschlagen", status: "ERROR" };
   }
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const email = resetPasswordFormData.data.email.replace(
       "@googlemail.com",
       "@gmail.com",
@@ -226,7 +226,7 @@ export async function deleteUser(): Promise<{
   status: string;
 }> {
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) {
       log.error(JSON.stringify(userError));
@@ -286,7 +286,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
     return { message: "Passwörter stimmen nicht überein!", status: "ERROR" };
   }
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const { error: userError } = await supabase.auth.updateUser({
       password: updatePasswordFormData.data.new_password,
     });
@@ -318,7 +318,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
 }
 
 export async function signInWithSlack() {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "slack",
@@ -345,7 +345,7 @@ export async function signInWithMagicLink(prevState: any, formData: FormData) {
     magicLinkEmail: formData.get("magicLinkEmail"),
   });
 
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const { error } = await supabase.auth.signInWithOtp({
     email: signInFormData.magicLinkEmail!,
     options: {
@@ -365,7 +365,7 @@ export async function sendResetPasswordLinkFromSettings(
 ) {
   const email = prevState.email;
   try {
-    const supabase = initSupabaseActions();
+    const supabase = await initSupabaseActions();
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(
         email.replace("@googlemail.com", "@gmail.com"),

@@ -50,7 +50,7 @@ const initialstate: DateTimeAnswerResponse = {
 };
 
 export async function fetchDateTimePickerAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

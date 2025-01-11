@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { signInUser } from "@/actions/auth";
 
@@ -19,7 +19,7 @@ const initialState: messageType = {
 };
 
 export default function SignInForm() {
-  const [state, formAction] = useFormState(signInUser, initialState);
+  const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
 
   const togglePopup = () => {
