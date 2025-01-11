@@ -2,7 +2,7 @@
 import { ChangeEvent, useState } from "react";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useFormState } from "react-dom";
 
 import { signUpUser } from "@/actions/auth";
 
@@ -20,7 +20,7 @@ const initialState: messageType = {
 };
 
 export default function SignUpForm() {
-  const [state, formAction] = useActionState(signUpUser, initialState);
+  const [state, formAction] = useFormState(signUpUser, initialState);
   const [password, setPassword] = useState("");
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {

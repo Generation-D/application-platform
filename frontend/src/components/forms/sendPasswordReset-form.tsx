@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { useActionState } from "react";
+import { useFormState } from "react-dom";
 
 import { sendResetPasswordLinkFromSettings } from "@/actions/auth";
 
@@ -14,7 +14,7 @@ export default function SendPasswordResetForm({ email }: { email: string }) {
     message: "",
     status: "",
   };
-  const [state, formAction] = useActionState(
+  const [state, formAction] = useFormState(
     sendResetPasswordLinkFromSettings,
     initialState,
   );
