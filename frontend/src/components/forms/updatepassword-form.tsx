@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 
-import { useActionState } from "react";
+import { useFormState } from "react-dom";
 
 import { updatePassword } from "@/actions/auth";
 
@@ -20,7 +20,7 @@ const initialState: messageType = {
 };
 
 export default function UpdatePasswordForm() {
-  const [state, formAction] = useActionState(updatePassword, initialState);
+  const [state, formAction] = useFormState(updatePassword, initialState);
   const [password, setPassword] = useState("");
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
