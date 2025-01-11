@@ -60,16 +60,15 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
     }
     const supabase = await initSupabaseActions();
 
-    const { data: questionTypeData, error: questionTypeError } =
-      await supabase
-        .from(tableName)
-        .select("*")
-        .in(
-          "questionid",
-          questions
-            .filter((q) => q.questiontype === questionType)
-            .map((q) => q.questionid),
-        );
+    const { data: questionTypeData, error: questionTypeError } = await supabase
+      .from(tableName)
+      .select("*")
+      .in(
+        "questionid",
+        questions
+          .filter((q) => q.questiontype === questionType)
+          .map((q) => q.questionid),
+      );
 
     if (questionTypeError) {
       log.error(JSON.stringify(questionTypeError));
@@ -101,7 +100,7 @@ export async function fetchAdditionalParams(
     );
     return {};
   }
-  const supabase = await initSupabaseActions()
+  const supabase = await initSupabaseActions();
   const { data: paramsData, error } = await supabase
     .from(table_name)
     .select("*");
@@ -177,11 +176,10 @@ export async function fetch_question_table(
   phaseId: string,
 ): Promise<Question[]> {
   const supabase = await initSupabaseActions();
-  const { data: questionData, error: questionError } =
-    await supabase
-      .from("question_table")
-      .select("*")
-      .eq("phaseid", phaseId);
+  const { data: questionData, error: questionError } = await supabase
+    .from("question_table")
+    .select("*")
+    .eq("phaseid", phaseId);
 
   if (questionError) {
     log.error(JSON.stringify(questionError));
@@ -235,11 +233,10 @@ export async function fetch_question_table(
 }
 
 export async function fetch_conditional_questionid_mapping() {
-  const supabase = await initSupabaseActions()
-  const { data: conditionalData, error: conditionalError } =
-    await supabase
-      .from("conditional_question_choice_table")
-      .select("*");
+  const supabase = await initSupabaseActions();
+  const { data: conditionalData, error: conditionalError } = await supabase
+    .from("conditional_question_choice_table")
+    .select("*");
   if (conditionalError) {
     log.error(JSON.stringify(conditionalError));
     return {} as Record<string, string[]>;
