@@ -9,13 +9,13 @@ on:
     workflow_dispatch:
         inputs:
             branch:
-                description: 'Branch to trigger the workflow on (default: tst)'
+                description: 'Branch to trigger the workflow on (tst or prd, default: tst)'
                 required: false
                 default: tst
 
 jobs:
   build-and-push:
-    if: github.event_name == 'pull_request' || github.event.inputs.branch == 'tst'
+    if: github.event_name == 'pull_request' || github.event.inputs.branch == 'tst' || github.event.inputs.branch == 'prd'
     runs-on: ubuntu-latest
     permissions:
       packages: write
