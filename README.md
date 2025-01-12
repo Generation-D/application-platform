@@ -222,7 +222,7 @@ exit 0
 4. Login into Github Container Registry:
 https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
 
-5. Call docker compose up -d
+5. Call docker compose up -d (make sure the api keys are set to the e.g. supabase instance you want to use: https://github.com/Generation-D/application-platform/settings/secrets/actions)
 
 6. Setup Nginx
 - Go to YOUR_IP:81
