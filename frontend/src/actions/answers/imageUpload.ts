@@ -71,7 +71,7 @@ export async function saveImageUploadAnswer(
 }
 
 export async function deleteImageUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const { data: imageUploadData, error: imageUploadError } = await supabase
     .rpc("fetch_image_upload_answer_table", {
@@ -98,7 +98,7 @@ interface ImageAnswerResponse {
 }
 
 export async function fetchImageUploadAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
     log.error(JSON.stringify(userError));

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "";
 
   if (token_hash && type) {
-    const supabase = initSupabaseRouteNew();
+    const supabase = await initSupabaseRouteNew();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (error) {
       // TODO: return the user to an error page with some instructions

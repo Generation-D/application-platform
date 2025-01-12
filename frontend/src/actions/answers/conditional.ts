@@ -51,7 +51,7 @@ const initialstate: ConditionalAnswerResponse = {
 };
 
 export async function fetchConditionalAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

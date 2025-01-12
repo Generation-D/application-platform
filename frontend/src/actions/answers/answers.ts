@@ -81,7 +81,7 @@ export interface ExtendedAnswerType extends Answer {
 export async function fetchAllAnswersOfApplication(): Promise<
   ExtendedAnswerType[]
 > {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   const { data: answerData, error: answerError } = await supabase
@@ -123,7 +123,7 @@ export async function fetchAllAnswersOfApplication(): Promise<
 }
 
 export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   let answerid = await fetchAnswerId(supabase, user, applicationid, questionid);
@@ -166,7 +166,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
 }
 
 export async function deleteAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   const answerid = await fetchAnswerId(

@@ -4,7 +4,7 @@ import { getURL } from "@/utils/helpers";
 import { initSupabaseRoute } from "@/utils/supabaseServerClients";
 
 export async function POST() {
-  const supabase = initSupabaseRoute();
+  const supabase = await initSupabaseRoute();
 
   const {
     data: { session },
@@ -14,7 +14,7 @@ export async function POST() {
     await supabase.auth.signOut();
   }
 
-  return NextResponse.redirect(`${getURL()}/login`, {
+  return NextResponse.redirect(`${getURL()}login`, {
     status: 302,
   });
 }
