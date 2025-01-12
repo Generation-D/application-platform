@@ -50,7 +50,7 @@ const initialstate: DateAnswerResponse = {
 };
 
 export async function fetchDatePickerAnswer(questionid: string) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

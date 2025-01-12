@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   let subdomain = "";
   if (code) {
-    const supabase = initSupabaseRouteNew();
+    const supabase = await initSupabaseRouteNew();
     try {
       await supabase.auth.exchangeCodeForSession(code);
     } catch (error) {

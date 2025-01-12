@@ -1,12 +1,18 @@
 from datetime import datetime
-from backend.utils.utils_datetime import convert_to_timezone
+
+from backend.enums.question_type import QuestionType
 from backend.logger import Logger
-from backend.utils.consts import REGEX_TO_DESCRIPTION
+from backend.utils.consts import REGEX_JS, REGEX_TO_DESCRIPTION
+from backend.utils.utils_datetime import convert_to_timezone
 from backend.utils.utils_file import read_yaml_file
 from backend.utils.utils_supabase import init_supabase
-from backend.enums.question_type import QuestionType
-from backend.validate_config import DEFAULT_PARAMS, MANDATORY_PARAMS, OPTIONAL_PARAMS, QUESTION_TYPES_DB_TABLE, run_structure_checks
-from backend.utils.consts import REGEX_JS
+from backend.validate_config import (
+    DEFAULT_PARAMS,
+    MANDATORY_PARAMS,
+    OPTIONAL_PARAMS,
+    QUESTION_TYPES_DB_TABLE,
+    run_structure_checks,
+)
 
 log = Logger(__name__)
 
@@ -18,7 +24,7 @@ def process_nested_questions(nested_questions, phase_id, phase_sections, supabas
 
 
 def process_question(question, phase_id, phase_sections, supabase, depends_on=None):
-    question_type = QuestionType.str_to_enum(question['questionType'])
+    question_type = QuestionType.from_str(question['questionType'])
 
     section_number = question.get('sectionNumber')
     data_question_table = create_data_questions_table(question_type, question['order'], phase_id, question['mandatory'],
@@ -76,7 +82,7 @@ def process_question(question, phase_id, phase_sections, supabase, depends_on=No
 
 
 def process_config():
-    config_data = read_yaml_file('apl_config_gend.yml')
+    config_data = read_yaml_file('apl_config_gend_all_phases.yml')
     run_structure_checks(config_data)
 
     supabase = init_supabase()

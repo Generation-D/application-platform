@@ -42,7 +42,7 @@ export function SectionView({
     const validIndex = urlIndex >= 0 && urlIndex < sortedSections.length;
     return validIndex
       ? sortedSections[urlIndex].sectionid
-      : sortedSections[0]?.sectionid ?? "";
+      : (sortedSections[0]?.sectionid ?? "");
   });
 
   // Update URL when the section changes
@@ -118,11 +118,13 @@ export function SectionView({
             <button
               type="button"
               key={phaseSection.sectionid}
-              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary ${selectedSection === phaseSection.sectionid
+              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary ${
+                selectedSection === phaseSection.sectionid
                   ? "text-secondary border-b-2"
                   : "text-gray-500"
-                } ${isFirstButton ? "rounded-tl-lg" : ""} ${isLastButton ? "rounded-tr-lg" : ""
-                }`}
+              } ${isFirstButton ? "rounded-tl-lg" : ""} ${
+                isLastButton ? "rounded-tr-lg" : ""
+              }`}
               onClick={() => setSelectedSectionWithUrl(phaseSection.sectionid)}
             >
               {phaseSection.sectionname}
@@ -138,7 +140,12 @@ export function SectionView({
             key={phaseSection.sectionid}
             className={`p-4 mt-4 ${isVisible ? "visible" : "hidden"}`}
           >
-            <div dangerouslySetInnerHTML={{__html: phaseSection.sectiondescription}} className="w-full" />
+            <div
+              dangerouslySetInnerHTML={{
+                __html: phaseSection.sectiondescription,
+              }}
+              className="w-full"
+            />
             <Questionnaire
               phaseData={phaseData}
               phaseQuestions={mapQuestions[phaseSection.sectionid]}

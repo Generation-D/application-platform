@@ -4,7 +4,7 @@ import { getURL } from "@/utils/helpers";
 import { initSupabaseRoute } from "@/utils/supabaseServerClients";
 
 export async function POST() {
-  const supabase = initSupabaseRoute();
+  const supabase = await initSupabaseRoute();
 
   const {
     data: { session },

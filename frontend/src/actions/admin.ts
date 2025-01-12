@@ -111,8 +111,9 @@ export interface ApplicantsStatus {
 }
 
 export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
+  const supabase = await initSupabaseActions();
   const { data: applicantsStatusData, error: applicantsStatusError } =
-    await initSupabaseActions().from("phase_outcome_table").select("*");
+    await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
     log.error(JSON.stringify(applicantsStatusError));
     throw applicantsStatusError;
@@ -127,7 +128,7 @@ export async function saveApplicationOutcome(
   admin_id: string,
   outcome?: boolean,
 ) {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   if (applicantStatus === undefined) {
     const { error: applicantStatusError } = await supabase
       .from("phase_outcome_table")

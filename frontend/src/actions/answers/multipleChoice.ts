@@ -53,7 +53,7 @@ const initialstate: MultipleChoiceAnswerResponse = {
 export async function fetchMultipleChoiceAnswer(
   questionid: string,
 ): Promise<MultipleChoiceAnswerResponse> {
-  const supabase = initSupabaseActions();
+  const supabase = await initSupabaseActions();
   const {
     data: { user },
   } = await supabase.auth.getUser();

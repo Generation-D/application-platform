@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const next = searchParams.get("next") ?? "";
 
   if (code) {
-    const supabase = initSupabaseRouteNew();
+    const supabase = await initSupabaseRouteNew();
     try {
       await supabase.auth.exchangeCodeForSession(code);
     } catch (error) {

@@ -1,13 +1,14 @@
-import os
 import logging
+import os
+
 import requests
 
 
 class Logger:
     def __init__(self, module: str):
-        self.api_url = f"https://api.logflare.app/api/logs?source={os.environ['LOGFLARE_BACKEND_SOURCE_TOKEN']}"
-        self.api_get_url = f"https://api.logflare.app/api/endpoints/query/{os.environ['LOGFLARE_BACKEND_SOURCE_TOKEN']}"
-        self.HEADER = {'Content-Type': 'application/json', 'x-api-key': os.environ['LOGFLARE_BACKEND_API_TOKEN']}
+        # self.api_url = f"https://api.logflare.app/api/logs?source={os.environ['LOGFLARE_BACKEND_SOURCE_TOKEN']}"
+        # self.api_get_url = f"https://api.logflare.app/api/endpoints/query/{os.environ['LOGFLARE_BACKEND_SOURCE_TOKEN']}"
+        # self.HEADER = {'Content-Type': 'application/json', 'x-api-key': os.environ['LOGFLARE_BACKEND_API_TOKEN']}
         self.logger = logging.getLogger('ApiLogger')
         self.module = module
 
