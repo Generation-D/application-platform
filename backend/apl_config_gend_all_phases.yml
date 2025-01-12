@@ -243,7 +243,8 @@ questions:
         - "Flyer & Plakate in einer Hochschuleinrichtung"
         - "Flyer & Plakate in einem Gründungszentrum/-initiative"
         - "Flyer & Plakate woanders ausgehängt"
-        - "Empfehlung von Freunden und Bekannten Sonstiges"
+        - "Empfehlung von Freunden und Bekannten"
+        - "Sonstiges"
         mandatory: true
         userInput: false
         sectionNumber: 2
