@@ -36,7 +36,11 @@ jobs:
     - name: Extract branch name and lowercase repository name
       shell: bash
       run: |
-        echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        else
+          echo "BRANCH_NAME=$(echo ${{ github.event.inputs.branch }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        fi
         echo "REPOSITORY_NAME=$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
     - name: Set branch specific secrets
