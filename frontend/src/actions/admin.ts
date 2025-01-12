@@ -111,7 +111,7 @@ export interface ApplicantsStatus {
 }
 
 export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
-  const supabase = await initSupabaseActions()
+  const supabase = await initSupabaseActions();
   const { data: applicantsStatusData, error: applicantsStatusError } =
     await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
