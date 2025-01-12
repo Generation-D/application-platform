@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime
 
 from backend.enums.question_type import QuestionType
@@ -81,8 +82,8 @@ def process_question(question, phase_id, phase_sections, supabase, depends_on=No
                                      response_conditional_choice_table.data[0]['choiceid'])
 
 
-def process_config():
-    config_data = read_yaml_file('apl_config_gend_all_phases.yml')
+def process_config(config_file_path: str):
+    config_data = read_yaml_file(config_file_path)
     run_structure_checks(config_data)
 
     supabase = init_supabase()
@@ -156,8 +157,7 @@ def create_data_question_type_table(question_id: str, question_type: str, questi
             continue
         if opt_param == 'formattingRegex':
             data_question_type_table[opt_param.lower()] = REGEX_JS.get(question[opt_param], None)
-            data_question_type_table["formattingdescription"] = REGEX_TO_DESCRIPTION.get(
-                question_type, question.get("formattingDescription", None))
+            data_question_type_table["formattingdescription"] = REGEX_TO_DESCRIPTION.get(question_type, question.get("formattingDescription", None))
     return data_question_type_table
 
 
@@ -220,3 +220,15 @@ def add_test_user():
         supabase.table("application_table").insert({"userid": user_id}).execute()
         supabase.table("user_profiles_table").insert({"userid": user_id, "userrole": 1, "isactive": True}).execute()
     print("Done")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Script to setup the supabase database using the config file')
+    parser.add_argument('--config', help='Path to the yaml config file', type=str,
+                       default='backend/apl_config_gend_all_phases.yml', dest='config_file_path')
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    process_config(**vars(args))
