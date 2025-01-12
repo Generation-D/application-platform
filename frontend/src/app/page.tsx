@@ -26,6 +26,28 @@ export default async function Home() {
     <>
       <div className="flex flex-col items-start justify-between space-y-4">
         <Apl_Header />
+        <style>
+          {`
+            .markdown-body ul {
+                list-style-type: disc;
+            }
+            .markdown-body ol {
+                list-style-type: decimal;
+            }
+            .markdown-body ul ul {
+                list-style-type: circle;
+            }
+            .markdown-body ol ul {
+                list-style-type: disc;
+            }
+            .markdown-body ul ol {
+                list-style-type: lower-roman;
+            }
+            .markdown-body ol ol {
+                list-style-type: lower-alpha;
+            }
+          `}
+        </style>
         <div
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: contentHtml }}
