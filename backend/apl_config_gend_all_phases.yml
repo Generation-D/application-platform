@@ -273,7 +273,7 @@ questions:
 
       - questionType: checkBox
         order: 22
-        question: "Ich habe die Einverständnis-Erklärung zur Teilnahme am Wettbewerb gelesen und stimme dieser zu."
+        question: 'Ich habe die <u><a href="https://bewerbung.generation-d.org/files/Ablauf_des_Bewerbungsprozesses_2025.pdf" target="_blank">Einverständnis-Erklärung</a></u> zur Teilnahme am Wettbewerb gelesen und stimme dieser zu.'
         mandatory: true
         sectionNumber: 2
 
