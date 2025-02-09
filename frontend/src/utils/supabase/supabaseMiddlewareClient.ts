@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function getSupabaseMiddlewareClient(request: NextRequest) {
-  let response = {
+  const response = {
     value: NextResponse.next({ request: request }),
   };
 
