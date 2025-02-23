@@ -33,7 +33,18 @@ export default function SignInForm() {
           <ForgottenPasswordForm />
         </Popup>
       )}
-      <form action={formAction} className="space-y-4">
+      <form
+        action={formAction}
+        className="space-y-4"
+        onSubmit={(e) => {
+          // Prevent credentials from appearing in URL
+          if (window.location.search) {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            formAction(formData);
+          }
+        }}
+      >
         <div>
           <label
             htmlFor="email"

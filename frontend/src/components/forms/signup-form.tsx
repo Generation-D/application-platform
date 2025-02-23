@@ -30,7 +30,18 @@ export default function SignUpForm() {
   return (
     <div>
       <h2>Registriere dich!</h2>
-      <form action={formAction} className="space-y-6">
+      <form
+        action={formAction}
+        className="space-y-6"
+        onSubmit={(e) => {
+          // Prevent credentials from appearing in URL
+          if (window.location.search) {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            formAction(formData);
+          }
+        }}
+      >
         <div>
           <label
             htmlFor="email"
