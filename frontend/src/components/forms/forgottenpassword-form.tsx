@@ -6,6 +6,7 @@ import { useFormState } from "react-dom";
 import { sendResetPasswordLink } from "@/actions/auth";
 
 import { SubmitButton } from "../submitButton";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 interface messageType {
   message: string;
@@ -17,10 +18,11 @@ const initialState: messageType = {
   status: "",
 };
 
-export default function SignUpForm() {
+export default function ForgottenPasswordForm() {
   const [state, formAction] = useFormState(sendResetPasswordLink, initialState);
   const [timer, setTimer] = useState(0);
   const [buttonVisible, setButtonVisible] = useState(true);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
 
   useEffect(() => {
     let countdown: NodeJS.Timeout;
@@ -64,15 +66,31 @@ export default function SignUpForm() {
         >
           {state?.message}
         </div>
+
+        <div className="flex justify-center mx-auto">
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={(token) => {
+              setCaptchaToken(token);
+            }}
+            options={{
+              theme: "light",
+              language: "de"
+            }}
+          />
+        </div>
+
+        <input type="hidden" name="captcha" id="captcha" value={captchaToken} />
+
         <div>
-          {buttonVisible ? (
+          {!buttonVisible ? (
+            <p>Erneut senden erst in {timer}s möglich!</p>
+          ) : captchaToken ? (
             <SubmitButton
               text={`${state?.message == "" ? "Bestätigen" : "Erneut senden"}`}
               expanded={false}
             />
-          ) : (
-            <p>Erneut senden erst in {timer}s möglich!</p>
-          )}
+          ) : null}
         </div>
       </form>
     </div>

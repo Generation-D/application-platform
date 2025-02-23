@@ -192,9 +192,11 @@ export async function sendResetPasswordLink(
 ) {
   const schema = z.object({
     email: z.string().min(1),
+    captchaToken: z.string().min(1),
   });
   const resetPasswordFormData = schema.safeParse({
     email: formData.get("email"),
+    captchaToken: formData.get("captcha"),
   });
 
   if (!resetPasswordFormData.success) {
@@ -210,6 +212,7 @@ export async function sendResetPasswordLink(
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${getURL()}/auth/callback?next=login/update-password`,
+        captchaToken: resetPasswordFormData.data.captchaToken,
       });
     if (PasswordResetError) {
       log.error(JSON.stringify(PasswordResetError));
