@@ -20,12 +20,14 @@ export async function signUpUser(prevState: any, formData: FormData) {
     password: z.string().min(1),
     passwordConfirmation: z.string().min(1),
     legalConfirmation: z.string(),
+    captchaToken: z.string().min(1),
   });
   const signUpFormData = schema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
     passwordConfirmation: formData.get("confirm-password"),
     legalConfirmation: formData.get("confirm-legal"),
+    captchaToken: formData.get("captcha"),
   });
   if (!signUpFormData.success) {
     log.error(JSON.stringify(signUpFormData.error));
@@ -61,6 +63,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
       password: signUpFormData.data.password,
       options: {
         emailRedirectTo: `${getURL()}/auth/callback`,
+        captchaToken: signUpFormData.data.captchaToken,
       },
     });
     revalidatePath("/login");
@@ -121,10 +124,12 @@ export async function signInUser(prevState: any, formData: FormData) {
   const schema = z.object({
     email: z.string().min(1),
     password: z.string().min(1),
+    captchaToken: z.string().min(1),
   });
   const signInFormData = schema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
+    captchaToken: formData.get("captcha"),
   });
 
   if (!signInFormData.success) {
@@ -134,13 +139,17 @@ export async function signInUser(prevState: any, formData: FormData) {
 
   try {
     const supabase = await initSupabaseActions();
+    console.log(signInFormData.data.captchaToken);
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
         email: signInFormData.data.email.replace(
           "@googlemail.com",
-          "@gmail.com",
+          "@gmail.com"
         ),
         password: signInFormData.data.password,
+        options: {
+          captchaToken: signInFormData.data.captchaToken,
+        },
       });
     if (userError) {
       if (userError.status == 400) {

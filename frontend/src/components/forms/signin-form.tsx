@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFormState } from "react-dom";
 
 import { signInUser } from "@/actions/auth";
-
+import { Turnstile } from "@marsidev/react-turnstile";
 import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
@@ -21,11 +21,11 @@ const initialState: messageType = {
 export default function SignInForm() {
   const [state, formAction] = useFormState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen);
   };
-
   return (
     <div>
       {isPopupOpen && (
@@ -86,7 +86,23 @@ export default function SignInForm() {
           </button>
         </div>
         <div className="text-red-600 italic">{state?.message}</div>
-        <div>
+
+        <div className="flex justify-center mx-auto">
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={(token) => {
+              setCaptchaToken(token);
+            }}
+            options={{
+              theme: "light",
+              language: "de"
+            }}
+          />
+        </div>
+
+        <input type="hidden" name="captcha" id="captcha" value={captchaToken} />
+
+        <div className={`${captchaToken ? "" : "hidden"}`}>
           <SubmitButton text={"Bestätigen"} expanded={true} />
         </div>
       </form>

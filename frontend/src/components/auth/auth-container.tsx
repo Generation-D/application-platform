@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SignInForm from "../forms/signin-form";
 import SignUpForm from "../forms/signup-form";
-
+  
 interface AuthContainerProps {
   signUpPossible: boolean;
 }
@@ -17,7 +17,7 @@ export default function AuthContainer({ signUpPossible }: AuthContainerProps) {
         <div className="mb-6 text-center text-sm text-gray-600 bg-gray-50 p-4 rounded">
           Die erste Bewerbungsphase ist bereits vorbei und es können keine
           weiteren Accounts erstellt werden. Wir freuen uns auf eure Bewerbung
-          im nächsten Jahr. Für weitere Informationen bitte besucht unsere
+          im kommenden Jahr. für weitere Informationen bitte besucht unsere
           Webseite. Der Login ist weiterhin möglich!
         </div>
       )}

@@ -4,11 +4,14 @@ import { useState } from "react";
 
 import Image from "next/image";
 
+
 import AuthContainer from "@/components/auth/auth-container";
 
 export const LoginComponent: React.FC<{ signUpPossible: boolean }> = ({
   signUpPossible,
 }) => {
+
+
   return (
     <>
       <Image
