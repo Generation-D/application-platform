@@ -6,7 +6,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, getCurrentUser, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/pdfUpload");
+const log = new Logger("actions/answers/pdfUpload");
 
 export async function savePdfUploadAnswer(
   questionid: string,

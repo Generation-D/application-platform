@@ -5,7 +5,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/conditional");
+const log = new Logger("actions/answers/conditional");
 
 export async function saveConditionalAnswer(
   answertext: string,

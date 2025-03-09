@@ -27,13 +27,14 @@ export interface Answer {
   created: string;
 }
 
-const log = new Logger("actions/ansers/answers");
+const log = new Logger("actions/answers/answers");
 
 export async function getCurrentUser(supabase: SupabaseClient) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
     log.error(JSON.stringify(userError));
-    redirect("/");
+    log.info("Redirecting to /login");
+    redirect("/login");
   }
   return userData.user;
 }
