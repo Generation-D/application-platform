@@ -281,7 +281,26 @@ questions:
     phaseLabel: "Read-Deck"
     startDate: 2025-03-10
     endDate: 2025-04-06
-    questions: []
+    questions:
+      - questionType: shortText
+        order: 1
+        question: "Bitte gebt hier, im Format <i>Vorname</i> <i>Nachname</i>, durch Kommas getrennt, die Namen eures Gründungs- oder Kernteams an."
+        mandatory: true
+        maxTextLength: 300
+        note: "Beispiel: \"Marie Müller, Max Mustermann\""
+
+      - questionType: longText
+        order: 2
+        question: "Falls ihr einen Webauftritt (Website, LinkedIn, etc.) besitzt, bitte gebt hier alle betreffenden URLs an."
+        mandatory: false
+        maxTextLength: 500
+
+      - questionType: pdfUpload
+        order: 3
+        question: "Bitte ladet hier euer Read-Deck im PDF-Format hoch"
+        maxFileSizeInMB: 25.0  # in Mega Byte
+        mandatory: true
+        note: "[Dokument hochladen: Read-Deck]"
 
   phase-3:
     phaseLabel: "Lebensläufe & Interviews"
