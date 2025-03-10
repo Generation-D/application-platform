@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SignInForm from "../forms/signin-form";
 import SignUpForm from "../forms/signup-form";
-  
+
 interface AuthContainerProps {
   signUpPossible: boolean;
 }

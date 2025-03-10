@@ -75,7 +75,7 @@ export default function ForgottenPasswordForm() {
             }}
             options={{
               theme: "light",
-              language: "de"
+              language: "de",
             }}
           />
         </div>

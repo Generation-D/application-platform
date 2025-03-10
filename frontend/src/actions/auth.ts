@@ -144,7 +144,7 @@ export async function signInUser(prevState: any, formData: FormData) {
       await supabase.auth.signInWithPassword({
         email: signInFormData.data.email.replace(
           "@googlemail.com",
-          "@gmail.com"
+          "@gmail.com",
         ),
         password: signInFormData.data.password,
         options: {

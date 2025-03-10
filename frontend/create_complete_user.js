@@ -10,13 +10,13 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!supabaseUrl || !supabaseServiceKey) {
   console.error("Error: Required environment variables are missing.");
   console.error(
-    "Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in your .env file."
+    "Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in your .env file.",
   );
   console.error(
-    "Note: The SUPABASE_SERVICE_ROLE_KEY is different from the NEXT_PUBLIC_SUPABASE_ANON_KEY."
+    "Note: The SUPABASE_SERVICE_ROLE_KEY is different from the NEXT_PUBLIC_SUPABASE_ANON_KEY.",
   );
   console.error(
-    "You can find these values in your Supabase project settings under API."
+    "You can find these values in your Supabase project settings under API.",
   );
   process.exit(1);
 }
@@ -80,14 +80,14 @@ async function createCompleteUser(email, password, name, userRole = 1) {
     if (applicationError) {
       console.error(
         "Error creating application entry:",
-        applicationError.message
+        applicationError.message,
       );
       return null;
     }
     console.log("Application entry created successfully!");
 
     console.log(
-      "\n✅ User setup complete! The user can now log in to the application."
+      "\n✅ User setup complete! The user can now log in to the application.",
     );
     return data.user;
   } catch (err) {
@@ -100,10 +100,10 @@ async function createCompleteUser(email, password, name, userRole = 1) {
 async function main() {
   if (process.argv.length < 5) {
     console.log(
-      "Usage: node create_complete_user.js <email> <password> <name> [role]"
+      "Usage: node create_complete_user.js <email> <password> <name> [role]",
     );
     console.log(
-      'Example: node create_complete_user.js user@example.com secure123 "John Doe" 1'
+      'Example: node create_complete_user.js user@example.com secure123 "John Doe" 1',
     );
     console.log("\nRole values (default is 1 if not specified):");
     console.log("1 - Regular user");

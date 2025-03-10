@@ -128,7 +128,7 @@ export default function SignUpForm() {
             }}
             options={{
               theme: "light",
-              language: "de"
+              language: "de",
             }}
           />
         </div>
