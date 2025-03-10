@@ -41,7 +41,7 @@ jspm_packages
 .next
 
 # ignore env files
-*.env
+*.env*
 *.env.local
 
 # pycache
