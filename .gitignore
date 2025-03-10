@@ -46,7 +46,10 @@ jspm_packages
 
 # pycache
 *__pycache__
+
+
 backend/apl_config_gend.yml
 backend/users_id.csv
+supabase
 
 **.DS_Store
