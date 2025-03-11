@@ -40,9 +40,7 @@ def manage_application_outcomes(
     # Validate that all approved candidates exist in our mapping
     for approved_email in approved_candidates_emails:
         if approved_email not in email_to_user_id_map:
-            raise ValueError(
-                f"Approved candidate {approved_email} not found in the CSV mapping file"
-            )
+            raise ValueError(f"Approved candidate {approved_email} not found in the CSV mapping file")
 
     # Initialize Supabase client
     supabase_client = init_supabase(env_file_path)
@@ -50,14 +48,12 @@ def manage_application_outcomes(
     # Process approved candidates (outcome = True)
     for approved_email in approved_candidates_emails:
         user_id = email_to_user_id_map[approved_email]
-        supabase_client.table("phase_outcome_table").insert(
-            {
-                "phase_id": current_phase_id,
-                "user_id": user_id,
-                "outcome": True,
-                "reviewed_by": reviewer_id,
-            }
-        ).execute()
+        supabase_client.table("phase_outcome_table").insert({
+            "phase_id": current_phase_id,
+            "user_id": user_id,
+            "outcome": True,
+            "reviewed_by": reviewer_id,
+        }).execute()
 
     # Process all candidates (approved get skipped, others get outcome = False)
     for candidate_email, user_id in email_to_user_id_map.items():
@@ -65,14 +61,12 @@ def manage_application_outcomes(
 
         if candidate_email not in approved_candidates_emails:
             try:
-                supabase_client.table("phase_outcome_table").insert(
-                    {
-                        "phase_id": current_phase_id,
-                        "user_id": user_id,
-                        "outcome": False,
-                        "reviewed_by": reviewer_id,
-                    }
-                ).execute()
+                supabase_client.table("phase_outcome_table").insert({
+                    "phase_id": current_phase_id,
+                    "user_id": user_id,
+                    "outcome": False,
+                    "reviewed_by": reviewer_id,
+                }).execute()
             except Exception as error:
                 print(f"ERROR processing {candidate_email}: {error}")
         else:
@@ -83,9 +77,7 @@ def manage_application_outcomes(
 
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments for application outcome management."""
-    parser = argparse.ArgumentParser(
-        description="Process application outcomes for candidates in a specific phase"
-    )
+    parser = argparse.ArgumentParser(description="Process application outcomes for candidates in a specific phase")
 
     parser.add_argument(
         "--csv-file",
@@ -133,7 +125,6 @@ def parse_args() -> argparse.Namespace:
         required=False,
     )
     return parser.parse_args()
-
 
 
 if __name__ == "__main__":
