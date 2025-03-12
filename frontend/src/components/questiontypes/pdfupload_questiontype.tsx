@@ -55,9 +55,9 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
 
-      const savedAnswer = await fetchPdfUploadAnswer(questionid);
+
       try {
-        console.log(savedAnswer);
+        const savedAnswer = await fetchPdfUploadAnswer(questionid);
         if (savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
@@ -238,9 +238,8 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             </div>
           </div>
           <div
-            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${
-              !(tempAnswer || answer) && "hidden"
-            }`}
+            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${!(tempAnswer || answer) && "hidden"
+              }`}
           >
             {iseditable && (
               <button
