@@ -4,9 +4,9 @@ import { NextRequest } from "next/server";
 import Logger from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import {
-  initSupabaseRouteNew,
-  supabaseServiceRole,
-} from "@/utils/supabaseServerClients";
+  getSupabaseCookiesUtilClient,
+  getSupabaseCookiesUtilClientAdmin,
+} from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("auth/admin/callback/route");
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   let subdomain = "";
   if (code) {
-    const supabase = await initSupabaseRouteNew();
+    const supabase = await getSupabaseCookiesUtilClient();
     try {
       await supabase.auth.exchangeCodeForSession(code);
     } catch (error) {
@@ -40,7 +40,8 @@ export async function GET(req: NextRequest) {
       }
     }
     if (!roleData) {
-      const { error: userProfileError } = await supabaseServiceRole
+      const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+      const { error: userProfileError } = await supabaseAdmin
         .from("user_profiles_table")
         .insert({ userid: user!.id, userrole: 2, isactive: true });
       if (userProfileError) {

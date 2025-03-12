@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useFormState } from "react-dom";
 
 import { signInWithMagicLink } from "@/actions/auth";
+import { useActionState } from "react";
 
 export default function Home() {
-  const [state, formAction] = useFormState(signInWithMagicLink, null);
+  const [state, formAction] = useActionState(signInWithMagicLink, null);
   return (
     <main className="grid-cols-1 flex flex-col items-center justify-between space-y-6">
       <Image

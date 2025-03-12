@@ -8,7 +8,7 @@ import { useFormStatus } from "react-dom";
 import { deleteUser } from "@/actions/auth";
 import { RESET_STATE } from "@/store/actionTypes";
 import { useAppDispatch } from "@/store/store";
-import { supabase } from "@/utils/supabaseBrowserClient";
+import { supabase } from "@/supabase-utils/browserClient";
 
 interface messageType {
   message: string;

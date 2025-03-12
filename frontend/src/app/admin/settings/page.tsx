@@ -9,7 +9,7 @@ import Awaiting from "@/components/layout/awaiting";
 import Apl_Header from "@/components/layout/header";
 import Popup from "@/components/layout/popup";
 import OverviewButton from "@/components/overviewButton";
-import { supabase } from "@/utils/supabaseBrowserClient";
+import { supabase } from "@/supabase-utils/browserClient";
 
 const SettingsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);

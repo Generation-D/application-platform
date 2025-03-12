@@ -1,9 +1,9 @@
 "use server";
 
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/answers/multipleChoice");
 
@@ -53,7 +53,7 @@ const initialstate: MultipleChoiceAnswerResponse = {
 export async function fetchMultipleChoiceAnswer(
   questionid: string,
 ): Promise<MultipleChoiceAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
