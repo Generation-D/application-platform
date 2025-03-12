@@ -4,7 +4,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/number");
+const log = new Logger("actions/answers/number");
 
 export async function saveNumberPickerAnswer(
   pickednumber: string,

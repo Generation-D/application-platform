@@ -18,6 +18,7 @@ run_script = 'backend.manage_applications:manage_users'
 python = "^3.11"
 pyyaml = "^6.0.1"
 logging = "^0.4.9.6"
+loguru = "^0.7.3"
 requests = "^2.31.0"
 python-dotenv = "^1.0.0"
 python-dateutil = "^2.8.2"

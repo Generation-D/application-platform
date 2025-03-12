@@ -401,6 +401,9 @@ ALTER TABLE PHASE_ASSIGNMENT_TABLE ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_policy ON PHASE_TABLE
   FOR SELECT USING (true);
 
+CREATE POLICY select_policy ON PHASE_OUTCOME_TABLE
+  FOR SELECT USING (auth.uid() IS NOT NULL);
+
 CREATE POLICY select_policy ON SECTIONS_TABLE
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
@@ -446,7 +449,7 @@ CREATE POLICY select_policy ON IMAGE_UPLOAD_QUESTION_TABLE
 CREATE POLICY select_policy ON USER_ROLES_TABLE
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
-CREATE POLICY select_profile ON public.user_profiles_table 
+CREATE POLICY select_profile ON public.user_profiles_table
   FOR SELECT USING (userid = auth.uid());
 
 CREATE POLICY insert_profile ON user_profiles_table FOR INSERT
@@ -455,7 +458,7 @@ CREATE POLICY insert_profile ON user_profiles_table FOR INSERT
 CREATE POLICY update_profile ON user_profiles_table FOR UPDATE
   WITH CHECK (userid = auth.uid());
 
-CREATE POLICY delete_profile ON public.user_profiles_table 
+CREATE POLICY delete_profile ON public.user_profiles_table
   FOR DELETE USING (userid = auth.uid());
 
 CREATE POLICY select_application ON application_table FOR SELECT
@@ -1175,13 +1178,13 @@ USING (
         JOIN QUESTION_TABLE as qt ON ANSWER_TABLE.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
         JOIN APPLICATION_TABLE as at ON ANSWER_TABLE.applicationid = at.applicationid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.userid 
+              WHERE up1.userid = at.userid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1200,13 +1203,13 @@ USING (
         JOIN ANSWER_TABLE as at ON DATETIME_PICKER_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1226,13 +1229,13 @@ USING (
         JOIN ANSWER_TABLE as at ON DATE_PICKER_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1252,13 +1255,13 @@ USING (
         JOIN ANSWER_TABLE as at ON DROPDOWN_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1278,13 +1281,13 @@ USING (
         JOIN ANSWER_TABLE as at ON IMAGE_UPLOAD_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1304,13 +1307,13 @@ USING (
         JOIN ANSWER_TABLE as at ON LONG_TEXT_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1330,13 +1333,13 @@ USING (
         JOIN ANSWER_TABLE as at ON MULTIPLE_CHOICE_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1356,13 +1359,13 @@ USING (
         JOIN ANSWER_TABLE as at ON NUMBER_PICKER_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1382,13 +1385,13 @@ USING (
         JOIN ANSWER_TABLE as at ON PDF_UPLOAD_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1408,13 +1411,13 @@ USING (
         JOIN ANSWER_TABLE as at ON SHORT_TEXT_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )
@@ -1434,13 +1437,13 @@ USING (
         JOIN ANSWER_TABLE as at ON VIDEO_UPLOAD_ANSWER_TABLE.answerid = at.answerid
         JOIN QUESTION_TABLE as qt ON at.questionid = qt.questionid
         JOIN PHASE_TABLE as pt ON qt.phaseid = pt.phaseid
-        WHERE up.userid = auth.uid() 
-          AND up.userrole = 2 
-          AND pt.phaseid = pat.phase_id 
+        WHERE up.userid = auth.uid()
+          AND up.userrole = 2
+          AND pt.phaseid = pat.phase_id
           AND EXISTS (
               SELECT 1
               FROM PUBLIC.USER_PROFILES_TABLE as up1
-              WHERE up1.userid = at.applicationid 
+              WHERE up1.userid = at.applicationid
                 AND up1.userrole = 1
                 AND pat.user_role_1_id = up1.userid
           )

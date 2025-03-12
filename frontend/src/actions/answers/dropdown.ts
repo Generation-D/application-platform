@@ -5,7 +5,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/dropdown");
+const log = new Logger("actions/answers/dropdown");
 
 export async function saveDropdownAnswer(
   answertext: string,

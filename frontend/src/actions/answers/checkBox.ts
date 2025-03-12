@@ -5,7 +5,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/checkBox");
+const log = new Logger("actions/answers/checkBox");
 
 export async function saveCheckBoxAnswer(checked: boolean, questionid: string) {
   if (!checked) {

@@ -4,7 +4,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/longText");
+const log = new Logger("actions/answers/longText");
 
 export async function saveLongTextAnswer(
   answertext: string,

@@ -5,7 +5,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/shortText");
+const log = new Logger("actions/answers/shortText");
 
 export async function saveShortTextAnswer(
   answertext: string,
