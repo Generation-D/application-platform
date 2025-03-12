@@ -45,9 +45,9 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   for (const questionType of Object.values(QuestionType)) {
     const tableName =
       QuestionTypeTable[
-      `${questionType[0].toUpperCase()}${questionType.slice(
-        1,
-      )}QuestionTable` as keyof typeof QuestionTypeTable
+        `${questionType[0].toUpperCase()}${questionType.slice(
+          1,
+        )}QuestionTable` as keyof typeof QuestionTypeTable
       ];
 
     if (!tableName) {
@@ -206,24 +206,24 @@ export async function fetch_question_table(
     log.error(`No questions defined for ${phaseId}`);
     redirect("/404", RedirectType.replace);
   }
-  const questionTypesData = await fetch_question_type_table(questionData as DefaultQuestion[]);
+  const questionTypesData = await fetch_question_type_table(
+    questionData as DefaultQuestion[],
+  );
   const choicesData = await fetchAdditionalParams(QuestionType.MultipleChoice);
   const optionsData = await fetchAdditionalParams(QuestionType.Dropdown);
 
   const conditionalChoicesData = await fetchAdditionalParams(
     QuestionType.Conditional,
   );
-  const combinedQuestions = questionData.map(
-    async (question) => {
-      return await append_params(
-        questionTypesData,
-        question as DefaultQuestion,
-        choicesData,
-        optionsData,
-        conditionalChoicesData,
-      );
-    },
-  );
+  const combinedQuestions = questionData.map(async (question) => {
+    return await append_params(
+      questionTypesData,
+      question as DefaultQuestion,
+      choicesData,
+      optionsData,
+      conditionalChoicesData,
+    );
+  });
   const awaitedQuestions = await Promise.all(combinedQuestions);
   const standaloneQuestions = awaitedQuestions.filter(
     (q: Question) => q.depends_on == null,
