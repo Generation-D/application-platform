@@ -55,9 +55,8 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
 
-      const savedAnswer = await fetchPdfUploadAnswer(questionid);
       try {
-        console.log(savedAnswer);
+        const savedAnswer = await fetchPdfUploadAnswer(questionid);
         if (savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
