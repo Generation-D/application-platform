@@ -1,8 +1,8 @@
 "use server";
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/answers/longText");
 
@@ -52,7 +52,7 @@ const initialstate: LongTextAnswerResponse = {
 export async function fetchLongTextAnswer(
   questionid: string,
 ): Promise<LongTextAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

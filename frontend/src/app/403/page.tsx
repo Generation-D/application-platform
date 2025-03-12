@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 import Logger from "@/logger/logger";
-import { supabase } from "@/utils/supabaseBrowserClient";
+import { supabase } from "@/supabase-utils/browserClient";
 
 const log = new Logger("Custom403");
 

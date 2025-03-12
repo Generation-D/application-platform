@@ -54,18 +54,23 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       if (fileInput && fileInput.value == "") {
         setTempAnswer("");
       }
+
+      const savedAnswer = await fetchPdfUploadAnswer(questionid);
       try {
-        const savedAnswer = await fetchPdfUploadAnswer(questionid);
+        console.log(savedAnswer);
         if (savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,
           );
+          console.log(imageUploadBucketData);
           const url = URL.createObjectURL(imageUploadBucketData!);
+          console.log(url);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {
           updateAnswerState("");
+          console.log("no pdf found");
         }
         setTempAnswer("");
       } catch (error) {
@@ -210,10 +215,10 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
                       d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                     />
                   </svg>
-                  <p className="mb-2 text-sm text-secondary text-center">
-                    <p className="font-semibold">Zum Uploaden klicken</p> oder
-                    per Drag and Drop
-                  </p>
+                  <div className="mb-2 text-sm text-secondary text-center">
+                    <p className="font-semibold">Zum Uploaden klicken</p>
+                    <p>oder per Drag and Drop</p>
+                  </div>
                   <p className="text-xs text-secondary">
                     PDF (MAX. {maxfilesizeinmb}MB)
                   </p>
@@ -247,7 +252,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
               </button>
             )}
             <iframe
-              src={tempAnswer || answer}
+              src={tempAnswer || answer || undefined}
               width="100%"
               height="600px max-w-xs max-h-96 self-center"
               style={{ border: "none" }}

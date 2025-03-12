@@ -9,7 +9,7 @@ import {
   userData,
 } from "@/actions/admin";
 import { PhaseData } from "@/store/slices/phaseSlice";
-import { supabase } from "@/utils/supabaseBrowserClient";
+import { supabase } from "@/supabase-utils/browserClient";
 
 import ToggleSwitch from "./fields/toggleswitch";
 import { SubmitButton } from "./submitButton";

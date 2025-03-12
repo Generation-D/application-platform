@@ -2,7 +2,7 @@
 import { ChangeEvent, useState } from "react";
 
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 import { signUpUser } from "@/actions/auth";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -21,7 +21,7 @@ const initialState: messageType = {
 };
 
 export default function SignUpForm() {
-  const [state, formAction] = useFormState(signUpUser, initialState);
+  const [state, formAction] = useActionState(signUpUser, initialState);
   const [password, setPassword] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | undefined>();
 
