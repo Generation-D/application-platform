@@ -36,7 +36,7 @@ ENV SMTP_PASSWORD=$SMTP_PASSWORD
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
+COPY frontend/package.json frontend/package-lock.json* ./
 
 RUN \
   if [ ! -f package-lock.json ]; then echo "Lockfile not found." && exit 1; fi
