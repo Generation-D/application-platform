@@ -59,7 +59,7 @@ export async function fetchConditionalAnswer(questionid: string) {
     await supabase
       .rpc("fetch_conditional_answer_table", {
         question_id: questionid,
-        user_id: user?.id,
+        user_id: user?.id ?? "",
       })
       .single<ConditionalAnswerResponse>();
   if (conditionalTextError) {

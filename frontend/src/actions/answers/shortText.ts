@@ -60,7 +60,7 @@ export async function fetchShortTextAnswer(
   const { data: shortTextData, error: shortTextError } = await supabase
     .rpc("fetch_short_text_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<ShortTextAnswerResponse>();
   if (shortTextError) {

@@ -45,9 +45,9 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   for (const questionType of Object.values(QuestionType)) {
     const tableName =
       QuestionTypeTable[
-        `${questionType[0].toUpperCase()}${questionType.slice(
-          1,
-        )}QuestionTable` as keyof typeof QuestionTypeTable
+      `${questionType[0].toUpperCase()}${questionType.slice(
+        1,
+      )}QuestionTable` as keyof typeof QuestionTypeTable
       ];
 
     if (!tableName) {
@@ -87,7 +87,10 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
 export async function fetchAdditionalParams(
   questiontype: QuestionType,
 ): Promise<Record<string, any>> {
-  let table_name = "";
+  let table_name:
+    | "multiple_choice_question_choice_table"
+    | "dropdown_question_option_table"
+    | "conditional_question_choice_table";
   if (questiontype == QuestionType.MultipleChoice) {
     table_name = "multiple_choice_question_choice_table";
   } else if (questiontype == QuestionType.Dropdown) {
@@ -125,17 +128,30 @@ export async function fetchAdditionalParams(
     if (!paramsDict[param.questionid]) {
       paramsDict[param.questionid] = [];
     }
-    if (questiontype == QuestionType.MultipleChoice) {
+
+    if (
+      questiontype === QuestionType.MultipleChoice &&
+      "choiceid" in param &&
+      "choicetext" in param
+    ) {
       paramsDict[param.questionid].push({
         choiceid: param.choiceid,
         choicetext: param.choicetext,
       });
-    } else if (questiontype == QuestionType.Dropdown) {
+    } else if (
+      questiontype === QuestionType.Dropdown &&
+      "optionid" in param &&
+      "optiontext" in param
+    ) {
       paramsDict[param.questionid].push({
         optionid: param.optionid,
         optiontext: param.optiontext,
       });
-    } else if (questiontype == QuestionType.Conditional) {
+    } else if (
+      questiontype === QuestionType.Conditional &&
+      "choiceid" in param &&
+      "choicevalue" in param
+    ) {
       paramsDict[param.questionid].push({
         choiceid: param.choiceid,
         choicevalue: param.choicevalue,
@@ -190,8 +206,7 @@ export async function fetch_question_table(
     log.error(`No questions defined for ${phaseId}`);
     redirect("/404", RedirectType.replace);
   }
-
-  const questionTypesData = await fetch_question_type_table(questionData);
+  const questionTypesData = await fetch_question_type_table(questionData as DefaultQuestion[]);
   const choicesData = await fetchAdditionalParams(QuestionType.MultipleChoice);
   const optionsData = await fetchAdditionalParams(QuestionType.Dropdown);
 
@@ -199,10 +214,10 @@ export async function fetch_question_table(
     QuestionType.Conditional,
   );
   const combinedQuestions = questionData.map(
-    async (question: DefaultQuestion) => {
+    async (question) => {
       return await append_params(
         questionTypesData,
-        question,
+        question as DefaultQuestion,
         choicesData,
         optionsData,
         conditionalChoicesData,
@@ -249,7 +264,7 @@ export async function fetch_conditional_questionid_mapping() {
       acc[question.choiceid] = question.questionid;
       return acc;
     },
-    {} as Record<string, string[]>,
+    {} as Record<string, string>,
   );
 }
 

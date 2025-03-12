@@ -58,7 +58,7 @@ export async function fetchDateTimePickerAnswer(questionid: string) {
     await supabase
       .rpc("fetch_datetime_picker_answer_table", {
         question_id: questionid,
-        user_id: user?.id,
+        user_id: user?.id ?? "",
       })
       .single<DateTimeAnswerResponse>();
   if (dateTimePickerError) {

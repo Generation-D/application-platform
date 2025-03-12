@@ -61,7 +61,7 @@ export async function fetchMultipleChoiceAnswer(
     await supabase
       .rpc("fetch_multiple_choice_answer_table", {
         question_id: questionid,
-        user_id: user?.id,
+        user_id: user?.id ?? "",
       })
       .single<MultipleChoiceAnswerResponse>();
   if (multipleChoiceError) {

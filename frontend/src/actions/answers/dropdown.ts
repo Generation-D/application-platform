@@ -60,7 +60,7 @@ export async function fetchDropdownAnswer(
   const { data: dropdownData, error: dropdownError } = await supabase
     .rpc("fetch_dropdown_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<DropdownAnswerResponse>();
   if (dropdownError) {

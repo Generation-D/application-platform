@@ -57,7 +57,7 @@ export async function fetchCheckBoxAnswer(
   const { data: checkBoxData, error: checkBoxError } = await supabase
     .rpc("fetch_checkbox_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<LongTextAnswerResponse>();
   if (checkBoxError) {
