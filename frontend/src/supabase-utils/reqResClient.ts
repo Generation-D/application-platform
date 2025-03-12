@@ -2,7 +2,11 @@ import { Database } from "@/types/database.types";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export const getSupabaseReqResClient = ({ request } : { request: NextRequest }) => {
+export const getSupabaseReqResClient = ({
+  request,
+}: {
+  request: NextRequest;
+}) => {
   const response = {
     value: NextResponse.next({ request: request }),
   };
@@ -30,7 +34,7 @@ export const getSupabaseReqResClient = ({ request } : { request: NextRequest }) 
           });
         },
       },
-    }
+    },
   );
 
   return { supabase, response };

@@ -21,7 +21,7 @@ export const getSupabaseCookiesUtilClient = async () => {
           } catch {}
         },
       },
-    }
+    },
   );
 };
 
@@ -44,6 +44,6 @@ export const getSupabaseCookiesUtilClientAdmin = async () => {
           } catch {}
         },
       },
-    }
+    },
   );
 };

@@ -95,7 +95,7 @@ export default function SignInForm() {
             }}
             options={{
               theme: "light",
-              language: "de"
+              language: "de",
             }}
           />
         </div>

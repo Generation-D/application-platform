@@ -19,7 +19,10 @@ const initialState: messageType = {
 };
 
 export default function ForgottenPasswordForm() {
-  const [state, formAction] = useActionState(sendResetPasswordLink, initialState);
+  const [state, formAction] = useActionState(
+    sendResetPasswordLink,
+    initialState,
+  );
   const [timer, setTimer] = useState(0);
   const [buttonVisible, setButtonVisible] = useState(true);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>();
@@ -75,7 +78,7 @@ export default function ForgottenPasswordForm() {
             }}
             options={{
               theme: "light",
-              language: "de"
+              language: "de",
             }}
           />
         </div>

@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 
 import Logger from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
-import { getSupabaseCookiesUtilClient, getSupabaseCookiesUtilClientAdmin } from "@/supabase-utils/cookiesUtilClient";
+import {
+  getSupabaseCookiesUtilClient,
+  getSupabaseCookiesUtilClientAdmin,
+} from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("auth/admin/callback/route");
 
@@ -37,7 +40,7 @@ export async function GET(req: NextRequest) {
       }
     }
     if (!roleData) {
-      const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
+      const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
       const { error: userProfileError } = await supabaseAdmin
         .from("user_profiles_table")
         .insert({ userid: user!.id, userrole: 2, isactive: true });

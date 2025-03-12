@@ -54,7 +54,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       if (fileInput && fileInput.value == "") {
         setTempAnswer("");
       }
-      
+
       const savedAnswer = await fetchPdfUploadAnswer(questionid);
       try {
         console.log(savedAnswer);

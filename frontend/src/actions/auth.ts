@@ -7,7 +7,10 @@ import { z } from "zod";
 
 import Logger from "@/logger/logger";
 import { getURL, isValidPassword } from "@/utils/helpers";
-import { getSupabaseCookiesUtilClient, getSupabaseCookiesUtilClientAdmin } from "@/supabase-utils/cookiesUtilClient";
+import {
+  getSupabaseCookiesUtilClient,
+  getSupabaseCookiesUtilClientAdmin,
+} from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/auth");
 
@@ -80,7 +83,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
         status: "ERROR",
       };
     }
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
+    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
     const { error: userProfileError } = await supabaseAdmin
       .from("user_profiles_table")
       .insert({ userid: userData.user!.id, userrole: 1, isactive: true });
@@ -142,7 +145,7 @@ export async function signInUser(prevState: any, formData: FormData) {
       await supabase.auth.signInWithPassword({
         email: signInFormData.data.email.replace(
           "@googlemail.com",
-          "@gmail.com"
+          "@gmail.com",
         ),
         password: signInFormData.data.password,
         options: {
@@ -243,7 +246,7 @@ export async function deleteUser(): Promise<{
       return { message: userError.message, status: "ERROR" };
     }
     log.info(`Deleting User ${userData.user.email}`);
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
+    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
     const { error: deleteUserError } =
       await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
     if (deleteUserError) {
