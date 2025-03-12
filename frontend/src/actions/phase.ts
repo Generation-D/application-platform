@@ -13,12 +13,12 @@ import {
   createCurrentTimestamp,
   setToPrefferedTimeZone,
 } from "@/utils/helpers";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import {
   getApplicationIdOfCurrentUser,
   getCurrentUser,
 } from "./answers/answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 type IdType = {
   questionid: string;
@@ -58,7 +58,7 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
         `Table for question type "${questionType}" is missing. Skipping...`,
       );
     }
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
 
     const { data: questionTypeData, error: questionTypeError } = await supabase
       .from(tableName)
@@ -100,7 +100,7 @@ export async function fetchAdditionalParams(
     );
     return {};
   }
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: paramsData, error } = await supabase
     .from(table_name)
     .select("*");
@@ -175,7 +175,7 @@ async function append_params(
 export async function fetch_question_table(
   phaseId: string,
 ): Promise<Question[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: questionData, error: questionError } = await supabase
     .from("question_table")
     .select("*")
@@ -233,7 +233,7 @@ export async function fetch_question_table(
 }
 
 export async function fetch_conditional_questionid_mapping() {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: conditionalData, error: conditionalError } = await supabase
     .from("conditional_question_choice_table")
     .select("*");
@@ -256,7 +256,7 @@ export async function fetch_conditional_questionid_mapping() {
 export async function fetch_phase_by_name(
   phaseName: string,
 ): Promise<PhaseData> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: phaseData, error: phaseError } = await supabase
     .from("phase_table")
     .select("*")
@@ -278,7 +278,7 @@ export async function fetch_phase_by_name(
 }
 
 export async function fetch_all_phases(): Promise<PhaseData[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
 
   const { data: phasesData, error: phasesError } = await supabase
     .from("phase_table")
@@ -332,7 +332,7 @@ export async function extractCurrentPhase(
 export async function fetch_answer_table(
   questionIds: string[],
 ): Promise<number> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
 
@@ -350,7 +350,7 @@ export async function fetch_answer_table(
 }
 
 export async function fetch_first_phase_over(): Promise<boolean> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: phaseData, error: phaseError } = await supabase
     .from("phase_table")
     .select("enddate")
@@ -374,7 +374,7 @@ export async function fetch_first_phase_over(): Promise<boolean> {
 export async function fetch_sections_by_phase(
   phaseId: string,
 ): Promise<SectionData[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: sectionsData, error: sectionsError } = await supabase
     .from("sections_table")
     .select("*")
@@ -404,7 +404,7 @@ export type PhaseOutcome = {
 };
 
 export async function fetch_phases_status(): Promise<PhaseOutcome[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const all_phases = await fetch_all_phases();
   const { data, error } = await supabase

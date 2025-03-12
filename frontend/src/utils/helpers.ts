@@ -1,4 +1,4 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import moment from "moment-timezone";
 
 export const getURL = () => {
@@ -32,10 +32,7 @@ export function transformReadableDateTime(dateString: string) {
 }
 
 export async function downloadFile(bucket_name: string, filename: string) {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const supabase = getSupabaseBrowserClient();
 
   const { data: fileUploadBucketData, error: fileUploadBucketError } =
     await supabase.storage.from(bucket_name).download(filename);

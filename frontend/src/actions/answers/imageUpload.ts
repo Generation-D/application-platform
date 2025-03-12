@@ -2,9 +2,9 @@
 
 import Logger from "@/logger/logger";
 import { storageSaveName } from "@/utils/helpers";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, getCurrentUser, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/ansers/imageUpload");
 
@@ -71,7 +71,7 @@ export async function saveImageUploadAnswer(
 }
 
 export async function deleteImageUploadAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const { data: imageUploadData, error: imageUploadError } = await supabase
     .rpc("fetch_image_upload_answer_table", {
@@ -98,7 +98,7 @@ interface ImageAnswerResponse {
 }
 
 export async function fetchImageUploadAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
     log.error(JSON.stringify(userError));

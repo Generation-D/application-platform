@@ -7,11 +7,11 @@ import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
 import Logger from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteImageUploadAnswer } from "./imageUpload";
 import { deletePdfUploadAnswer } from "./pdfUpload";
 import { deleteVideoUploadAnswer } from "./videoUpload";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
@@ -81,7 +81,7 @@ export interface ExtendedAnswerType extends Answer {
 export async function fetchAllAnswersOfApplication(): Promise<
   ExtendedAnswerType[]
 > {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   const { data: answerData, error: answerError } = await supabase
@@ -123,7 +123,7 @@ export async function fetchAllAnswersOfApplication(): Promise<
 }
 
 export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   let answerid = await fetchAnswerId(supabase, user, applicationid, questionid);
@@ -166,7 +166,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
 }
 
 export async function deleteAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
   const answerid = await fetchAnswerId(

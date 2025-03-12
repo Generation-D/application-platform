@@ -1,11 +1,8 @@
 "use server";
 import { ApplicantsStateType } from "@/components/applicantslist";
 import Logger from "@/logger/logger";
+import { getSupabaseCookiesUtilClient, getSupabaseCookiesUtilClientAdmin } from "@/supabase-utils/cookiesUtilClient";
 import { createCurrentTimestamp } from "@/utils/helpers";
-import {
-  initSupabaseActions,
-  supabaseServiceRole,
-} from "@/utils/supabaseServerClients";
 import { UserRole } from "@/utils/userRole";
 
 const log = new Logger("actions/admin");
@@ -41,15 +38,16 @@ function mergeUserDatas(users: any[], userProfiles: any[]): userData[] {
 }
 
 export async function fetchAllUsers() {
+  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
   const {
     data: { users },
     error: adminError,
-  } = await supabaseServiceRole.auth.admin.listUsers();
+  } = await supabaseAdmin.auth.admin.listUsers();
   if (adminError) {
     log.error(JSON.stringify(adminError));
     throw adminError;
   }
-  const { data: profileData, error: profileError } = await supabaseServiceRole
+  const { data: profileData, error: profileError } = await supabaseAdmin
     .from("user_profiles_table")
     .select("*");
   if (profileError) {
@@ -60,8 +58,9 @@ export async function fetchAllUsers() {
 }
 
 export async function toggleStatusOfUser(currUser: userData) {
+  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
   try {
-    const { error: userProfileError } = await supabaseServiceRole
+    const { error: userProfileError } = await supabaseAdmin
       .from("user_profiles_table")
       .update({ isactive: !currUser.isactive })
       .eq("userid", currUser.id);
@@ -83,8 +82,9 @@ export async function toggleStatusOfUser(currUser: userData) {
 }
 
 export async function changeRoleOfUser(currUser: userData, role: UserRole) {
+  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
   try {
-    const { error: userProfileError } = await supabaseServiceRole
+    const { error: userProfileError } = await supabaseAdmin
       .from("user_profiles_table")
       .update({ userrole: role.valueOf() })
       .eq("userid", currUser.id);
@@ -111,7 +111,7 @@ export interface ApplicantsStatus {
 }
 
 export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: applicantsStatusData, error: applicantsStatusError } =
     await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
@@ -128,7 +128,7 @@ export async function saveApplicationOutcome(
   admin_id: string,
   outcome?: boolean,
 ) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   if (applicantStatus === undefined) {
     const { error: applicantStatusError } = await supabase
       .from("phase_outcome_table")
@@ -204,7 +204,8 @@ export async function finishEvaluationOfPhase(
       );
     }
   });
-  const { error: applicantStatusError } = await supabaseServiceRole
+  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
+  const { error: applicantStatusError } = await supabaseAdmin
     .from("phase_table")
     .update({ finished_evaluation: createCurrentTimestamp() })
     .eq("phaseid", phase_id);

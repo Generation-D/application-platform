@@ -2,9 +2,9 @@
 
 import Logger from "@/logger/logger";
 import { storageSaveName } from "@/utils/helpers";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, getCurrentUser, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/ansers/pdfUpload");
 
@@ -71,7 +71,7 @@ export async function savePdfUploadAnswer(
 }
 
 export async function deletePdfUploadAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const { data: pdfUploadData, error: pdfUploadError } = await supabase
     .rpc("fetch_pdf_upload_answer_table", {
@@ -98,8 +98,9 @@ interface PdfAnswerResponse {
 }
 
 export async function fetchPdfUploadAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
+
   if (userError) {
     log.error(JSON.stringify(userError));
   }
@@ -111,7 +112,6 @@ export async function fetchPdfUploadAnswer(questionid: string) {
       user_id: user_id,
     })
     .single<PdfAnswerResponse>();
-
   if (pdfUploadError) {
     if (pdfUploadError.code == "PGRST116") {
       return null;

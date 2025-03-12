@@ -7,10 +7,7 @@ import { z } from "zod";
 
 import Logger from "@/logger/logger";
 import { getURL, isValidPassword } from "@/utils/helpers";
-import {
-  initSupabaseActions,
-  supabaseServiceRole,
-} from "@/utils/supabaseServerClients";
+import { getSupabaseCookiesUtilClient, getSupabaseCookiesUtilClientAdmin } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/auth");
 
@@ -57,7 +54,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
     return { message: `Passwörter stimmen nicht überein!`, status: "ERROR" };
   }
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } = await supabase.auth.signUp({
       email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
       password: signUpFormData.data.password,
@@ -83,7 +80,8 @@ export async function signUpUser(prevState: any, formData: FormData) {
         status: "ERROR",
       };
     }
-    const { error: userProfileError } = await supabaseServiceRole
+    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
+    const { error: userProfileError } = await supabaseAdmin
       .from("user_profiles_table")
       .insert({ userid: userData.user!.id, userrole: 1, isactive: true });
     if (userProfileError) {
@@ -99,7 +97,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
       return { message: userProfileError.message, status: "ERROR" };
     }
     const sendData = { userid: userData!.user!.id };
-    const { error: applicationError } = await supabaseServiceRole
+    const { error: applicationError } = await supabaseAdmin
       .from("application_table")
       .insert(sendData);
     if (applicationError) {
@@ -138,7 +136,7 @@ export async function signInUser(prevState: any, formData: FormData) {
   }
 
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     console.log(signInFormData.data.captchaToken);
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
@@ -204,7 +202,7 @@ export async function sendResetPasswordLink(
     return { message: "Passwort zurücksetzen fehlgeschlagen", status: "ERROR" };
   }
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     const email = resetPasswordFormData.data.email.replace(
       "@googlemail.com",
       "@gmail.com",
@@ -238,15 +236,16 @@ export async function deleteUser(): Promise<{
   status: string;
 }> {
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) {
       log.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
     log.info(`Deleting User ${userData.user.email}`);
+    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin()
     const { error: deleteUserError } =
-      await supabaseServiceRole.auth.admin.deleteUser(userData.user!.id);
+      await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
     if (deleteUserError) {
       log.error(JSON.stringify(deleteUserError));
       return { message: deleteUserError.message, status: "ERROR" };
@@ -298,7 +297,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
     return { message: "Passwörter stimmen nicht überein!", status: "ERROR" };
   }
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     const { error: userError } = await supabase.auth.updateUser({
       password: updatePasswordFormData.data.new_password,
     });
@@ -330,7 +329,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
 }
 
 export async function signInWithSlack() {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "slack_oidc",
@@ -357,7 +356,7 @@ export async function signInWithMagicLink(prevState: any, formData: FormData) {
     magicLinkEmail: formData.get("magicLinkEmail"),
   });
 
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: signInFormData.magicLinkEmail!,
     options: {
@@ -377,7 +376,7 @@ export async function sendResetPasswordLinkFromSettings(
 ) {
   const email = prevState.email;
   try {
-    const supabase = await initSupabaseActions();
+    const supabase = await getSupabaseCookiesUtilClient();
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(
         email.replace("@googlemail.com", "@gmail.com"),
