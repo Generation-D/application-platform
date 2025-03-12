@@ -18,7 +18,7 @@ class Logger {
     const apiKey = process.env.NEXT_PUBLIC_LOGFLARE_API_TOKEN;
     const sourceToken = process.env.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN;
     if (!apiKey || !sourceToken) {
-      throw new Error("Logflare API key and source token must be configured!");
+      throw new Error(`Logflare API key and source token must be configured! apiKey: ${apiKey}; sourceToken: ${sourceToken}`);
     }
     const stream = createWriteStream({
       apiKey: apiKey,
