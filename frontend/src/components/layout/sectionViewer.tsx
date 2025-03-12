@@ -42,7 +42,7 @@ export function SectionView({
     const validIndex = urlIndex >= 0 && urlIndex < sortedSections.length;
     return validIndex
       ? sortedSections[urlIndex].sectionid
-      : (sortedSections[0]?.sectionid ?? "");
+      : sortedSections[0]?.sectionid ?? "";
   });
 
   // Update URL when the section changes

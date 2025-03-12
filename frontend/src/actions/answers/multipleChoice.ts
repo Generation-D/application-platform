@@ -5,7 +5,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/multipleChoice");
+const log = new Logger("actions/answers/multipleChoice");
 
 export async function saveMultipleChoiceAnswer(
   answertext: string,

@@ -4,7 +4,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/datePicker");
+const log = new Logger("actions/answers/datePicker");
 
 export async function saveDatePickerAnswer(
   pickeddate: string,

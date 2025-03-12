@@ -6,7 +6,7 @@ import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, getCurrentUser, saveAnswer } from "./answers";
 
-const log = new Logger("actions/ansers/imageUpload");
+const log = new Logger("actions/answers/imageUpload");
 
 export async function saveImageUploadAnswer(
   questionid: string,

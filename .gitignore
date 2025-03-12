@@ -41,12 +41,15 @@ jspm_packages
 .next
 
 # ignore env files
-*.env
+*.env*
 *.env.local
 
 # pycache
 *__pycache__
+
+
 backend/apl_config_gend.yml
 backend/users_id.csv
+supabase
 
 **.DS_Store

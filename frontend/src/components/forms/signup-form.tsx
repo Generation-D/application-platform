@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useFormState } from "react-dom";
 
 import { signUpUser } from "@/actions/auth";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
@@ -22,6 +23,7 @@ const initialState: messageType = {
 export default function SignUpForm() {
   const [state, formAction] = useFormState(signUpUser, initialState);
   const [password, setPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -30,7 +32,18 @@ export default function SignUpForm() {
   return (
     <div>
       <h2>Registriere dich!</h2>
-      <form action={formAction} className="space-y-6">
+      <form
+        action={formAction}
+        className="space-y-6"
+        onSubmit={(e) => {
+          // Prevent credentials from appearing in URL
+          if (window.location.search) {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            formAction(formData);
+          }
+        }}
+      >
         <div>
           <label
             htmlFor="email"
@@ -106,7 +119,25 @@ export default function SignUpForm() {
         >
           {state?.message}
         </div>
-        <SubmitButton text={"Registrieren"} expanded={true} />
+
+        <div className="flex justify-center mx-auto">
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={(token) => {
+              setCaptchaToken(token);
+            }}
+            options={{
+              theme: "light",
+              language: "de",
+            }}
+          />
+        </div>
+
+        <input type="hidden" name="captcha" id="captcha" value={captchaToken} />
+
+        <div className={`${captchaToken ? "" : "hidden"}`}>
+          <SubmitButton text={"Registrieren"} expanded={true} />
+        </div>
       </form>
     </div>
   );
