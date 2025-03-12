@@ -59,7 +59,7 @@ export async function fetchNumberPickerAnswer(
   const { data: numberPickerData, error: numberPickerError } = await supabase
     .rpc("fetch_number_picker_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<NumberPickerAnswerResponse>();
   if (numberPickerError) {

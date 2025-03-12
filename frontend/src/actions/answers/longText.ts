@@ -59,7 +59,7 @@ export async function fetchLongTextAnswer(
   const { data: longTextData, error: longTextError } = await supabase
     .rpc("fetch_long_text_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<LongTextAnswerResponse>();
   if (longTextError) {
