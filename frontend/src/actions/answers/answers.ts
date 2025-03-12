@@ -145,7 +145,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     if (insertAnswerError) {
       log.error(JSON.stringify(insertAnswerError));
     }
-    answerid = insertAnswerData.answerid;
+    answerid = insertAnswerData?.answerid;
     reqtype = "created";
   } else {
     const { data: updateAnswerData, error: updateAnswerError } = await supabase
@@ -160,7 +160,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     if (updateAnswerError) {
       log.error(JSON.stringify(updateAnswerError));
     }
-    answerid = updateAnswerData.answerid;
+    answerid = updateAnswerData?.answerid;
     reqtype = "updated";
   }
   return { supabase: supabase, answerid: answerid, reqtype: reqtype };

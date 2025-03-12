@@ -4,10 +4,10 @@ import Image from "next/image";
 
 export default async function Page({
   params,
-}: {
-  params: { filename: string };
-}) {
-  const filename = params.filename;
+}: Readonly<{
+  params: Promise<{ filename: string }>;
+}>) {
+  const filename = (await params).filename;
 
   // Check the file extension to determine the file type
   const fileExtension = filename!.split(".").pop();

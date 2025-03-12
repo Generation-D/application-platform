@@ -9,7 +9,7 @@ import {
   userData,
 } from "@/actions/admin";
 import { PhaseData } from "@/store/slices/phaseSlice";
-import { supabase } from "@/supabase-utils/browserClient";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 import ToggleSwitch from "./fields/toggleswitch";
 import { SubmitButton } from "./submitButton";
@@ -35,6 +35,7 @@ const ApplicantsList: React.FC<{
   let renderedUnfinishedPhase = false;
   useEffect(() => {
     async function loadAnswer() {
+      const supabase = getSupabaseBrowserClient();
       const { data: user, error: userError } = await supabase.auth.getUser();
       if (userError) {
         console.error(userError);

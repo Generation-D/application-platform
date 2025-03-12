@@ -8,7 +8,7 @@ import { useFormStatus } from "react-dom";
 import { deleteUser } from "@/actions/auth";
 import { RESET_STATE } from "@/store/actionTypes";
 import { useAppDispatch } from "@/store/store";
-import { supabase } from "@/supabase-utils/browserClient";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 interface messageType {
   message: string;
@@ -40,6 +40,7 @@ export default function SubmitDeletionForm({
       );
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     } else if (countdown === 0) {
+      const supabase = getSupabaseBrowserClient();
       supabase.auth.signOut();
       router.push("/login");
     }
