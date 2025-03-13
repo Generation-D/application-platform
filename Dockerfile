@@ -1,7 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 # Source https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:20-alpine
+FROM node:20
 
 # TODO: REMOVE IT ALL
 ARG NEXT_PUBLIC_SUPABASE_URL
@@ -40,4 +40,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
