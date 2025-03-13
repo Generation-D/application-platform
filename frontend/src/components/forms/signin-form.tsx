@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
+import { useRef, useState, useEffect } from "react";
 import { useActionState } from "react";
-
 import { signInUser } from "@/actions/auth";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
@@ -22,10 +20,20 @@ export default function SignInForm() {
   const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
+  const ref = useRef<TurnstileInstance>(null);
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen);
   };
+
+  // Reset Turnstile on failed sign-in
+  useEffect(() => {
+    if (state?.message) {
+      ref.current?.reset();
+      setCaptchaToken(""); // Clear captcha token to disable the button
+    }
+  }, [state]);
+
   return (
     <div>
       {isPopupOpen && (
@@ -46,10 +54,7 @@ export default function SignInForm() {
         }}
       >
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
@@ -62,10 +67,7 @@ export default function SignInForm() {
           />
         </div>
         <div className="mb-0">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Passwort
           </label>
           <input
@@ -77,11 +79,7 @@ export default function SignInForm() {
           />
         </div>
         <div className="flex justify-end mt-1">
-          <button
-            type="button"
-            onClick={togglePopup}
-            className="px-1 text-secondary"
-          >
+          <button type="button" onClick={togglePopup} className="px-1 text-secondary">
             Passwort vergessen?
           </button>
         </div>
@@ -89,9 +87,16 @@ export default function SignInForm() {
 
         <div className="flex justify-center mx-auto">
           <Turnstile
+            ref={ref}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-            onSuccess={(token) => {
-              setCaptchaToken(token);
+            onSuccess={(token) => setCaptchaToken(token)}
+            onExpire={() => {
+              ref.current?.reset();
+              setCaptchaToken("");
+            }}
+            onError={() => {
+              ref.current?.reset();
+              setCaptchaToken("");
             }}
             options={{
               theme: "light",

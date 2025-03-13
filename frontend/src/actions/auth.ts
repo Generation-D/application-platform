@@ -140,7 +140,6 @@ export async function signInUser(prevState: any, formData: FormData) {
 
   try {
     const supabase = await getSupabaseCookiesUtilClient();
-    console.log(signInFormData.data.captchaToken);
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
         email: signInFormData.data.email.replace(
@@ -155,6 +154,7 @@ export async function signInUser(prevState: any, formData: FormData) {
     if (userError) {
       if (userError.status == 400) {
         log.debug("Invalid Login Credentials");
+        log.error(userError.message);
         return { message: "Deine Login Daten sind ungültig!" };
       }
       log.error(JSON.stringify(userError));
