@@ -54,7 +54,10 @@ export default function SignInForm() {
         }}
       >
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
             Email
           </label>
           <input
@@ -67,7 +70,10 @@ export default function SignInForm() {
           />
         </div>
         <div className="mb-0">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
             Passwort
           </label>
           <input
@@ -79,7 +85,11 @@ export default function SignInForm() {
           />
         </div>
         <div className="flex justify-end mt-1">
-          <button type="button" onClick={togglePopup} className="px-1 text-secondary">
+          <button
+            type="button"
+            onClick={togglePopup}
+            className="px-1 text-secondary"
+          >
             Passwort vergessen?
           </button>
         </div>
