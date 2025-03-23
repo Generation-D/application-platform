@@ -20,14 +20,10 @@ from backend.validate_config import (
 log = logger
 
 
-def process_nested_questions(
-    nested_questions, phase_id, phase_sections, supabase, depends_on
-):
+def process_nested_questions(nested_questions, phase_id, phase_sections, supabase, depends_on):
     for order, nested_question in enumerate(nested_questions):
         nested_question["order"] = order + 1
-        process_question(
-            nested_question, phase_id, phase_sections, supabase, depends_on
-        )
+        process_question(nested_question, phase_id, phase_sections, supabase, depends_on)
 
 
 def process_question(question, phase_id, phase_sections, supabase, depends_on=None):
@@ -49,26 +45,19 @@ def process_question(question, phase_id, phase_sections, supabase, depends_on=No
     )
 
     log.debug(f'Create Question "{question}"')
-    response_question_table = (
-        supabase.table("question_table").insert(data_question_table).execute()
-    )
+    response_question_table = (supabase.table("question_table").insert(data_question_table).execute())
 
     log.debug(f"Create QuestionType {question_type}")
     question_id = response_question_table.data[0]["questionid"]
-    data_question_type_table = create_data_question_type_table(
-        question_id, question_type, question
-    )
+    data_question_type_table = create_data_question_type_table(question_id, question_type, question)
 
-    response_question_type_table = (
-        supabase.table(QUESTION_TYPES_DB_TABLE[question_type])
-        .insert(data_question_type_table)
-        .execute()
-    )
+    response_question_type_table = (supabase.table(
+        QUESTION_TYPES_DB_TABLE[question_type]).insert(data_question_type_table).execute())
     log.info(str(response_question_type_table))
     if question_type in [
-        QuestionType.PDF_UPLOAD,
-        QuestionType.IMAGE_UPLOAD,
-        QuestionType.VIDEO_UPLOAD,
+            QuestionType.PDF_UPLOAD,
+            QuestionType.IMAGE_UPLOAD,
+            QuestionType.VIDEO_UPLOAD,
     ]:
         file_type = ""
         if question_type == QuestionType.PDF_UPLOAD:
@@ -80,45 +69,30 @@ def process_question(question, phase_id, phase_sections, supabase, depends_on=No
         elif question_type == QuestionType.IMAGE_UPLOAD:
             file_type = "image"
             allowed_mime_types = ["image/png", "image/jpeg"]
-        create_file_storage(
-            file_type, question_id, question["maxFileSizeInMB"], allowed_mime_types
-        )
+        create_file_storage(file_type, question_id, question["maxFileSizeInMB"], allowed_mime_types)
     elif question_type == QuestionType.MULTIPLE_CHOICE:
         for answer in question["Answers"]:
             data_list_table = create_data_choice_table(question_id, answer)
             try:
                 response_list_table = (
-                    supabase.table("multiple_choice_question_choice_table")
-                    .insert(data_list_table)
-                    .execute()
-                )
+                    supabase.table("multiple_choice_question_choice_table").insert(data_list_table).execute())
                 log.info(str(response_list_table))
             except Exception:
-                log.info(
-                    "Failed to insert data into multiple_choice_question_choice_table"
-                )
+                log.info("Failed to insert data into multiple_choice_question_choice_table")
     elif question_type == QuestionType.DROPDOWN:
         for answer in question["Answers"]:
             data_list_table = create_data_option_table(question_id, answer)
             try:
                 response_list_table = (
-                    supabase.table("dropdown_question_option_table")
-                    .insert(data_list_table)
-                    .execute()
-                )
+                    supabase.table("dropdown_question_option_table").insert(data_list_table).execute())
                 log.info(str(response_list_table))
             except Exception:
                 log.info("Failed to insert data into dropdown_question_option_table")
     elif question_type == QuestionType.CONDITIONAL:
         for answer in question["Answers"]:
-            data_conditional_choice_table = create_data_conditional_choice_table(
-                question_id, answer["value"]
-            )
+            data_conditional_choice_table = create_data_conditional_choice_table(question_id, answer["value"])
             response_conditional_choice_table = (
-                supabase.table("conditional_question_choice_table")
-                .insert(data_conditional_choice_table)
-                .execute()
-            )
+                supabase.table("conditional_question_choice_table").insert(data_conditional_choice_table).execute())
             process_nested_questions(
                 answer["questions"],
                 phase_id,
@@ -134,16 +108,10 @@ def process_config(config_file_path: str, env_file_path: str | None = None):
 
     supabase = init_supabase(env_file_path)
 
-    for phase_counter, (phase_name, phase) in enumerate(
-        config_data["questions"].items()
-    ):
+    for phase_counter, (phase_name, phase) in enumerate(config_data["questions"].items()):
         # Check if phase already exists in the database
-        existing_phases = (
-            supabase.table("phase_table")
-            .select("phaseid, phasename")
-            .eq("phasename", phase_name)
-            .execute()
-        )
+        existing_phases = (supabase.table("phase_table").select("phaseid, phasename").eq("phasename",
+                                                                                         phase_name).execute())
 
         if existing_phases.data and len(existing_phases.data) > 0:
             log.info(f"Phase {phase_name} already exists, skipping...")
@@ -160,21 +128,14 @@ def process_config(config_file_path: str, env_file_path: str | None = None):
         )
         log.info(f"Creating new Phase {phase_name}")
 
-        response_phase_table = (
-            supabase.table("phase_table").insert(data_phase_table).execute()
-        )
+        response_phase_table = (supabase.table("phase_table").insert(data_phase_table).execute())
         phase_sections = {}
         phase_id = response_phase_table.data[0]["phaseid"]
         if "sections" in phase:
             for order, section in enumerate(phase["sections"]):
-                data_section_table = create_data_section_table(
-                    section["name"], section["description"], order + 1, phase_id
-                )
-                response_section_table = (
-                    supabase.table("sections_table")
-                    .insert(data_section_table)
-                    .execute()
-                )
+                data_section_table = create_data_section_table(section["name"], section["description"], order + 1,
+                                                               phase_id)
+                response_section_table = (supabase.table("sections_table").insert(data_section_table).execute())
                 phase_sections[order + 1] = response_section_table.data[0]["sectionid"]
         log.info(str(response_phase_table))
 
@@ -201,9 +162,7 @@ def create_data_phase_table(
     }
 
 
-def create_data_section_table(
-    sectionname: str, sectiondescription: str, sectionorder: int, phaseid: str
-) -> dict:
+def create_data_section_table(sectionname: str, sectiondescription: str, sectionorder: int, phaseid: str) -> dict:
     return {
         "sectionname": sectionname,
         "sectiondescription": sectiondescription,
@@ -239,9 +198,7 @@ def create_data_questions_table(
     }
 
 
-def create_data_question_type_table(
-    question_id: str, question_type: str, question: dict
-) -> dict:
+def create_data_question_type_table(question_id: str, question_type: str, question: dict) -> dict:
     data_question_type_table = {"questionid": question_id}
     for param in MANDATORY_PARAMS.get(question_type, {}):
         if param != "Answers" and param.lower() not in DEFAULT_PARAMS:
@@ -250,14 +207,9 @@ def create_data_question_type_table(
         if opt_param not in question:
             continue
         if opt_param == "formattingRegex":
-            data_question_type_table[opt_param.lower()] = REGEX_JS.get(
-                question[opt_param], None
-            )
-            data_question_type_table["formattingdescription"] = (
-                REGEX_TO_DESCRIPTION.get(
-                    question_type, question.get("formattingDescription", None)
-                )
-            )
+            data_question_type_table[opt_param.lower()] = REGEX_JS.get(question[opt_param], None)
+            data_question_type_table["formattingdescription"] = (REGEX_TO_DESCRIPTION.get(
+                question_type, question.get("formattingDescription", None)))
     return data_question_type_table
 
 
@@ -282,9 +234,7 @@ def create_data_conditional_choice_table(questionId: str, choiceValue: str) -> d
     }
 
 
-def create_file_storage(
-    filetype: str, questionid: str, fileSizeLimitInMB: int, allowedMimeTypes: list
-):
+def create_file_storage(filetype: str, questionid: str, fileSizeLimitInMB: int, allowedMimeTypes: list):
     supabase = init_supabase()
     bucket_name = f"{filetype}-{questionid}"
     response = supabase.storage.create_bucket(
@@ -305,9 +255,7 @@ def add_phase_questions():
 
     supabase = init_supabase()
 
-    for phase_counter, (phase_name, phase) in enumerate(
-        config_data["questions"].items()
-    ):
+    for phase_counter, (phase_name, phase) in enumerate(config_data["questions"].items()):
         if phase_counter != 2:
             continue
         phase_sections = {}
@@ -326,16 +274,12 @@ def add_test_user():
         res_user = supabase.auth.sign_up({"email": user, "password": passwort})
         user_id = res_user.user.id
         supabase.table("application_table").insert({"userid": user_id}).execute()
-        supabase.table("user_profiles_table").insert(
-            {"userid": user_id, "userrole": 1, "isactive": True}
-        ).execute()
+        supabase.table("user_profiles_table").insert({"userid": user_id, "userrole": 1, "isactive": True}).execute()
     print("Done")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Script to setup the supabase database using the config file"
-    )
+    parser = argparse.ArgumentParser(description="Script to setup the supabase database using the config file")
     parser.add_argument(
         "--config",
         help="Path to the yaml config file",
