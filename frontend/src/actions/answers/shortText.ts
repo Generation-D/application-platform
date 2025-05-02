@@ -1,7 +1,7 @@
 "use server";
 
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
+import { initSupabase } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
@@ -53,7 +53,7 @@ const initialstate: ShortTextAnswerResponse = {
 export async function fetchShortTextAnswer(
   questionid: string,
 ): Promise<ShortTextAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await initSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();

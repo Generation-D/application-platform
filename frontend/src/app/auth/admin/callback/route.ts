@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import Logger from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import {
-  initSupabaseRouteNew,
+  initSupabase,
   supabaseServiceRole,
 } from "@/utils/supabaseServerClients";
 
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   let subdomain = "";
   if (code) {
-    const supabase = await initSupabaseRouteNew();
+    const supabase = await initSupabase();
     try {
       await supabase.auth.exchangeCodeForSession(code);
     } catch (error) {

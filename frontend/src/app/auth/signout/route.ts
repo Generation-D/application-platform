@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { getURL } from "@/utils/helpers";
-import { initSupabaseRoute } from "@/utils/supabaseServerClients";
+import { initSupabase } from "@/utils/supabaseServerClients";
 
 export async function POST() {
-  const supabase = await initSupabaseRoute();
+  const supabase = await initSupabase();
 
   const {
     data: { session },

@@ -1,6 +1,6 @@
 "use server";
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
+import { initSupabase } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
@@ -52,7 +52,7 @@ const initialstate: NumberPickerAnswerResponse = {
 export async function fetchNumberPickerAnswer(
   questionid: string,
 ): Promise<NumberPickerAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await initSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();

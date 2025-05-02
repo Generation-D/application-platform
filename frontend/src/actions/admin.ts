@@ -3,7 +3,7 @@ import { ApplicantsStateType } from "@/components/applicantslist";
 import Logger from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 import {
-  initSupabaseActions,
+  initSupabase,
   supabaseServiceRole,
 } from "@/utils/supabaseServerClients";
 import { UserRole } from "@/utils/userRole";
@@ -111,7 +111,7 @@ export interface ApplicantsStatus {
 }
 
 export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
-  const supabase = await initSupabaseActions();
+  const supabase = await initSupabase();
   const { data: applicantsStatusData, error: applicantsStatusError } =
     await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
@@ -128,7 +128,7 @@ export async function saveApplicationOutcome(
   admin_id: string,
   outcome?: boolean,
 ) {
-  const supabase = await initSupabaseActions();
+  const supabase = await initSupabase();
   if (applicantStatus === undefined) {
     const { error: applicantStatusError } = await supabase
       .from("phase_outcome_table")

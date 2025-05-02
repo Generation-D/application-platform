@@ -1,7 +1,7 @@
 "use server";
 
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
+import { initSupabase } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 
@@ -53,7 +53,7 @@ const initialstate: MultipleChoiceAnswerResponse = {
 export async function fetchMultipleChoiceAnswer(
   questionid: string,
 ): Promise<MultipleChoiceAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await initSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();
