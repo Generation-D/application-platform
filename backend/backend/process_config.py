@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime
 
 from backend.enums.question_type import QuestionType
-from backend.logger import Logger
 from loguru import logger
 from backend.utils.consts import REGEX_JS, REGEX_TO_DESCRIPTION
 from backend.utils.utils_datetime import convert_to_timezone

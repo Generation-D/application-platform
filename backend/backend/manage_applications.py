@@ -30,8 +30,8 @@ def manage_application_outcomes(
     with open(csv_mapping_file, mode="r") as file:
         csv_reader = csv.reader(file, delimiter=',')
         header = next(csv_reader)  # Skip header
-        assert "email" in header and "id" in header
-        index_email, index_id = header.index("email"), header.index("id")
+        assert "email" in header and "user_id" in header
+        index_email, index_id = header.index("email"), header.index("user_id")
         for row in csv_reader:
             candidate_email = row[index_email].lower()
             candidate_id = row[index_id].lower()

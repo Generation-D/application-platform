@@ -306,7 +306,14 @@ questions:
     phaseLabel: "Lebensläufe & Interviews"
     startDate: 2025-05-05
     endDate: 2025-05-25
-    questions: []
+    questions:
+      - questionType: pdfUpload
+        order: 1
+        question: "Bitte ladet hier die Lebensläufe des Gründerteams gesammelt in einem PDF-Dokument hoch"
+        maxFileSizeInMB: 25.0  # in Mega Byte
+        mandatory: true
+        note: "[Dokument hochladen: Lebensläufe]"
+
 
   phase-4:
     phaseLabel: "LinkedIn Voting"
