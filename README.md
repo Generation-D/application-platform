@@ -204,7 +204,7 @@ exit 0
 7. Test your git Hook: `git push`
 
 
-## Frontend Deployment
+## Frontend Deployment (Produktiv)
 
 1. Prerequisites:
 - Ubuntu Server with Docker Image and Docker Compose
