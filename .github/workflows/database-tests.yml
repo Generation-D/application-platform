@@ -25,6 +25,11 @@ jobs:
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
       - run: supabase db lint
       - run: supabase test db
+      - run: | 
+          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./frontend/.env 
+          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
+          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
+          echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
       - run: npm ci
         working-directory: ./frontend
       - run: echo ./frontend/.env
