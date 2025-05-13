@@ -20,9 +20,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | grep 'anon key' | cut -d ':' -f2)
           SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | grep ' service_role key' | cut -d ':' -f2)
 
-          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
       - run: supabase db lint
       - run: supabase test db
       - run: npm ci
