@@ -10,6 +10,22 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - run: supabase start
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          OUTPUT=$(supabase start)
+
+          NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | grep 'API URL' | cut -d ':' -f2)
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | grep 'anon key' | cut -d ':' -f2)
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | grep ' service_role key' | cut -d ':' -f2)
+
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> $GITHUB_ENV
       - run: supabase db lint
       - run: supabase test db
+      - run: npm ci
+        working-directory: ./frontend
+      - run: npm run dev
+        working-directory: ./frontend
