@@ -39,3 +39,7 @@ jobs:
           nohup npm start -- --port 3000 > next.log 2>&1 &
         working-directory: ./frontend
       - run: npx --yes wait-on http://localhost:3000
+      - run: npm ci
+        working-directory: ./e2e
+      - run: npm run test:e2e
+        working-directory: ./e2e
