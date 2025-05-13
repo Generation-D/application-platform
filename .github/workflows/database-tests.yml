@@ -27,6 +27,7 @@ jobs:
       - run: supabase test db
       - run: npm ci
         working-directory: ./frontend
+      - run: echo ./frontend/.env
       - run: npm run build
         working-directory: ./frontend
       - run: |
