@@ -16,9 +16,9 @@ jobs:
       - run: |
           OUTPUT=$(supabase start)
 
-          NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | grep 'API URL' | cut -d ':' -f2)
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | grep 'anon key' | cut -d ':' -f2)
-          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | grep ' service_role key' | cut -d ':' -f2)
+          NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | awk -F': ' '/API URL/ {print $2}')
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/anon key/ {print $2}')
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/service_role key/ {print $2}')
 
           echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
