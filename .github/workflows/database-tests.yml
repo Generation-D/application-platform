@@ -10,7 +10,6 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - run: supabase db start
+      - run: supabase start
       - run: supabase db lint
       - run: supabase test db
-      - run: supabase start
