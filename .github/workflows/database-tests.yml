@@ -1,4 +1,4 @@
-name: 'database-tests'
+name: 'ci
 on:
   pull_request:
 
@@ -32,7 +32,6 @@ jobs:
           echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
       - run: npm ci
         working-directory: ./frontend
-      - run: echo ./frontend/.env
       - run: npm run build
         working-directory: ./frontend
       - run: |
