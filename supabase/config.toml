@@ -50,9 +50,8 @@ max_client_conn = 100
 # Supports glob patterns relative to supabase directory: "./schemas/*.sql"
 schema_paths = [
     "../backend/backend/sql/init_db.sql",
-     "../backend/backend/sql/functions.sql",
-      "../backend/backend/sql/add_cascade_delete.sql",
-       "../backend/backend/sql/bucket_policies.sql"
+    "../backend/backend/sql/functions.sql",
+    "../backend/backend/sql/add_cascade_delete.sql",
     ]
 
 [db.seed]
