@@ -311,5 +311,15 @@ questions:
   phase-4:
     phaseLabel: "LinkedIn Voting"
     startDate: 2025-06-02
-    endDate: 2025-06-08
-    questions: []
+    endDate: 2025-06-06
+    questions: 
+      - questionType: videoUpload
+        order: 1
+        question: "Bitte ladet hier das veröffentlichungsfertige Video für das LinkedIn-Voting hoch. Bitte benennt die Datei nach eurem Startup. (max. 30 MB)"
+        mandatory: true
+        maxFileSizeInMB: 30.0  # in Mega Byte
+      - questionType: longText
+        order: 2
+        question: "Bitte gebt hier den druckfertigen Text für euren LinkedIn-Post an. (max. 1000 Zeichen)"
+        mandatory: true
+        maxTextLength: 1000
