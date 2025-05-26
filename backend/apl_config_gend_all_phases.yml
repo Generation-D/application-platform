@@ -313,13 +313,18 @@ questions:
     startDate: 2025-06-02
     endDate: 2025-06-06
     questions: 
-      - questionType: videoUpload
+      - questionType: imageUpload
         order: 1
-        question: "Bitte ladet hier das veröffentlichungsfertige Video für das LinkedIn-Voting hoch. Bitte benennt die Datei nach eurem Startup. (max. 30 MB)"
+        question: "Bitte ladet hier ein Logo eures Startups hoch. Bitte benennt die Datei nach eurem Startup. (max. 10 MB) (ACHTUNG: Sollte das Logo nicht gespeichert werden, wenn ihr die Seite neuladet, dann löscht bitte eure Cookies/Browserdaten und probiert es erneut. Sollte es weiterhin nicht funktionieren, sendet das Logo (und Video) bitte an startups@generation-d.org.)"
+        maxFileSizeInMB: 10.0  # in Mega Byte
         mandatory: true
-        maxFileSizeInMB: 30.0  # in Mega Byte
-      - questionType: longText
+      - questionType: videoUpload
         order: 2
-        question: "Bitte gebt hier den druckfertigen Text für euren LinkedIn-Post an. (max. 1000 Zeichen)"
+        question: "Bitte ladet hier das veröffentlichungsfertige Video für das LinkedIn-Voting hoch. Bitte benennt die Datei nach eurem Startup. (max. 50 MB) (ACHTUNG: Sollte euer Video größer als 50 MB sein, dann sendet uns bitte einen Link zum Download des Videos an startups@generation-d.org zu. Dies gilt auch, sollte das Video nicht gespeichert werden, wenn ihr die Seite neuladet.)"
+        maxFileSizeInMB: 50.0  # in Mega Byte
         mandatory: true
+      - questionType: longText
+        order: 3
+        question: "Bitte gebt hier den druckfertigen Text für euren LinkedIn-Post an. (max. 1000 Zeichen)"
         maxTextLength: 1000
+        mandatory: true
