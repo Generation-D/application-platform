@@ -6,7 +6,7 @@ import { storageSaveName } from "@/utils/helpers";
 import { deleteAnswer, getCurrentUser, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("actions/answers/imageUpload");
+const log = new Logger("actions/answers/videoUpload");
 
 export async function saveVideoUploadAnswer(
   questionid: string,
@@ -28,7 +28,7 @@ export async function saveVideoUploadAnswer(
           videoname: uploadFile.name,
         });
       if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
+        log.error("insertAnswerError " + JSON.stringify(insertAnswerError));
       }
       const { error: bucketError } = await supabase.storage
         .from(bucket_name)
@@ -37,7 +37,7 @@ export async function saveVideoUploadAnswer(
           uploadFile,
         );
       if (bucketError) {
-        log.error(JSON.stringify(bucketError));
+        log.error("bucketError: " + JSON.stringify(bucketError));
       }
     } else if (reqtype == "updated") {
       const { data: oldVideoData, error: oldVideoError } = await supabase
@@ -46,14 +46,14 @@ export async function saveVideoUploadAnswer(
         .eq("answerid", answerid)
         .single();
       if (oldVideoError) {
-        log.error(JSON.stringify(oldVideoError));
+        log.error("oldVideoError " + JSON.stringify(oldVideoError));
       }
       const { error: updatedVideoError } = await supabase
         .from("video_upload_answer_table")
         .update({ videoname: uploadFile.name })
         .eq("answerid", answerid);
       if (updatedVideoError) {
-        log.error(JSON.stringify(updatedVideoError));
+        log.error("updatedVideoError " + JSON.stringify(updatedVideoError));
       }
       const { error: updatedBucketError } = await supabase.storage
         .from(bucket_name)
@@ -64,7 +64,7 @@ export async function saveVideoUploadAnswer(
           uploadFile,
         );
       if (updatedBucketError) {
-        log.error(JSON.stringify(updatedBucketError));
+        log.error("updatedBucketError " + JSON.stringify(updatedBucketError));
       }
     }
   }

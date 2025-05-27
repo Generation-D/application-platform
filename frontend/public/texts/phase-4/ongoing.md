@@ -4,15 +4,15 @@ Aktuell läuft die **dritte Bewerbungsphase** in der wir euch als Team persönli
 
 ### Wie können wir die Wildcard gewinnen?
 
-Ganz einfach! Es wird ein einwöchiges Voting auf dem Generation-D LinkedIn Kanal geben, bei dem wir von allen teilnehmenden Teams ein Video und einen Text posten werden. Wer zum Ende des Votings (genaue Daten folgen noch) die meisten Likes hat, ist weiter - ganz unabhängig von eurer Performance in den Interviews. Uns ist bewusst, dass es nur eine Wildcard zu gewinnen gibt, doch profitieren kann jedes Team, denn die Reichweite und Sichtbarkeit unseres Votings ist beträchtlich. Also macht mit und vervollständigt eure Angaben bis zum **24. Mai 2025 23:59 Uhr**!
+Ganz einfach! Es wird ein einwöchiges Voting auf dem Generation-D LinkedIn-Kanal geben, bei dem wir von allen teilnehmenden Teams ein Video und einen Text posten werden. Wer zum Ende des Votings (15.06. 23:59 Uhr) die meisten Reaktionen hat, ist weiter - ganz unabhängig von eurer Performance in den Interviews. Uns ist bewusst, dass es nur eine Wildcard zu gewinnen gibt, doch profitieren kann jedes Team, denn die Reichweite und Sichtbarkeit unseres Votings ist beträchtlich. Also macht mit und vervollständigt eure Angaben bis zum **06.06. 23:59 Uhr** hier im Portal!
 
 ### Wie geht es weiter?
 
-Ob ihr zu 5 der Finalteams gehört, die durch unsere Jury ausgewählt wurden, erfahrt ihr am 25. Mai 2025. Doch selbst, wenn ihr bis dahin keine Mail von uns erhalten habt, gibt es ja noch die Chance, dass ihr die Wildcard gewinnt - das erfahrt ihr spätestens am 09. Juni 2025. Und ja, es wird in jedem Fall ein 6. Team im Finale geben, auch wenn das Team mit den meisten Likes schon durch die Jury weiterkommt - dann erhält die Wildcard das Team mit den zweitmeisten Votes und so weiter. Mitmachen lohnt sich also in jedem Fall!
+Ob ihr zu den 6 Finalteams gehört, die durch unsere Jury ausgewählt wurden, erfahrt ihr zeitnah nach dem LinkedIn-Voting.
 
 ### Save the Date - Leaderpitch und Finale 2025
 
-Es ist gar nicht mehr so lange bis zu unseren heiß ersehnten Events in Präsenz, hier in München, ausgetragen im HQ unseres Partners Brainlab. Damit ihr im Falle eines Weiterkommens auf jeden Fall dabei sein könnt - und das ist für uns ein Muss - tragt euch gern schonmal den 21.09. (Finale) und den 22.06. rot im Kalender ein. Auch wenn ihr nicht am LinkedIn Voting teilnehmen wollt, ladet bitte euer Logo hoch und stimmt der Eventteilnahme kurz zu, damit wir wissen, dass ihr die Info zur Kenntnis genommen habt.
+Es ist gar nicht mehr so lange bis zu unseren heiß ersehnten Events in Präsenz, hier in München, ausgetragen im HQ unseres Partners Brainlab. Damit ihr im Falle eines Weiterkommens auf jeden Fall dabei sein könnt - und das ist für uns ein Muss - tragt euch gern schonmal den 12.07. (Leaderpitch) und den 20.09. (Finale) rot im Kalender ein.
 
 ### Hinweise zum Hochladen
 
