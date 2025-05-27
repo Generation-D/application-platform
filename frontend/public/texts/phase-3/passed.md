@@ -8,7 +8,7 @@ Ganz einfach! Es wird ein einwöchiges Voting auf dem Generation-D LinkedIn-Kana
 
 ### Wie geht es weiter?
 
-Ob ihr zu den 6 Finalteams gehört, die durch unsere Jury ausgewählt wurden, erfahrt ihr zeitnah nach dem LinkedIn-Voting. 
+Ob ihr zu den 6 Finalteams gehört, die durch unsere Jury ausgewählt wurden, erfahrt ihr zeitnah nach dem LinkedIn-Voting.
 
 ### Save the Date - Leaderpitch und Finale 2025
 
