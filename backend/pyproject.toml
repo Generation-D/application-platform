@@ -24,9 +24,18 @@ python-dotenv = "^1.0.0"
 python-dateutil = "^2.8.2"
 supabase = "^2.0.0"
 pytest = "^7.4.3"
-yapf = "^0.40.2"
 pytz = "^2023.3.post1"
 gotrue = "^2.1.0"
+ruff = "0.11.2"
+
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+lint.extend-select = ["I"]
+lint.fixable = ["I"]
+lint.isort.known-first-party = ["backend*"]
+format.quote-style = 'single'
 
 
 [build-system]

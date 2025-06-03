@@ -3,18 +3,18 @@ from enum import Enum, unique
 
 @unique
 class QuestionType(Enum):
-    SHORT_TEXT = "shortText"
-    LONG_TEXT = "longText"
-    MULTIPLE_CHOICE = "multipleChoice"
-    VIDEO_UPLOAD = "videoUpload"
-    IMAGE_UPLOAD = "imageUpload"
-    PDF_UPLOAD = "pdfUpload"
-    DATE_PICKER = "datePicker"
-    DATETIME_PICKER = "datetimePicker"
-    NUMBER_PICKER = "numberPicker"
-    DROPDOWN = "dropdown"
-    CONDITIONAL = "conditional"
-    CHECKBOX = "checkBox"
+    SHORT_TEXT = 'shortText'
+    LONG_TEXT = 'longText'
+    MULTIPLE_CHOICE = 'multipleChoice'
+    VIDEO_UPLOAD = 'videoUpload'
+    IMAGE_UPLOAD = 'imageUpload'
+    PDF_UPLOAD = 'pdfUpload'
+    DATE_PICKER = 'datePicker'
+    DATETIME_PICKER = 'datetimePicker'
+    NUMBER_PICKER = 'numberPicker'
+    DROPDOWN = 'dropdown'
+    CONDITIONAL = 'conditional'
+    CHECKBOX = 'checkBox'
 
     @classmethod
     def list_values(cls):
