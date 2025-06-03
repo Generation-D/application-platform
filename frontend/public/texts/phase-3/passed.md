@@ -1,21 +1,25 @@
-## Willkommen zurück!
+## Willkommen zurück
 
-Herzlichen Glückwunsch! Ihr habt es in die finale Phase geschafft! Euer Startup hat die dritte Runde von Generation-D erfolgreich gemeistert und zählt somit zu den TOP10 Social Startups, die sich in diesem Jahr bei uns beworben haben.
+Aktuell läuft die **dritte Bewerbungsphase** in der wir euch als Team persönlich besser kennenlernen wollen. Eure Intervieweinladungen müsstet ihr bereits erhalten haben und einige Interviews sind schon geführt worden. Doch nun kommt noch ein besonderes Schmankerl: Das LinkedIn-Voting und eure Chance eine direkte Wildcard in die Finalauswahl zu gewinnen!
 
-### Wie geht es jetzt weiter?
+### Wie können wir die Wildcard gewinnen?
 
-Wir befinden uns derzeit in der **finalen Bewerbungsphase**, in der wir die endgültige Auswahl der Finalisten treffen möchten. Diese Phase besteht aus zwei Teilen:
+Ganz einfach! Es wird ein einwöchiges Voting auf dem Generation-D LinkedIn-Kanal geben, bei dem wir von allen teilnehmenden Teams ein Video und einen Text posten werden. Wer zum Ende des Votings (15.06. 23:59 Uhr) die meisten Reaktionen hat, ist weiter - ganz unabhängig von eurer Performance in den Interviews. Uns ist bewusst, dass es nur eine Wildcard zu gewinnen gibt, doch profitieren kann jedes Team, denn die Reichweite und Sichtbarkeit unseres Votings ist beträchtlich. Also macht mit und vervollständigt eure Angaben bis zum **06.06. 23:59 Uhr** hier im Portal!
 
-1. **Leaderpitch und Halbfinale**: Der Leaderpitch findet am **05.07.2025** statt. Hier habt ihr die Gelegenheit, euer Startup vor Größen aus der Wirtschaft zu präsentieren und wertvolles Feedback für die Zukunft sowie für das Finale zu erhalten. Nähere Details erhaltet ihr in Kürze per Mail.
+### Wie geht es weiter?
 
-2. **LinkedIn Voting**: Nutzt euer Netzwerk, um eure Chancen zu maximieren! Im LinkedIn-Voting stellen wir die Startups aus Runde 3 in kurzen Videosequenzen in separaten Beiträgen vor. Eure Challenge besteht darin, innerhalb von etwa 2 Wochen so viele Likes wie möglich zu sammeln. Das Startup mit den meisten Likes erhält eine “Wildcard” ins Finale von Generation-D!
+Ob ihr zu den 6 Finalteams gehört, die durch unsere Jury ausgewählt wurden, erfahrt ihr zeitnah nach dem LinkedIn-Voting.
 
-### Das Finale:
+### Save the Date - Leaderpitch und Finale 2025
 
-Das große Finale wird voraussichtlich am **20.09.2025** in München stattfinden. Die Bewertung erfolgt auf der Grundlage eines 5-minütigen Pitches und einer 10-minütigen anschließenden Fragerunde. Die Jury setzt sich aus GenD-Alumni sowie Vertretern aus Wirtschaft, Akademia und gelegentlich auch Politik, Recht und der Öffentlichkeit zusammen – alle mit einem Bezug zu sozialen Startups.
+Es ist gar nicht mehr so lange bis zu unseren heiß ersehnten Events in Präsenz, hier in München, ausgetragen im HQ unseres Partners Brainlab. Damit ihr im Falle eines Weiterkommens auf jeden Fall dabei sein könnt - und das ist für uns ein Muss - tragt euch gern schonmal den 12.07. (Leaderpitch) und den 20.09. (Finale) rot im Kalender ein.
 
-Wir sind gespannt auf eure Präsentationen und wünschen Euch viel Erfolg für die nächsten Schritte!
+### Hinweise zum Hochladen
 
-**Noch Fragen?**
+- Alle eure Angaben werden **automatisch gespeichert**. Ihr könnt eure Antworten vor der Deadline so oft ihr wollt bearbeiten. Zur Überprüfung könnt ihr die Seite neu laden.
 
-Weitere Details zum Ablauf und der Bewertung könnt ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](files/Ablauf_des_Bewerbungsprozesses_2025.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Sollten danach noch Fragen offen bleiben, meldet Euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).
+- Bitte achtet auf die Hinweise auf der Frageseite im Bewerbungsportal
+
+### Noch Fragen?
+
+Weitere Details zum Ablauf und der Bewertung könnt ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](files/Ablauf_des_Bewerbungsprozesses_2025.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Sollten danach noch Fragen offen bleiben, meldet euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).

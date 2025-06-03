@@ -1,5 +1,9 @@
-FROM node:18
+# syntax=docker.io/docker/dockerfile:1
+# Source https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
+FROM node:20
+
+# TODO: REMOVE IT ALL
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG SUPABASE_SERVICE_ROLE_KEY
@@ -28,7 +32,7 @@ WORKDIR /app
 
 COPY frontend/package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY frontend/ .
 

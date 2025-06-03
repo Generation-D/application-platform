@@ -1,9 +1,9 @@
 "use server";
 
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/answers/dropdown");
 
@@ -53,14 +53,14 @@ const initialstate: DropdownAnswerResponse = {
 export async function fetchDropdownAnswer(
   questionid: string,
 ): Promise<DropdownAnswerResponse> {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const { data: dropdownData, error: dropdownError } = await supabase
     .rpc("fetch_dropdown_answer_table", {
       question_id: questionid,
-      user_id: user?.id,
+      user_id: user?.id ?? "",
     })
     .single<DropdownAnswerResponse>();
   if (dropdownError) {

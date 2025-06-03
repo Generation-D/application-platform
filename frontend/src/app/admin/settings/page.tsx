@@ -9,7 +9,7 @@ import Awaiting from "@/components/layout/awaiting";
 import Apl_Header from "@/components/layout/header";
 import Popup from "@/components/layout/popup";
 import OverviewButton from "@/components/overviewButton";
-import { supabase } from "@/utils/supabaseBrowserClient";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 const SettingsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +18,7 @@ const SettingsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const supabase = getSupabaseBrowserClient();
       const { data, error } = await supabase.auth.getUser();
       if (!error && data) {
         setUser(data.user);

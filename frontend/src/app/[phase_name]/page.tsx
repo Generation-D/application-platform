@@ -20,10 +20,10 @@ import { createCurrentTimestamp } from "@/utils/helpers";
 
 export default async function Page({
   params,
-}: {
-  params: { phase_name: string };
-}) {
-  const phaseName = params.phase_name;
+}: Readonly<{
+  params: Promise<{ phase_name: string }>;
+}>) {
+  const phaseName = (await params).phase_name;
   const phaseData = await cached_fetch_phase_by_name(phaseName);
   const phasesOutcome = await fetch_phases_status();
   let failedPhase: boolean = false;

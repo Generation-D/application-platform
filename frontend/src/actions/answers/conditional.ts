@@ -1,9 +1,9 @@
 "use server";
 
 import Logger from "@/logger/logger";
-import { initSupabaseActions } from "@/utils/supabaseServerClients";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("actions/answers/conditional");
 
@@ -51,7 +51,7 @@ const initialstate: ConditionalAnswerResponse = {
 };
 
 export async function fetchConditionalAnswer(questionid: string) {
-  const supabase = await initSupabaseActions();
+  const supabase = await getSupabaseCookiesUtilClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -59,7 +59,7 @@ export async function fetchConditionalAnswer(questionid: string) {
     await supabase
       .rpc("fetch_conditional_answer_table", {
         question_id: questionid,
-        user_id: user?.id,
+        user_id: user?.id ?? "",
       })
       .single<ConditionalAnswerResponse>();
   if (conditionalTextError) {

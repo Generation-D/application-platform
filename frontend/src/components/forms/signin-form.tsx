@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
-import { useFormState } from "react-dom";
-
+import { useRef, useState, useEffect } from "react";
+import { useActionState } from "react";
 import { signInUser } from "@/actions/auth";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
@@ -19,13 +17,23 @@ const initialState: messageType = {
 };
 
 export default function SignInForm() {
-  const [state, formAction] = useFormState(signInUser, initialState);
+  const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
+  const ref = useRef<TurnstileInstance>(null);
 
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen);
   };
+
+  // Reset Turnstile on failed sign-in
+  useEffect(() => {
+    if (state?.message) {
+      ref.current?.reset();
+      setCaptchaToken(""); // Clear captcha token to disable the button
+    }
+  }, [state]);
+
   return (
     <div>
       {isPopupOpen && (
@@ -89,9 +97,16 @@ export default function SignInForm() {
 
         <div className="flex justify-center mx-auto">
           <Turnstile
+            ref={ref}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-            onSuccess={(token) => {
-              setCaptchaToken(token);
+            onSuccess={(token) => setCaptchaToken(token)}
+            onExpire={() => {
+              ref.current?.reset();
+              setCaptchaToken("");
+            }}
+            onError={() => {
+              ref.current?.reset();
+              setCaptchaToken("");
             }}
             options={{
               theme: "light",
