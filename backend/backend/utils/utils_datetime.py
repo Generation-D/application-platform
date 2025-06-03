@@ -1,8 +1,8 @@
 from datetime import datetime
 
+import pytz
 from dateutil.parser import isoparse
 from dateutil.parser._parser import ParserError
-import pytz
 
 from backend.utils.consts import DATETIME_FORMAT
 

@@ -1,7 +1,8 @@
-import pytest
 import logging
-
 from contextlib import nullcontext as does_not_raise
+
+import pytest
+
 from backend.logger import Logger
 
 

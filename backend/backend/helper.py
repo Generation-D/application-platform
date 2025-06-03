@@ -1,47 +1,47 @@
 tables = [
-    #"ANSWER_TABLE",
-    #"APPLICATION_TABLE",
-    "DATETIME_PICKER_ANSWER_TABLE",
-    #"DATETIME_PICKER_QUESTION_TABLE",
-    "DATE_PICKER_ANSWER_TABLE",
-    #"DATE_PICKER_QUESTION_TABLE",
-    "DROPDOWN_ANSWER_TABLE",
-    #"DROPDOWN_QUESTION_OPTION_TABLE",
-    #"DROPDOWN_QUESTION_TABLE",
-    "IMAGE_UPLOAD_ANSWER_TABLE",
-    #"IMAGE_UPLOAD_QUESTION_TABLE",
-    "LONG_TEXT_ANSWER_TABLE",
-    #"LONG_TEXT_QUESTION_TABLE",
-    "MULTIPLE_CHOICE_ANSWER_TABLE",
-    #"MULTIPLE_CHOICE_QUESTION_CHOICE_TABLE",
-    #"MULTIPLE_CHOICE_QUESTION_TABLE",
-    "NUMBER_PICKER_ANSWER_TABLE",
-    #"NUMBER_PICKER_QUESTION_TABLE",
-    "PDF_UPLOAD_ANSWER_TABLE",
-    #"PDF_UPLOAD_QUESTION_TABLE",
-    #"PHASE_TABLE",
-    #"QUESTION_TABLE",
-    "SHORT_TEXT_ANSWER_TABLE",
-    #"SHORT_TEXT_QUESTION_TABLE",
-    #"USER_PROFILES_TABLE",
-    #"USER_ROLES_TABLE",
-    "VIDEO_UPLOAD_ANSWER_TABLE",
-    #"VIDEO_UPLOAD_QUESTION_TABLE"
+    # "ANSWER_TABLE",
+    # "APPLICATION_TABLE",
+    'DATETIME_PICKER_ANSWER_TABLE',
+    # "DATETIME_PICKER_QUESTION_TABLE",
+    'DATE_PICKER_ANSWER_TABLE',
+    # "DATE_PICKER_QUESTION_TABLE",
+    'DROPDOWN_ANSWER_TABLE',
+    # "DROPDOWN_QUESTION_OPTION_TABLE",
+    # "DROPDOWN_QUESTION_TABLE",
+    'IMAGE_UPLOAD_ANSWER_TABLE',
+    # "IMAGE_UPLOAD_QUESTION_TABLE",
+    'LONG_TEXT_ANSWER_TABLE',
+    # "LONG_TEXT_QUESTION_TABLE",
+    'MULTIPLE_CHOICE_ANSWER_TABLE',
+    # "MULTIPLE_CHOICE_QUESTION_CHOICE_TABLE",
+    # "MULTIPLE_CHOICE_QUESTION_TABLE",
+    'NUMBER_PICKER_ANSWER_TABLE',
+    # "NUMBER_PICKER_QUESTION_TABLE",
+    'PDF_UPLOAD_ANSWER_TABLE',
+    # "PDF_UPLOAD_QUESTION_TABLE",
+    # "PHASE_TABLE",
+    # "QUESTION_TABLE",
+    'SHORT_TEXT_ANSWER_TABLE',
+    # "SHORT_TEXT_QUESTION_TABLE",
+    # "USER_PROFILES_TABLE",
+    # "USER_ROLES_TABLE",
+    'VIDEO_UPLOAD_ANSWER_TABLE',
+    # "VIDEO_UPLOAD_QUESTION_TABLE"
 ]
 
 answer_dict = {
-    "CHECKBOX_ANSWER_TABLE": ["checked", "bool"],
-    "CONDITIONAL_ANSWER_TABLE": ["selectedchoice", "text"],
-    "DATETIME_PICKER_ANSWER_TABLE": ["pickeddatetime", "timestamptz"],
-    "DATE_PICKER_ANSWER_TABLE": ["pickeddate", "date"],
-    "DROPDOWN_ANSWER_TABLE": ["selectedoptions", "text"],
-    "IMAGE_UPLOAD_ANSWER_TABLE": ["imagename", "text"],
-    "LONG_TEXT_ANSWER_TABLE": ["answertext", "text"],
-    "MULTIPLE_CHOICE_ANSWER_TABLE": ["selectedchoice", "text"],
-    "NUMBER_PICKER_ANSWER_TABLE": ["pickednumber", "int4"],
-    "PDF_UPLOAD_ANSWER_TABLE": ["pdfname", "text"],
-    "SHORT_TEXT_ANSWER_TABLE": ["answertext", "text"],
-    "VIDEO_UPLOAD_ANSWER_TABLE": ["videoname", "text"],
+    'CHECKBOX_ANSWER_TABLE': ['checked', 'bool'],
+    'CONDITIONAL_ANSWER_TABLE': ['selectedchoice', 'text'],
+    'DATETIME_PICKER_ANSWER_TABLE': ['pickeddatetime', 'timestamptz'],
+    'DATE_PICKER_ANSWER_TABLE': ['pickeddate', 'date'],
+    'DROPDOWN_ANSWER_TABLE': ['selectedoptions', 'text'],
+    'IMAGE_UPLOAD_ANSWER_TABLE': ['imagename', 'text'],
+    'LONG_TEXT_ANSWER_TABLE': ['answertext', 'text'],
+    'MULTIPLE_CHOICE_ANSWER_TABLE': ['selectedchoice', 'text'],
+    'NUMBER_PICKER_ANSWER_TABLE': ['pickednumber', 'int4'],
+    'PDF_UPLOAD_ANSWER_TABLE': ['pdfname', 'text'],
+    'SHORT_TEXT_ANSWER_TABLE': ['answertext', 'text'],
+    'VIDEO_UPLOAD_ANSWER_TABLE': ['videoname', 'text'],
 }
 
 
@@ -75,7 +75,7 @@ USING (
 
 
 def kill_policy_script(table_name):
-    return f"DROP POLICY IF EXISTS select_reviewer_{table_name.lower()} ON {table_name};"
+    return f'DROP POLICY IF EXISTS select_reviewer_{table_name.lower()} ON {table_name};'
 
 
 def generate_sql_function(table_name, answer, answer_type):

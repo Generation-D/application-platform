@@ -1,5 +1,4 @@
 import logging
-import os
 
 import requests
 
@@ -16,33 +15,34 @@ class Logger:
         return self.logger.debug(message)
 
     def info(self, message: str) -> bool:
-        return self.__send_log_to_log_flare(message, "info")
+        return self.__send_log_to_log_flare(message, 'info')
 
     def warning(self, message: str) -> bool:
-        return self.__send_log_to_log_flare(message, "warning")
+        return self.__send_log_to_log_flare(message, 'warning')
 
     def error(self, message: str) -> bool:
-        return self.__send_log_to_log_flare(message, "error")
+        return self.__send_log_to_log_flare(message, 'error')
 
     def fatal(self, message: str) -> bool:
-        return self.__send_log_to_log_flare(message, "fatal")
+        return self.__send_log_to_log_flare(message, 'fatal')
 
     def __send_log_to_log_flare(self, message: str, level: int) -> bool:
         return
         payload = {
-            "event_message": message,
-            "metadata": {
-                "level": level,
-                "module": self.module,
-            }
+            'event_message': message,
+            'metadata': {
+                'level': level,
+                'module': self.module,
+            },
         }
         try:
             response = requests.post(self.api_url, headers=self.HEADER, json=payload, timeout=5.0)
             if response.status_code != 200:
-                self.logger.error("Failed to send log to API. Status code: %s and Reason: %s", response.status_code,
-                                  response.reason)
+                self.logger.error(
+                    'Failed to send log to API. Status code: %s and Reason: %s', response.status_code, response.reason
+                )
                 assert False
         except requests.RequestException as e:
-            self.logger.error("Failed to send log to API. Error: %s", str(e))
+            self.logger.error('Failed to send log to API. Error: %s', str(e))
             return False
         return True
