@@ -7,8 +7,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: astral-sh/ruff-action@v3
-    - name: run YAPF to test if python code is correctly formatted
-      uses: AlexanderMelde/yapf-action@master
       with:
         src: ./backend
         args: check
