@@ -1,0 +1,1 @@
+INSERT INTO "user_roles_table" (userroleid, userrolename) VALUES (1, 'applicant'), (2, 'reviewer'), (3, 'admin');

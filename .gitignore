@@ -50,6 +50,5 @@ jspm_packages
 
 backend/apl_config_gend.yml
 backend/users_id.csv
-supabase
 
 **.DS_Store
