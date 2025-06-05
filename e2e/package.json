@@ -1,0 +1,17 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "reset:db:local": "supabase db reset --workdir ../",
+    "pretest:e2e:local": "npm run reset:db:local",
+    "test:e2e:local": "npm run test:e2e",
+    "test:e2e": "cypress run"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "cypress": "^14.3.3"
+  }
+}

@@ -1,0 +1,44 @@
+name: 'ci
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          OUTPUT=$(supabase start)
+
+          NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | awk -F': ' '/API URL/ {print $2}')
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/anon key/ {print $2}')
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/service_role key/ {print $2}')
+
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
+      - run: supabase db lint
+      - run: supabase test db
+      - run: | 
+          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./frontend/.env 
+          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
+          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
+          echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
+      - run: npm ci
+        working-directory: ./frontend
+      - run: npm run build
+        working-directory: ./frontend
+      - run: |
+          nohup npm start -- --port 3000 > next.log 2>&1 &
+        working-directory: ./frontend
+      - run: npx --yes wait-on http://localhost:3000
+      - run: npm ci
+        working-directory: ./e2e
+      - run: npm run test:e2e
+        working-directory: ./e2e
