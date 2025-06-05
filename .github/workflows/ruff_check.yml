@@ -10,3 +10,7 @@ jobs:
       with:
         src: ./backend
         args: check
+    - uses: astral-sh/ruff-action@v3
+      with:
+        src: ./backend
+        args: format --check
