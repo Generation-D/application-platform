@@ -1,21 +1,20 @@
 name: Build and Push Docker Image
 
 on:
-    pull_request:
-        types: [closed]
-        branches:
-        - tst
-        - prd
+    on:
+    release:
+      types: [published]
+    push:
+      branches: ['main']
     workflow_dispatch:
         inputs:
             branch:
-                description: 'Branch to trigger the workflow on (tst or prd, default: tst)'
+                description: 'Branch to trigger the workflow on (default: main)'
                 required: false
-                default: tst
+                default: main
 
 jobs:
   build-and-push:
-    if: github.event_name == 'pull_request' || github.event.inputs.branch == 'tst' || github.event.inputs.branch == 'prd'
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -33,20 +32,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract branch name and lowercase repository name
-      shell: bash
-      run: |
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          echo "BRANCH_NAME=$(echo ${GITHUB_BASE_REF} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        else
-          echo "BRANCH_NAME=$(echo ${{ github.event.inputs.branch }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        fi
-        echo "REPOSITORY_NAME=$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}
 
     - name: Set branch specific secrets
       shell: bash
       run: |
-        if [ "$BRANCH_NAME" == "prd" ]; then
+        if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+          echo "Triggered by release: ${GITHUB_REF}"
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL_PRD }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_PRD }}" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PRD }}" >> $GITHUB_ENV
@@ -54,7 +50,8 @@ jobs:
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_API_TOKEN_PRD }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN_PRD }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}" >> $GITHUB_ENV
-        elif [ "$BRANCH_NAME" == "tst" ]; then
+        else
+          echo "Triggered by push to branch: ${GITHUB_REF}"
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL_TST }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_TST }}" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY_TST }}" >> $GITHUB_ENV
@@ -67,10 +64,9 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: .
-        file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ env.REPOSITORY_NAME }}-${{ env.BRANCH_NAME }}:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           NEXT_PUBLIC_SUPABASE_URL=${{ env.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
