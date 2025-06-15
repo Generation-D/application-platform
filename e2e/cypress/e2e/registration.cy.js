@@ -5,7 +5,7 @@ describe('registration', () => {
 
     cy.contains('button', 'Registrieren').click()
 
-    const password = 'Password1!'
+    const password = Cypress.env('password')
 
     cy.get("#email").type("test@example.com")
     cy.get("#password").type(password)
