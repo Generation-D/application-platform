@@ -1,6 +1,6 @@
 import re
 
-from consts import REGEX_PY
+from backend.utils.consts import REGEX_PY
 
 
 def phone_number_regex_check(string: str) -> bool:
