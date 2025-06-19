@@ -1,10 +1,10 @@
-name: Lint Codebase
+name: Lint frontend
 
 on: [push, pull_request]
 
 jobs:
   lint:
-    name: ESLint for NextJS
+    name: Lint frontend
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,12 @@ jobs:
           cd frontend
           npm install
 
-      - name: Run Lint
+      - name: Run Eslint
         run: |
           cd frontend
           npm run lint
+      
+      - name: Run Prettier
+        run: |
+          cd frontend
           npm run format
