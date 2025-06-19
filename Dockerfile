@@ -32,7 +32,7 @@ WORKDIR /app
 
 COPY frontend/package*.json ./
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY frontend/ .
 
