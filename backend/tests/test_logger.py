@@ -6,7 +6,7 @@ import pytest
 from backend.logger import Logger
 
 
-@pytest.mark.skip(reason="This test is temporarily disabled")
+@pytest.mark.skip(reason='This test is temporarily disabled')
 @pytest.mark.parametrize('message', ['TEST MESSAGE'])
 def test_logger_api(message: str):
     logger = Logger('API')
