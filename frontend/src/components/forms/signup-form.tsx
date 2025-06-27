@@ -32,7 +32,7 @@ export default function SignUpForm() {
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-  }
+  };
 
   return (
     <div>
