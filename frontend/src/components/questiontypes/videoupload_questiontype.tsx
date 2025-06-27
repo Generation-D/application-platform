@@ -2,9 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  deleteVideoUploadAnswer,
-} from "@/actions/answers/videoUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -217,7 +214,6 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deleteVideoUploadAnswer(questionid);
     setTempAnswer("");
     setUploadedFile(null);
     updateAnswerState("");

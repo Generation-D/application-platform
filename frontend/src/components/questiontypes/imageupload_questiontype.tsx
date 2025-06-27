@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import {
-  deleteImageUploadAnswer,
-} from "@/actions/answers/imageUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -17,6 +14,7 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { saveAnswerClient } from "@/actions/answers/answers";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;

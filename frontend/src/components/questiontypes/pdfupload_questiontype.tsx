@@ -2,9 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  deletePdfUploadAnswer,
-} from "@/actions/answers/pdfUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
@@ -15,6 +12,7 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { saveAnswerClient } from "@/actions/answers/answers";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;

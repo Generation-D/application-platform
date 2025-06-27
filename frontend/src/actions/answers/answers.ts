@@ -8,10 +8,8 @@ import { QuestionType } from "@/components/questiontypes/utils/questiontype_sele
 import Logger from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
-import { deleteImageUploadAnswer } from "./imageUpload";
-import { deletePdfUploadAnswer } from "./pdfUpload";
-import { deleteVideoUploadAnswer } from "./videoUpload";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+import { deleteImageUploadAnswer, deleteVideoUploadAnswer, deletePdfUploadAnswer } from "./deleteUpload";
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
