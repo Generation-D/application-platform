@@ -116,7 +116,6 @@ export async function fetchImageUploadAnswer(questionid: string) {
   return { ...imageUploadData, userid: user_id };
 }
 
-
 const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   phasename,
   questionid,

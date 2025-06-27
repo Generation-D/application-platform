@@ -9,7 +9,11 @@ import Logger from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-import { deleteImageUploadAnswer, deleteVideoUploadAnswer, deletePdfUploadAnswer } from "./deleteUpload";
+import {
+  deleteImageUploadAnswer,
+  deleteVideoUploadAnswer,
+  deletePdfUploadAnswer,
+} from "./deleteUpload";
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
@@ -166,7 +170,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
 
 export async function saveAnswerClient(questionid: string) {
   const { answerid, reqtype } = await saveAnswer(questionid);
-  return { answerid, reqtype }
+  return { answerid, reqtype };
 }
 
 export async function deleteAnswer(questionid: string) {
