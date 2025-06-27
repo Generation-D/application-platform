@@ -166,6 +166,49 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
   return { supabase: supabase, answerid: answerid, reqtype: reqtype };
 }
 
+export async function saveAnswerN(questionid: string) {
+  const supabase = await getSupabaseCookiesUtilClient();
+  const user = await getCurrentUser(supabase);
+  const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  let answerid = await fetchAnswerId(supabase, user, applicationid, questionid);
+  const now = createCurrentTimestamp();
+
+  let reqtype = "";
+  if (answerid == "") {
+    const { data: insertAnswerData, error: insertAnswerError } = await supabase
+      .from("answer_table")
+      .insert({
+        questionid: questionid,
+        applicationid: applicationid,
+        created: now,
+        lastupdated: now,
+      })
+      .select()
+      .single();
+    if (insertAnswerError) {
+      log.error(JSON.stringify(insertAnswerError));
+    }
+    answerid = insertAnswerData?.answerid;
+    reqtype = "created";
+  } else {
+    const { data: updateAnswerData, error: updateAnswerError } = await supabase
+      .from("answer_table")
+      .update({
+        lastupdated: now,
+      })
+      .eq("questionid", questionid)
+      .eq("applicationid", applicationid)
+      .select()
+      .single();
+    if (updateAnswerError) {
+      log.error(JSON.stringify(updateAnswerError));
+    }
+    answerid = updateAnswerData?.answerid;
+    reqtype = "updated";
+  }
+  return { answerid: answerid, reqtype: reqtype };
+}
+
 export async function deleteAnswer(questionid: string) {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
