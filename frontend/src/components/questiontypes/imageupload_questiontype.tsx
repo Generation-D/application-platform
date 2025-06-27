@@ -6,24 +6,118 @@ import Image from "next/image";
 
 import {
   deleteImageUploadAnswer,
-  fetchImageUploadAnswer,
-  saveImageUploadAnswer,
 } from "@/actions/answers/imageUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile } from "@/utils/helpers";
+import { downloadFile, storageSaveName } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
+import { saveAnswerClient } from "@/actions/answers/answers";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   maxfilesizeinmb: number;
 }
 
+export interface ImageAnswerResponse {
+  answerid: string;
+  imagename: string;
+}
+
 const log = new Logger("ImageUploadQuestionType");
+
+export async function saveImageUploadAnswer(
+  questionid: string,
+  formData: FormData,
+) {
+  const file = formData.get(questionid) as File;
+  const uploadFile = new File([file], storageSaveName(file.name), {
+    type: file.type,
+    lastModified: file.lastModified,
+  });
+  const bucket_name = `image-${questionid}`;
+  if (uploadFile) {
+    const { answerid, reqtype } = await saveAnswerClient(questionid);
+    const supabase = getSupabaseBrowserClient();
+    if (reqtype == "created") {
+      const { error: insertAnswerError } = await supabase
+        .from("image_upload_answer_table")
+        .insert({
+          answerid: answerid,
+          imagename: uploadFile.name,
+        });
+      if (insertAnswerError) {
+        log.error(JSON.stringify(insertAnswerError));
+      }
+      const { error: bucketError } = await supabase.storage
+        .from(bucket_name)
+        .upload(
+          `${(await supabase.auth.getUser()).data.user!.id}_${uploadFile.name}`,
+          uploadFile,
+        );
+      if (bucketError) {
+        log.error(JSON.stringify(bucketError));
+      }
+    } else if (reqtype == "updated") {
+      const { data: oldImageData, error: oldImageError } = await supabase
+        .from("image_upload_answer_table")
+        .select("imagename")
+        .eq("answerid", answerid)
+        .single();
+      if (oldImageError) {
+        log.error(JSON.stringify(oldImageError));
+      }
+      const { error: updatedImageError } = await supabase
+        .from("image_upload_answer_table")
+        .update({ imagename: uploadFile.name })
+        .eq("answerid", answerid);
+      if (updatedImageError) {
+        log.error(JSON.stringify(updatedImageError));
+      }
+      const { error: updatedBucketError } = await supabase.storage
+        .from(bucket_name)
+        .update(
+          `${
+            (await supabase.auth.getUser()).data.user!.id
+          }_${oldImageData?.imagename}`,
+          uploadFile,
+        );
+      if (updatedBucketError) {
+        log.error(JSON.stringify(updatedBucketError));
+      }
+    }
+  }
+}
+
+export async function fetchImageUploadAnswer(questionid: string) {
+  const supabase = getSupabaseBrowserClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError) {
+    log.error(JSON.stringify(userError));
+  }
+  const user_id = userData.user!.id;
+
+  const { data: imageUploadData, error: imageUploadError } = await supabase
+    .rpc("fetch_image_upload_answer_table", {
+      question_id: questionid,
+      user_id: user_id,
+    })
+    .single<ImageAnswerResponse>();
+
+  if (imageUploadError) {
+    if (imageUploadError.code == "PGRST116") {
+      return null;
+    }
+    log.error(JSON.stringify(imageUploadError));
+    return null;
+  }
+  return { ...imageUploadData, userid: user_id };
+}
+
 
 const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   phasename,

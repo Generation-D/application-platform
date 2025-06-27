@@ -14,7 +14,7 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
-import { saveAnswerN } from "@/actions/answers/answers";
+import { saveAnswerClient } from "@/actions/answers/answers";
 
 export interface VideoAnswerResponse {
   answerid: string;
@@ -61,7 +61,7 @@ export async function saveVideoUploadAnswer(
   });
   const bucket_name = `video-${questionid}`;
   if (uploadFile) {
-    const { answerid, reqtype } = await saveAnswerN(questionid);
+    const { answerid, reqtype } = await saveAnswerClient(questionid);
     const supabase = getSupabaseBrowserClient();
     if (reqtype == "created") {
       const { error: insertAnswerError } = await supabase
