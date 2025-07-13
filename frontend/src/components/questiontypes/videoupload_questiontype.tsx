@@ -2,25 +2,48 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  deleteVideoUploadAnswer,
-  saveVideoUploadAnswer,
-  fetchVideoUploadAnswer,
-} from "@/actions/answers/videoUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile } from "@/utils/helpers";
+import { downloadFile, storageSaveName } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
+import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
+
+const log = new Logger("VideoUploadQuestionType");
+
+export interface VideoAnswerResponse {
+  answerid: string;
+  videoname: string;
+}
 
 export interface VideoUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
 }
 
-const log = new Logger("VideoUploadQuestionType");
+export async function saveVideoUploadAnswer(
+  questionid: string,
+  formData: FormData,
+) {
+  return saveUploadAnswer(questionid, formData, {
+    table: "video_upload_answer_table",
+    fileName: "videoname",
+    bucketPrefix: "video",
+    validTypes: ["video/mp4"],
+    maxfilesizeinmb: 100, // or pass as prop if needed
+    storageSaveName,
+  });
+}
+
+export async function fetchVideoUploadAnswer(questionid: string) {
+  return fetchUploadAnswer<VideoAnswerResponse>(questionid, {
+    rpcName: "fetch_video_upload_answer_table",
+    fileName: "videoname",
+  });
+}
 
 const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
   phasename,
@@ -56,7 +79,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       }
       try {
         const savedAnswer = await fetchVideoUploadAnswer(questionid);
-        if (savedAnswer?.videoname != "") {
+        if (savedAnswer && savedAnswer?.videoname != "") {
           const VideoUploadBucketData = await downloadFile(
             `video-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.videoname}`,
@@ -212,8 +235,8 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
                     />
                   </svg>
                   <p className="mb-2 text-sm text-secondary text-center">
-                    <p className="font-semibold">Zum Uploaden klicken</p> oder
-                    per Drag and Drop
+                    <span className="font-semibold">Zum Uploaden klicken</span>{" "}
+                    oder per Drag and Drop
                   </p>
                   <p className="text-xs text-secondary">
                     MP4 (MAX. {maxfilesizeinmb}MB)
@@ -247,16 +270,18 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
                 Löschen
               </button>
             )}
-            <video
-              width="100%"
-              height="100%"
-              style={{ border: "none" }}
-              controls
-              className="max-w-xs max-h-96"
-            >
-              <source src={tempAnswer || answer} type="video/mp4" />
-              Dein Browser supported diese Darstellung leider nicht
-            </video>
+            {(tempAnswer || answer) && (
+              <video
+                width="100%"
+                height="100%"
+                style={{ border: "none" }}
+                controls
+                className="max-w-xs max-h-96"
+              >
+                <source src={tempAnswer || answer} type="video/mp4" />
+                Dein Browser supported diese Darstellung leider nicht
+              </video>
+            )}
             {!wasUploaded ? (
               <>
                 <div className="italic">

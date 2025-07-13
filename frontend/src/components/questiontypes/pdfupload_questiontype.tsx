@@ -2,25 +2,48 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  deletePdfUploadAnswer,
-  fetchPdfUploadAnswer,
-  savePdfUploadAnswer,
-} from "@/actions/answers/pdfUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile } from "@/utils/helpers";
+import { downloadFile, storageSaveName } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
+import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
+import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+
+const log = new Logger("PDFUploadQuestionType");
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
 }
 
-const log = new Logger("PDFUploadQuestionType");
+export interface PdfAnswerResponse {
+  answerid: string;
+  pdfname: string;
+}
+
+export async function savePdfUploadAnswer(
+  questionid: string,
+  formData: FormData,
+) {
+  return saveUploadAnswer(questionid, formData, {
+    table: "pdf_upload_answer_table",
+    fileName: "pdfname",
+    bucketPrefix: "pdf",
+    validTypes: ["application/pdf"],
+    maxfilesizeinmb: 10, // or pass as prop if needed
+    storageSaveName,
+  });
+}
+
+export async function fetchPdfUploadAnswer(questionid: string) {
+  return fetchUploadAnswer<PdfAnswerResponse>(questionid, {
+    rpcName: "fetch_pdf_upload_answer_table",
+    fileName: "pdfname",
+  });
+}
 
 const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
   phasename,
@@ -57,7 +80,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
       try {
         const savedAnswer = await fetchPdfUploadAnswer(questionid);
-        if (savedAnswer?.pdfname != "") {
+        if (savedAnswer && savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,

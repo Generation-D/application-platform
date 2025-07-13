@@ -4,26 +4,49 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import {
-  deleteImageUploadAnswer,
-  fetchImageUploadAnswer,
-  saveImageUploadAnswer,
-} from "@/actions/answers/imageUpload";
 import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile } from "@/utils/helpers";
+import { downloadFile, storageSaveName } from "@/utils/helpers";
+import { saveUploadAnswer, fetchUploadAnswer } from "@/utils/uploadHelpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
+import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
+
+const log = new Logger("ImageUploadQuestionType");
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   maxfilesizeinmb: number;
 }
 
-const log = new Logger("ImageUploadQuestionType");
+export interface ImageAnswerResponse {
+  answerid: string;
+  imagename: string;
+}
+
+export async function saveImageUploadAnswer(
+  questionid: string,
+  formData: FormData,
+) {
+  return saveUploadAnswer(questionid, formData, {
+    table: "image_upload_answer_table",
+    fileName: "imagename",
+    bucketPrefix: "image",
+    validTypes: ["image/png", "image/jpeg"],
+    maxfilesizeinmb: 5, // or pass as prop if needed
+    storageSaveName,
+  });
+}
+
+export async function fetchImageUploadAnswer(questionid: string) {
+  return fetchUploadAnswer<ImageAnswerResponse>(questionid, {
+    rpcName: "fetch_image_upload_answer_table",
+    fileName: "imagename",
+  });
+}
 
 const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   phasename,
@@ -58,7 +81,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
       }
       try {
         const savedAnswer = await fetchImageUploadAnswer(questionid);
-        if (savedAnswer?.imagename != "") {
+        if (savedAnswer && savedAnswer.imagename != "") {
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
@@ -211,8 +234,8 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                     />
                   </svg>
                   <p className="mb-2 text-sm text-secondary text-center">
-                    <p className="font-semibold">Zum Uploaden klicken</p> oder
-                    per Drag and Drop
+                    <span className="font-semibold">Zum Uploaden klicken</span>{" "}
+                    oder per Drag and Drop
                   </p>
                   <p className="text-xs text-secondary">
                     PNG, JPG oder JPEG (MAX. {maxfilesizeinmb}MB)
@@ -246,14 +269,16 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                 Löschen
               </button>
             )}
-            <Image
-              alt="Preview"
-              src={tempAnswer || answer}
-              className="self-center max-w-xs max-h-96"
-              id="imagePreview"
-              width={100}
-              height={100}
-            />
+            {tempAnswer || answer ? (
+              <Image
+                alt="Preview"
+                src={tempAnswer || answer}
+                className="self-center max-w-xs max-h-96"
+                id="imagePreview"
+                width={100}
+                height={100}
+              />
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">

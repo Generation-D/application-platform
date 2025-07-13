@@ -8,10 +8,12 @@ import { QuestionType } from "@/components/questiontypes/utils/questiontype_sele
 import Logger from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
-import { deleteImageUploadAnswer } from "./imageUpload";
-import { deletePdfUploadAnswer } from "./pdfUpload";
-import { deleteVideoUploadAnswer } from "./videoUpload";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+import {
+  deleteImageUploadAnswer,
+  deleteVideoUploadAnswer,
+  deletePdfUploadAnswer,
+} from "./deleteUpload";
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
@@ -164,6 +166,12 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     reqtype = "updated";
   }
   return { supabase: supabase, answerid: answerid, reqtype: reqtype };
+}
+
+// necessary because we cannot return server objects (here: supabase) to the client
+export async function saveAnswerClient(questionid: string) {
+  const { answerid, reqtype } = await saveAnswer(questionid);
+  return { answerid, reqtype };
 }
 
 export async function deleteAnswer(questionid: string) {
