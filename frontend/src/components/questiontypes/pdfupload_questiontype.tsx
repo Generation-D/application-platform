@@ -10,9 +10,10 @@ import { downloadFile, storageSaveName } from "@/utils/helpers";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
-import { saveAnswerClient } from "@/actions/answers/answers";
-import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
+import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+
+const log = new Logger("PDFUploadQuestionType");
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
@@ -23,94 +24,25 @@ export interface PdfAnswerResponse {
   pdfname: string;
 }
 
-const log = new Logger("PDFUploadQuestionType");
-
 export async function savePdfUploadAnswer(
   questionid: string,
   formData: FormData,
 ) {
-  const file = formData.get(questionid) as File;
-  const uploadFile = new File([file], storageSaveName(file.name), {
-    type: file.type,
-    lastModified: file.lastModified,
+  return saveUploadAnswer(questionid, formData, {
+    table: "pdf_upload_answer_table",
+    fileName: "pdfname",
+    bucketPrefix: "pdf",
+    validTypes: ["application/pdf"],
+    maxfilesizeinmb: 10, // or pass as prop if needed
+    storageSaveName,
   });
-  const bucket_name = `pdf-${questionid}`;
-  if (uploadFile) {
-    const { answerid, reqtype } = await saveAnswerClient(questionid);
-    const supabase = getSupabaseBrowserClient();
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("pdf_upload_answer_table")
-        .insert({
-          answerid: answerid,
-          pdfname: uploadFile.name,
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-      const { error: bucketError } = await supabase.storage
-        .from(bucket_name)
-        .upload(
-          `${(await supabase.auth.getUser()).data.user!.id}_${uploadFile.name}`,
-          uploadFile,
-        );
-      if (bucketError) {
-        log.error(JSON.stringify(bucketError));
-      }
-    } else if (reqtype == "updated") {
-      const { data: oldPdfData, error: oldPdfError } = await supabase
-        .from("pdf_upload_answer_table")
-        .select("pdfname")
-        .eq("answerid", answerid)
-        .single();
-      if (oldPdfError) {
-        log.error(JSON.stringify(oldPdfError));
-      }
-      const { error: updatedImageError } = await supabase
-        .from("pdf_upload_answer_table")
-        .update({ pdfname: uploadFile.name })
-        .eq("answerid", answerid);
-      if (updatedImageError) {
-        log.error(JSON.stringify(updatedImageError));
-      }
-      const { error: updatedBucketError } = await supabase.storage
-        .from(bucket_name)
-        .update(
-          `${
-            (await supabase.auth.getUser()).data.user!.id
-          }_${oldPdfData?.pdfname}`,
-          uploadFile,
-        );
-      if (updatedBucketError) {
-        log.error(JSON.stringify(updatedBucketError));
-      }
-    }
-  }
 }
 
 export async function fetchPdfUploadAnswer(questionid: string) {
-  const supabase = getSupabaseBrowserClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  if (userError) {
-    log.error(JSON.stringify(userError));
-  }
-  const user_id = userData.user!.id;
-
-  const { data: pdfUploadData, error: pdfUploadError } = await supabase
-    .rpc("fetch_pdf_upload_answer_table", {
-      question_id: questionid,
-      user_id: user_id,
-    })
-    .single<PdfAnswerResponse>();
-  if (pdfUploadError) {
-    if (pdfUploadError.code == "PGRST116") {
-      return null;
-    }
-    log.error(JSON.stringify(pdfUploadError));
-    return null;
-  }
-  return { ...pdfUploadData, userid: user_id };
+  return fetchUploadAnswer<PdfAnswerResponse>(questionid, {
+    rpcName: "fetch_pdf_upload_answer_table",
+    fileName: "pdfname",
+  });
 }
 
 const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
@@ -148,7 +80,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
       try {
         const savedAnswer = await fetchPdfUploadAnswer(questionid);
-        if (savedAnswer?.pdfname != "") {
+        if (savedAnswer && savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,

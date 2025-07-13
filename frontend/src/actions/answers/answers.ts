@@ -168,6 +168,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
   return { supabase: supabase, answerid: answerid, reqtype: reqtype };
 }
 
+// necessary because we cannot return server objects (here: supabase) to the client
 export async function saveAnswerClient(questionid: string) {
   const { answerid, reqtype } = await saveAnswer(questionid);
   return { answerid, reqtype };

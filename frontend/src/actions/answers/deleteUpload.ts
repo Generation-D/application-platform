@@ -9,68 +9,64 @@ import { getCurrentUser, deleteAnswer } from "./answers";
 
 const log = new Logger("actions/answers/deleteUpload");
 
-export async function deleteImageUploadAnswer(questionid: string) {
+type UploadRpcName =
+  | "fetch_image_upload_answer_table"
+  | "fetch_pdf_upload_answer_table"
+  | "fetch_video_upload_answer_table";
+
+async function deleteUploadAnswer<T extends { [key: string]: any }>(
+  questionid: string,
+  rpcName: UploadRpcName,
+  bucketPrefix: string,
+  fileProperty: string,
+) {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
-  const { data: imageUploadData, error: imageUploadError } = await supabase
-    .rpc("fetch_image_upload_answer_table", {
+  const { data: uploadData, error: uploadError } = await supabase
+    .rpc(rpcName, {
       question_id: questionid,
       user_id: user.id,
     })
-    .single<ImageAnswerResponse>();
-  if (imageUploadError) {
-    log.error(JSON.stringify(imageUploadError));
+    .single<T>();
+  if (uploadError) {
+    log.error(JSON.stringify(uploadError));
   }
-  const bucket_name = `image-${questionid}`;
-  const { error: imageDeleteError } = await supabase.storage
-    .from(bucket_name)
-    .remove([`${user.id}_${imageUploadData?.imagename}`]);
-  if (imageDeleteError) {
-    log.error(JSON.stringify(imageDeleteError));
+  const bucket_name = `${bucketPrefix}-${questionid}`;
+  const fileName = uploadData?.[fileProperty];
+  if (fileName) {
+    const { error: deleteError } = await supabase.storage
+      .from(bucket_name)
+      .remove([`${user.id}_${fileName}`]);
+    if (deleteError) {
+      log.error(JSON.stringify(deleteError));
+    }
   }
   await deleteAnswer(questionid);
+}
+
+export async function deleteImageUploadAnswer(questionid: string) {
+  return deleteUploadAnswer<ImageAnswerResponse>(
+    questionid,
+    "fetch_image_upload_answer_table",
+    "image",
+    "imagename",
+  );
 }
 
 export async function deletePdfUploadAnswer(questionid: string) {
-  const supabase = await getSupabaseCookiesUtilClient();
-  const user = await getCurrentUser(supabase);
-  const { data: pdfUploadData, error: pdfUploadError } = await supabase
-    .rpc("fetch_pdf_upload_answer_table", {
-      question_id: questionid,
-      user_id: user.id,
-    })
-    .single<PdfAnswerResponse>();
-  if (pdfUploadError) {
-    log.error(JSON.stringify(pdfUploadError));
-  }
-  const bucket_name = `pdf-${questionid}`;
-  const { error: pdfDeleteError } = await supabase.storage
-    .from(bucket_name)
-    .remove([`${user.id}_${pdfUploadData?.pdfname}`]);
-  if (pdfDeleteError) {
-    log.error(JSON.stringify(pdfDeleteError));
-  }
-  await deleteAnswer(questionid);
+  return deleteUploadAnswer<PdfAnswerResponse>(
+    questionid,
+    "fetch_pdf_upload_answer_table",
+    "pdf",
+    "pdfname",
+  );
 }
 
 export async function deleteVideoUploadAnswer(questionid: string) {
-  const supabase = await getSupabaseCookiesUtilClient();
-  const user = await getCurrentUser(supabase);
-  const { data: videoUploadData, error: videoUploadError } = await supabase
-    .rpc("fetch_video_upload_answer_table", {
-      question_id: questionid,
-      user_id: user.id,
-    })
-    .single<VideoAnswerResponse>();
-  if (videoUploadError) {
-    log.error(JSON.stringify(videoUploadError));
-  }
-  const bucket_name = `video-${questionid}`;
-  const { error: videoDeleteError } = await supabase.storage
-    .from(bucket_name)
-    .remove([`${user.id}_${videoUploadData?.videoname}`]);
-  if (videoDeleteError) {
-    log.error(JSON.stringify(videoDeleteError));
-  }
-  await deleteAnswer(questionid);
+  return deleteUploadAnswer<VideoAnswerResponse>(
+    questionid,
+    "fetch_video_upload_answer_table",
+    "video",
+    "videoname",
+  );
 }

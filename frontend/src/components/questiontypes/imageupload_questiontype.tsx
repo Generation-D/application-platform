@@ -8,13 +8,14 @@ import Logger from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
+import { saveUploadAnswer, fetchUploadAnswer } from "@/utils/uploadHelpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
-import { saveAnswerClient } from "@/actions/answers/answers";
-import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
+
+const log = new Logger("ImageUploadQuestionType");
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -26,94 +27,25 @@ export interface ImageAnswerResponse {
   imagename: string;
 }
 
-const log = new Logger("ImageUploadQuestionType");
-
 export async function saveImageUploadAnswer(
   questionid: string,
   formData: FormData,
 ) {
-  const file = formData.get(questionid) as File;
-  const uploadFile = new File([file], storageSaveName(file.name), {
-    type: file.type,
-    lastModified: file.lastModified,
+  return saveUploadAnswer(questionid, formData, {
+    table: "image_upload_answer_table",
+    fileName: "imagename",
+    bucketPrefix: "image",
+    validTypes: ["image/png", "image/jpeg"],
+    maxfilesizeinmb: 5, // or pass as prop if needed
+    storageSaveName,
   });
-  const bucket_name = `image-${questionid}`;
-  if (uploadFile) {
-    const { answerid, reqtype } = await saveAnswerClient(questionid);
-    const supabase = getSupabaseBrowserClient();
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("image_upload_answer_table")
-        .insert({
-          answerid: answerid,
-          imagename: uploadFile.name,
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-      const { error: bucketError } = await supabase.storage
-        .from(bucket_name)
-        .upload(
-          `${(await supabase.auth.getUser()).data.user!.id}_${uploadFile.name}`,
-          uploadFile,
-        );
-      if (bucketError) {
-        log.error(JSON.stringify(bucketError));
-      }
-    } else if (reqtype == "updated") {
-      const { data: oldImageData, error: oldImageError } = await supabase
-        .from("image_upload_answer_table")
-        .select("imagename")
-        .eq("answerid", answerid)
-        .single();
-      if (oldImageError) {
-        log.error(JSON.stringify(oldImageError));
-      }
-      const { error: updatedImageError } = await supabase
-        .from("image_upload_answer_table")
-        .update({ imagename: uploadFile.name })
-        .eq("answerid", answerid);
-      if (updatedImageError) {
-        log.error(JSON.stringify(updatedImageError));
-      }
-      const { error: updatedBucketError } = await supabase.storage
-        .from(bucket_name)
-        .update(
-          `${
-            (await supabase.auth.getUser()).data.user!.id
-          }_${oldImageData?.imagename}`,
-          uploadFile,
-        );
-      if (updatedBucketError) {
-        log.error(JSON.stringify(updatedBucketError));
-      }
-    }
-  }
 }
 
 export async function fetchImageUploadAnswer(questionid: string) {
-  const supabase = getSupabaseBrowserClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    log.error(JSON.stringify(userError));
-  }
-  const user_id = userData.user!.id;
-
-  const { data: imageUploadData, error: imageUploadError } = await supabase
-    .rpc("fetch_image_upload_answer_table", {
-      question_id: questionid,
-      user_id: user_id,
-    })
-    .single<ImageAnswerResponse>();
-
-  if (imageUploadError) {
-    if (imageUploadError.code == "PGRST116") {
-      return null;
-    }
-    log.error(JSON.stringify(imageUploadError));
-    return null;
-  }
-  return { ...imageUploadData, userid: user_id };
+  return fetchUploadAnswer<ImageAnswerResponse>(questionid, {
+    rpcName: "fetch_image_upload_answer_table",
+    fileName: "imagename",
+  });
 }
 
 const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
@@ -149,7 +81,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
       }
       try {
         const savedAnswer = await fetchImageUploadAnswer(questionid);
-        if (savedAnswer?.imagename != "") {
+        if (savedAnswer && savedAnswer.imagename != "") {
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
@@ -302,8 +234,8 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                     />
                   </svg>
                   <p className="mb-2 text-sm text-secondary text-center">
-                    <p className="font-semibold">Zum Uploaden klicken</p> oder
-                    per Drag and Drop
+                    <span className="font-semibold">Zum Uploaden klicken</span>{" "}
+                    oder per Drag and Drop
                   </p>
                   <p className="text-xs text-secondary">
                     PNG, JPG oder JPEG (MAX. {maxfilesizeinmb}MB)
@@ -337,14 +269,16 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                 Löschen
               </button>
             )}
-            <Image
-              alt="Preview"
-              src={tempAnswer || answer}
-              className="self-center max-w-xs max-h-96"
-              id="imagePreview"
-              width={100}
-              height={100}
-            />
+            {tempAnswer || answer ? (
+              <Image
+                alt="Preview"
+                src={tempAnswer || answer}
+                className="self-center max-w-xs max-h-96"
+                id="imagePreview"
+                width={100}
+                height={100}
+              />
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">
