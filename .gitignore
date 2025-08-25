@@ -52,3 +52,6 @@ backend/apl_config_gend.yml
 backend/users_id.csv
 
 **.DS_Store
+
+# IDEA
+.idea
