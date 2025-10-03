@@ -1,0 +1,94 @@
+
+### Uncomment to configure additional attributes of Application
+# application:
+#   timezone: Europe/Berlin  #default
+#   admin_email: string
+#   admin_password: string
+
+# application_table:
+questions:
+  phase-1:
+    phaseLabel: "Fundamental Test"
+    startDate: 2025-01-01  # format: %Y-%m-%d
+    endDate: 2050-12-31  # format: %Y-%m-%d
+    sections:
+      - name: General
+        description: "General tests"
+
+    questions:
+      - questionType: shortText
+        order: 1
+        question: "What is your name?"
+        mandatory: true
+        sectionNumber: 1
+        maxTextLength: 60
+
+      - questionType: longText
+        order: 2
+        question: "What is your mission?"
+        mandatory: true
+        sectionNumber: 1
+        maxTextLength: 500
+
+      - questionType: multipleChoice
+        order: 3
+        question: "Choose one to three options."
+        minAnswers: 1
+        maxAnswers: 3
+        Answers:
+          - "1. Keine Armut"
+          - "2. Kein Hunger"
+          - "3. Gesundheit und Wohlergehen"
+          - "4. Hochwertige Bildung"
+          - "5. Geschlechtergleichstellung"
+          - "6. Sauberes Wasser und Sanitäreinrichtungen"
+          - "7. Bezahlbare und saubere Energie"
+          - "8. Menschenwürdige Arbeit und Wirtschaftswachstum"
+          - "9. Industrie, Innovation und Infrastruktur"
+          - "10. Weniger Ungleichheiten"
+          - "11. Nachhaltige Städte und Gemeinden"
+          - "12. Verantwortungsvolle Konsum- und Produktionsmuster"
+          - "13. Maßnahmen zum Klimaschutz"
+          - "14. Leben unter Wasser"
+          - "15. Leben an Land"
+          - "16. Frieden, Gerechtigkeit und starke Institutionen"
+          - "17. Partnerschaften zur Erreichung der Ziele"
+        mandatory: true
+        sectionNumber: 1
+        userInput: false
+
+      - questionType: conditional
+        order: 4
+        mandatory: true
+        question: "Chose either yes or no"
+        Answers:
+          - value: "Yes"
+            questions:
+              - questionType: shortText
+                question: "Yes"
+                mandatory: true
+                maxTextLength: 100
+          - value: "Nein"
+            questions: []
+        sectionNumber: 1
+
+      - questionType: imageUpload
+        order: 5
+        question: "Upload an image (max. 2MB)"
+        maxFileSizeInMB: 2.0  # in Mega Byte
+        sectionNumber: 1
+        mandatory: true
+
+      - questionType: pdfUpload
+        order: 6
+        question: "Upload a pdf (max. 25MB)"
+        maxFileSizeInMB: 25.0  # in Mega Byte
+        sectionNumber: 1
+        mandatory: true
+
+      - questionType: videoUpload
+        order: 7
+        question: "Uplaod a video (max. 50MB)"
+        maxFileSizeInMB: 50.0  # in Mega Byte
+        sectionNumber: 1
+        mandatory: true
