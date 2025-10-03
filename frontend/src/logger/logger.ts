@@ -1,5 +1,5 @@
 import pino from "pino";
-import { createPinoBrowserSend, createWriteStream } from "pino-logflare";
+import { logflarePinoVercel} from "pino-logflare";
 
 import { getURL } from "@/utils/helpers";
 
@@ -25,21 +25,11 @@ class Logger {
         `Logflare API key and source token must be configured! apiKey: ${apiKey}; sourceToken: ${sourceToken}`,
       );
     }
-    const stream = createWriteStream({
-      apiKey: apiKey,
-      sourceToken: sourceToken,
-      transforms: {
-        numbersToFloats: true,
-      },
-    });
 
-    const send = createPinoBrowserSend({
-      apiKey: apiKey,
-      sourceToken: sourceToken,
-      transforms: {
-        numbersToFloats: true,
-      },
-    });
+    const { stream, send } = logflarePinoVercel({
+      apiKey,
+      sourceToken,
+    })
 
     this.module = module;
     this.logger = pino(
