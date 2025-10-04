@@ -19,8 +19,8 @@ jobs:
           echo "$OUTPUT"
 
           NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | awk -F': ' '/API URL/ {print $2}')
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/anon key/ {print $2}')
-          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/service_role key/ {print $2}')
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/Publishable key/ {print $2}')
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/Secret key/ {print $2}')
 
           # Fallback: If keys are empty, set dummy values for debugging
           if [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
@@ -53,7 +53,4 @@ jobs:
       - run: npm ci
         working-directory: ./e2e
       - name: Start frontend and run e2e tests
-        run: |
-          npx concurrently \
-            "npm start --prefix frontend -- --port 3000" \
-            "npx wait-on http://localhost:3000 --timeout=120000 && npm run test:e2e --prefix e2e"
+        run: npx start-server-and-test "npm start --prefix frontend -- --port 3000" http://localhost:3000 "npm run test:e2e --prefix e2e"
