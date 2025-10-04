@@ -18,7 +18,7 @@
     "@mui/material": "^5.14.19",
     "@reduxjs/toolkit": "^2.6.0",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.47.16",
+    "@supabase/supabase-js": "^2.55.0",
     "autoprefixer": "^10.4.16",
     "dotenv": "^16.4.7",
     "eslint-config-next": "14.0.3",
