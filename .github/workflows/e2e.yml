@@ -30,6 +30,7 @@ jobs:
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
+          cp ./frontend/.env ./frontend/.env.local
       - run: npm ci
         working-directory: ./frontend
       - run: npm run build
