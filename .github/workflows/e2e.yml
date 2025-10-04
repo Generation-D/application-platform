@@ -34,11 +34,10 @@ jobs:
         working-directory: ./frontend
       - run: npm run build
         working-directory: ./frontend
-      - run: |
-          nohup npm start -- --port 3000 > next.log 2>&1 &
-        working-directory: ./frontend
-      - run: npx --yes wait-on http://localhost:3000
       - run: npm ci
         working-directory: ./e2e
-      - run: npm run test:e2e
-        working-directory: ./e2e
+      - name: Start frontend and run e2e tests
+        run: |
+          npx concurrently \
+            "npm start --prefix frontend -- --port 3000" \
+            "npx wait-on http://localhost:3000 --timeout=120000 && npm run test:e2e --prefix e2e"
