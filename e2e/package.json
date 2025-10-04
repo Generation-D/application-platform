@@ -6,7 +6,7 @@
     "reset:db:local": "supabase db reset --workdir ../",
     "pretest:e2e:local": "npm run reset:db:local",
     "test:e2e:local": "npm run test:e2e",
-    "test:e2e": "cypress run --spec \"cypress/e2e/registration.cy.js,cypress/e2e/login_logout.cy.js,cypress/e2e/fill_question_types.cy.js\""
+    "test:e2e": "cypress run"
   },
   "author": "",
   "license": "ISC",
