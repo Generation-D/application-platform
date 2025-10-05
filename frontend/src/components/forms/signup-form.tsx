@@ -23,10 +23,15 @@ const initialState: messageType = {
 export default function SignUpForm() {
   const [state, formAction] = useActionState(signUpUser, initialState);
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | undefined>();
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
   return (
@@ -57,6 +62,8 @@ export default function SignUpForm() {
             name="email"
             autoComplete="email"
             required
+            value={email}
+            onChange={(e) => handleEmailChange(e)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>

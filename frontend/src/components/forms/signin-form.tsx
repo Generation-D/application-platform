@@ -10,16 +10,19 @@ import { SubmitButton } from "../submitButton";
 
 interface messageType {
   message: string;
+  email: string;
 }
 
 const initialState: messageType = {
   message: "",
+  email: "",
 };
 
 export default function SignInForm() {
   const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
+  const [email, setEmail] = useState("");
   const ref = useRef<TurnstileInstance>(null);
 
   const togglePopup = () => {
@@ -66,6 +69,10 @@ export default function SignInForm() {
             name="email"
             autoComplete="email"
             required
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
