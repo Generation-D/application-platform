@@ -1,7 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 # Source https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:20
+FROM node:24
 
 # TODO: REMOVE IT ALL
 ARG NEXT_PUBLIC_SUPABASE_URL
