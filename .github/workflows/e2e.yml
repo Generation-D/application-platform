@@ -15,17 +15,30 @@ jobs:
           node-version: '20'
       - run: |
           OUTPUT=$(supabase start)
+          echo "Supabase start output:"  # Debug output
+          echo "$OUTPUT"
 
           NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | awk -F': ' '/API URL/ {print $2}')
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/anon key/ {print $2}')
-          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/service_role key/ {print $2}')
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/Publishable key/ {print $2}')
+          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/Secret key/ {print $2}')
+
+          # Fallback: If keys are empty, set dummy values for debugging
+          if [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
+            NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
+          fi
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            SUPABASE_SERVICE_ROLE_KEY="dummy_service_role_key"
+          fi
 
           echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY"
       - run: supabase db lint
       - run: supabase test db
-      - run: | 
+      - run: |
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./frontend/.env 
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
@@ -34,11 +47,13 @@ jobs:
         working-directory: ./frontend
       - run: npm run build
         working-directory: ./frontend
-      - run: |
-          nohup npm start -- --port 3000 > next.log 2>&1 &
-        working-directory: ./frontend
-      - run: npx --yes wait-on http://localhost:3000
       - run: npm ci
         working-directory: ./e2e
-      - run: npm run test:e2e
-        working-directory: ./e2e
+      - name: Install Python dependencies
+        run: pip install poetry && poetry install
+        working-directory: ./backend
+      - name: Process application configuration
+        run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../frontend/.env
+        working-directory: ./backend
+      - name: Start frontend and run e2e tests
+        run: npx start-server-and-test "npm start --prefix frontend -- --port 3000" http://localhost:3000 "npm run test:e2e --prefix e2e"
