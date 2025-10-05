@@ -1,31 +1,68 @@
 import 'cypress-file-upload';
 
 describe('template spec', () => {
-  /* ==== Test Created with Cypress Studio ==== */
   it('fill_question_types', function() {
-    /* ==== Generated with Cypress Studio ==== */
     cy.visit('http://localhost:3000/login');
     cy.get('#email').type('user1@example.com');
     cy.get('#password').type('password123');
     cy.get('.apl-button-expanded').click();
     cy.get('.apl-button-fixed-short').click();
-    cy.get('#ba337f5e-d6cf-451e-bb60-7b39da650f3a').type('Testuser');
-    cy.get(':nth-child(2) > .mt-1 > .shadow').click();
-    cy.get(':nth-child(2) > .mt-1 > .shadow').click();
-    cy.get('#e43220b2-a3b4-4cdc-81be-bee848951ab0').check();
-    cy.get('#\\39 d16a723-d58c-4a01-b8f9-fa4ca1c6bfaf').check();
-    /* ==== End Cypress Studio ==== */
-    /* ==== Generated with Cypress Studio ==== */
-    cy.get('input[type="file"]#0af45c12-d6b2-43a6-b8cc-203c74942001').attachFile('files/file_example_PNG_1MB.png');
+    
+    // Fill short text question: "What is your name?"
+    cy.contains('label', 'What is your name?')
+      .next('div.mt-1')
+      .find('input')
+      .type('Testuser');
+    
+    // Fill long text question: "What is your mission?"
+    cy.contains('label', 'What is your mission?')
+      .next('div.mt-1')
+      .find('textarea')
+      .type('Test mission text');
+    
+    // Select multiple choice options: "Choose one to three options."
+    cy.contains('label', 'Choose one to three options.')
+      .next('div.mt-1')
+      .within(() => {
+        cy.contains('1. Keine Armut').click();
+        cy.contains('2. Kein Hunger').click();
+      });
+    
+    // Handle conditional question: "Chose either yes or no"
+    cy.contains('label', 'Chose either yes or no')
+      .next('div.mt-1')
+      .within(() => {
+        cy.contains('Nein').click();
+      });
+    
+    // Upload image: "Upload an image (max. 2MB)"
+    cy.contains('label', 'Upload an image (max. 2MB)')
+      .next('div.mt-1')
+      .find('form')
+      .find('input[type="file"]')
+      .attachFile('files/file_example_PNG_1MB.png');
     cy.get(':nth-child(5) > :nth-child(2) > form > .mt-4 > .apl-button-fixed').click();
-    cy.get(':nth-child(6) > :nth-child(2) > form > .mt-1 > div.w-full > .w-full').click();
-    cy.get('input[type="file"]#f67d20ca-c91f-4bb0-aa10-fbf3f9ebd6fd').attachFile('files/file_example_PDF_1MB.pdf');
+    
+    // Upload PDF: "Upload a pdf (max. 25MB)"
+    cy.contains('label', 'Upload a pdf (max. 25MB)')
+      .next('div.mt-1')
+      .find('form')
+      .find('input[type="file"]')
+      .attachFile('files/file_example_PDF_1MB.pdf');
     cy.get(':nth-child(6) > :nth-child(2) > form > .mt-4 > .apl-button-fixed').click();
-    cy.get(':nth-child(7) > :nth-child(2) > form > .mt-1 > div.w-full > .w-full > .flex').click();
-    cy.get('input[type="file"]#4c272030-53aa-45c6-812a-92049b217733').attachFile('files/file_example_MP4_1280_10MG.mp4');
+    
+    // Upload video: "Uplaod a video (max. 50MB)"
+    cy.contains('label', 'Uplaod a video (max. 50MB)')
+      .next('div.mt-1')
+      .find('form')
+      .find('input[type="file"]')
+      .attachFile('files/file_example_MP4_1280_10MG.mp4');
     cy.get('.mt-4 > .apl-button-fixed').click();
+    
     cy.get('.items-start > :nth-child(4)').click();
-    /* ==== End Cypress Studio ==== */
-    cy.get('.bg-green-600').should('have.attr', 'style').and('include', 'width: 100%');
+    
+    // Add debugging and wait for progress calculation
+    cy.log('Checking progress bar state...');
+    cy.get('.bg-green-600', { timeout: 10000 }).should('have.attr', 'style').and('include', 'width: 100%');
   });
 })
