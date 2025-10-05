@@ -1,5 +1,5 @@
 import pino from "pino";
-import { logflarePinoVercel} from "pino-logflare";
+import { logflarePinoVercel } from "pino-logflare";
 
 import { getURL } from "@/utils/helpers";
 
@@ -29,7 +29,7 @@ class Logger {
     const { stream, send } = logflarePinoVercel({
       apiKey,
       sourceToken,
-    })
+    });
 
     this.module = module;
     this.logger = pino(

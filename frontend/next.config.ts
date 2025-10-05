@@ -17,12 +17,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb",
     },
   },
-    webpack: (config, { isServer }) => {
+  webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         worker_threads: false,
-    };
+      };
     }
     return config;
   },
