@@ -1,6 +1,8 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
-import { textCache } from "@/generated/textCache";
 import { createCurrentTimestamp } from "./helpers";
+import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+
+const supabase = getSupabaseBrowserClient();
 
 export default async function getOverviewPageText() {
   const currentTime = new Date(createCurrentTimestamp());
@@ -31,9 +33,23 @@ export default async function getOverviewPageText() {
     markdownKey = 'error.md';
   }
 
-  if (markdownKey in textCache) {
-    return textCache[markdownKey as keyof typeof textCache];
+  const { data, error } = await supabase
+    .from('phase_texts')
+    .select('html_content')
+    .eq('path', markdownKey)
+    .single();
+
+  if (error) {
+    console.error('❌ Failed to fetch text:', error.message);
   }
 
-  return  textCache['error.md'];
+  if (data?.html_content) return data.html_content;
+
+  const fallback = await supabase
+    .from('phase_texts')
+    .select('html_content')
+    .eq('path', 'error.md')
+    .single();
+
+  return fallback.data?.html_content ?? '<p>Unknown error</p>';
 }

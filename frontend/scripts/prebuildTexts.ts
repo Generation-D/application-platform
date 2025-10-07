@@ -1,8 +1,15 @@
 import markdownToHtml from '../src/utils/markdownToHtml';
 import fs from 'fs';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const baseDir = path.join(process.cwd(), 'public', 'texts');
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function getAllMarkdownFiles(dir: string, base = ''): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -20,20 +27,27 @@ function getAllMarkdownFiles(dir: string, base = ''): string[] {
 }
 
 async function buildTextMap() {
-  const result: Record<string, string> = {};
   const markdownFiles = getAllMarkdownFiles(baseDir);
+
+  await supabase.from('phase_texts').delete().neq('id', 0);
 
   for (const relPath of markdownFiles) {
     const fullPath = path.join(baseDir, relPath);
     const markdown = fs.readFileSync(fullPath, 'utf8');
     const html = await markdownToHtml(markdown);
-    result[relPath] = html;
+
+    const { error } = await supabase
+      .from('phase_texts')
+      .upsert({ path: relPath, html_content: html });
+
+    if (error) {
+      console.error(`❌ Failed to upload ${relPath}:`, error.message);
+    } else {
+      console.log(`✅ Uploaded ${relPath}`);
+    }
   }
 
-  fs.writeFileSync(
-    path.join(process.cwd(), 'src', 'generated', 'textCache.ts'),
-    'export const textCache = ' + JSON.stringify(result, null, 2),
-  );
+  console.log('✅ All markdown files uploaded to Supabase');
 }
 
 buildTextMap();
