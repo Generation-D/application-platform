@@ -24,7 +24,7 @@
     "github-markdown-css": "^5.5.0",
     "moment-timezone": "^0.5.43",
     "next": "^15.3.3",
-    "nodemailer": "^6.9.7",
+    "nodemailer": "^7.0.0",
     "pino-logflare": "^0.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
