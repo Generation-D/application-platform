@@ -1,6 +1,9 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
 import { createCurrentTimestamp } from "./helpers";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import Logger from "@/logger/logger";
+
+const log = new Logger("utils/getMarkdownText");
 
 const supabase = getSupabaseBrowserClient();
 
@@ -40,7 +43,7 @@ export default async function getOverviewPageText() {
     .single();
 
   if (error) {
-    console.error('❌ Failed to fetch text:', error.message);
+    log.error('Failed to fetch text:', error.message);
   }
 
   if (data?.html_content) return data.html_content;
@@ -51,5 +54,9 @@ export default async function getOverviewPageText() {
     .eq('path', 'error.md')
     .single();
 
-  return fallback.data?.html_content ?? '<p>Unknown error</p>';
+  if (fallback.data?.html_content) return fallback.data.html_content;
+  
+  log.error('Failed to fetch fallback')
+
+  return '<p>Unknown error</p>';
 }
