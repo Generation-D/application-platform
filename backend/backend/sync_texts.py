@@ -1,7 +1,7 @@
 import argparse
-import markdown
 from pathlib import Path
 
+import markdown
 from loguru import logger
 
 from backend.utils.utils_supabase import init_supabase
