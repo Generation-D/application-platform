@@ -55,5 +55,8 @@ jobs:
       - name: Process application configuration
         run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../frontend/.env
         working-directory: ./backend
+      - name: Sync application texts
+        run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+        working-directory: ./backend
       - name: Start frontend and run e2e tests
         run: npx start-server-and-test "npm start --prefix frontend -- --port 3000" http://localhost:3000 "npm run test:e2e --prefix e2e"

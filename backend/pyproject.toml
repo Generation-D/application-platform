@@ -27,6 +27,7 @@ pytest = "^8.4.1"
 pytz = "^2023.3.post1"
 gotrue = "^2.1.0"
 ruff = "^0.14.0"
+markdown = "^3.9"
 
 
 [tool.ruff]
