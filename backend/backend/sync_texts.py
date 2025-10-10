@@ -1,11 +1,11 @@
 import argparse
-import os
 from pathlib import Path
 from backend.utils.utils_supabase import init_supabase
 import markdown
 from loguru import logger
 
 log = logger
+
 
 def get_all_markdown_files(dir_path: Path, base: Path = Path()) -> list[str]:
     files = []
@@ -17,15 +17,17 @@ def get_all_markdown_files(dir_path: Path, base: Path = Path()) -> list[str]:
             files.append(str(rel_path))
     return files
 
+
 def markdown_to_html(md_text: str) -> str:
     return markdown.markdown(md_text)
+
 
 def sync_texts(env_file_path: str, markdown_files_path: str):
     BASE_DIR = Path(markdown_files_path)
     markdown_files = get_all_markdown_files(BASE_DIR)
 
     if not markdown_files:
-        log.info(f"⚠️  No Markdown files found in {BASE_DIR}. Nothing to upload.")
+        log.info(f'⚠️  No Markdown files found in {BASE_DIR}. Nothing to upload.')
         return
 
     supabase = init_supabase(env_file_path)
@@ -39,15 +41,12 @@ def sync_texts(env_file_path: str, markdown_files_path: str):
         html_content = markdown_to_html(md_content)
 
         try:
-            response = supabase.table('phase_texts').upsert({
-                'path': rel_path,
-                'html_content': html_content
-            }).execute()
-            log.info(f"✅ Uploaded {rel_path} ({len(response.data) if response.data else 0} row(s))")
+            response = supabase.table('phase_texts').upsert({'path': rel_path, 'html_content': html_content}).execute()
+            log.info(f'✅ Uploaded {rel_path} ({len(response.data) if response.data else 0} row(s))')
         except Exception as e:
-            log.error(f"❌ Failed to upload {rel_path}: {e}")
+            log.error(f'❌ Failed to upload {rel_path}: {e}')
 
-    log.info("✅ All markdown files uploaded to Supabase")
+    log.info('✅ All markdown files uploaded to Supabase')
 
 
 def parse_args() -> argparse.Namespace:
@@ -70,8 +69,9 @@ def parse_args() -> argparse.Namespace:
         dest='markdown_files_path',
         required=True,
     )
-    return parser.parse_args() 
+    return parser.parse_args()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     args = parse_args()
     sync_texts(**vars(args))

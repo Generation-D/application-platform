@@ -16,7 +16,7 @@ export default async function getOverviewPageText() {
   let markdownKey: string;
 
   if (currentPhase.phaseorder == -1) {
-    markdownKey = 'welcome.md';
+    markdownKey = "welcome.md";
   } else if (
     last_phase_status !== undefined &&
     last_phase_status.outcome == false &&
@@ -33,30 +33,30 @@ export default async function getOverviewPageText() {
   } else if (last_phase_status.outcome == true) {
     markdownKey = `${currentPhase.phasename}/passed.md`;
   } else {
-    markdownKey = 'error.md';
+    markdownKey = "error.md";
   }
 
   const { data, error } = await supabase
-    .from('phase_texts')
-    .select('html_content')
-    .eq('path', markdownKey)
+    .from("phase_texts")
+    .select("html_content")
+    .eq("path", markdownKey)
     .single();
 
   if (error) {
-    log.error('Failed to fetch text:', error.message);
+    log.error("Failed to fetch text:", error.message);
   }
 
   if (data?.html_content) return data.html_content;
 
   const fallback = await supabase
-    .from('phase_texts')
-    .select('html_content')
-    .eq('path', 'error.md')
+    .from("phase_texts")
+    .select("html_content")
+    .eq("path", "error.md")
     .single();
 
   if (fallback.data?.html_content) return fallback.data.html_content;
-  
-  log.error('Failed to fetch fallback')
 
-  return '<p>Unknown error</p>';
+  log.error("Failed to fetch fallback");
+
+  return "<p>Unknown error</p>";
 }
