@@ -1,8 +1,10 @@
 import argparse
-from pathlib import Path
-from backend.utils.utils_supabase import init_supabase
 import markdown
+from pathlib import Path
+
 from loguru import logger
+
+from backend.utils.utils_supabase import init_supabase
 
 log = logger
 
