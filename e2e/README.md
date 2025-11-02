@@ -22,19 +22,24 @@ supabase db reset
 (Config files for reference i.e `backend/apl_config_gend_all_phases.yml`)
 ```
 cd backend
+poetry install
 poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../frontend/.env
 ```
-4) Install dependencies
+4) Load the phase texts
+```
+poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+```
+5) Install dependencies
 ```
 cd ../e2e
 npm install
 ```
-5) Start the frontend in a new terminal
+6) Start the frontend in a new terminal
 ```
 cd ../frontend
 npm run dev
 ```
-6) Run the e2e tests
+7) Run the e2e tests
 ```
 npx cypress run
 ```
