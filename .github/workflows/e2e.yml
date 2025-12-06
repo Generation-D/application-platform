@@ -14,28 +14,21 @@ jobs:
         with:
           node-version: '24'
       - run: |
-          OUTPUT=$(supabase start)
-          echo "Supabase start output:"  # Debug output
-          echo "$OUTPUT"
+          supabase start
 
-          NEXT_PUBLIC_SUPABASE_URL=$(echo "$OUTPUT" | awk -F': ' '/API URL/ {print $2}')
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$OUTPUT" | awk -F': ' '/Publishable key/ {print $2}')
-          SUPABASE_SERVICE_ROLE_KEY=$(echo "$OUTPUT" | awk -F': ' '/Secret key/ {print $2}')
-
-          # Fallback: If keys are empty, set dummy values for debugging
-          if [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
-            NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy_anon_key"
-          fi
-          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
-            SUPABASE_SERVICE_ROLE_KEY="dummy_service_role_key"
-          fi
+          # Use JSON output for reliable parsing
+          NEXT_PUBLIC_SUPABASE_URL=$(supabase status -o json | jq -r '.API_URL')
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o json | jq -r '.ANON_KEY')
+          SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o json | jq -r '.SERVICE_ROLE_KEY')
 
           echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
-          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL"
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY"
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY"
+
+          echo "Supabase configuration:"
+          echo "  API URL: $NEXT_PUBLIC_SUPABASE_URL"
+          echo "  Anon Key: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:0:20}..."
+          echo "  Service Role Key: ${SUPABASE_SERVICE_ROLE_KEY:0:20}..."
       - run: supabase db lint
       - run: supabase test db
       - run: |
