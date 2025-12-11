@@ -1,17 +1,9 @@
 name: Build and Push Docker Image
 
 on:
-    workflow_dispatch:
-        inputs:
-            environment:
-                description: 'Environment to build for'
-                required: true
-                type: choice
-                options:
-                    - tst
-                    - prd
-                default: tst
-
+  push:
+    branches:
+      - main
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -33,49 +25,10 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set environment and repository name
-      shell: bash
-      run: |
-        echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-        echo "REPOSITORY_NAME=$(echo ${GITHUB_REPOSITORY} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-    - name: Set environment specific secrets
-      shell: bash
-      run: |
-        if [ "$ENVIRONMENT" == "prd" ]; then
-          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL_PRD }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_PRD }}" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PRD }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL_PRD }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_API_TOKEN_PRD }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN_PRD }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}" >> $GITHUB_ENV
-        elif [ "$ENVIRONMENT" == "tst" ]; then
-          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL_TST }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_TST }}" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY_TST }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL_TST }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_API_TOKEN_TST }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN_TST }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}" >> $GITHUB_ENV
-        fi
-
     - name: Build and push
       uses: docker/build-push-action@v6
       with:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ env.REPOSITORY_NAME }}-${{ env.ENVIRONMENT }}:latest
-        build-args: |
-          NEXT_PUBLIC_SUPABASE_URL=${{ env.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ env.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL=${{ env.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_LOGFLARE_API_TOKEN=${{ env.NEXT_PUBLIC_LOGFLARE_API_TOKEN }}
-          NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=${{ env.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN }}
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ env.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
-          SMTP_HOST=${{ secrets.SMTP_HOST }}
-          SMTP_PORT=${{ secrets.SMTP_PORT }}
-          SMTP_USER=${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+        tags: ghcr.io/${{ env.REPOSITORY_NAME }}:latest

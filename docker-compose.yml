@@ -1,17 +1,39 @@
 services:
   frontend:
-    image: 'ghcr.io/generation-d/application-platform-prd:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_SITE_URL: ${DOMAIN}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_LOGFLARE_API_TOKEN: ${NEXT_PUBLIC_LOGFLARE_API_TOKEN}
+      NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN: ${NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    image: 'ghcr.io/generation-d/application-platform:latest'
     container_name: frontend
-    ports:
-      - '3000:3000'
-  nginx:
-    image: 'jc21/nginx-proxy-manager:latest'
+  caddy:
+    image: caddy:latest
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx-data:/data
-      - ./nginx-letsencrypt:/etc/letsencrypt
-      - ./custom-nginx.conf:/etc/nginx/conf.d/custom-settings.conf
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+    depends_on:
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:

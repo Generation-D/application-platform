@@ -7,6 +7,7 @@ import { sendResetPasswordLink } from "@/actions/auth";
 
 import { SubmitButton } from "../submitButton";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { getPublicEnv } from "@/utils/env";
 
 interface messageType {
   message: string;
@@ -72,7 +73,7 @@ export default function ForgottenPasswordForm() {
 
         <div className="flex justify-center mx-auto">
           <Turnstile
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            siteKey={getPublicEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY")!}
             onSuccess={(token) => {
               setCaptchaToken(token);
             }}

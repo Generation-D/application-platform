@@ -1,8 +1,9 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import moment from "moment-timezone";
+import { getPublicEnv } from "./env";
 
 export const getURL = () => {
-  let url = process?.env?.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000/"; // Set this to your site URL in production env.
+  let url = getPublicEnv("NEXT_PUBLIC_SITE_URL") ?? "http://localhost:3000/"; // Set this to your site URL in production env.
   // Make sure to include `https://` when not localhost.
   url = url.includes("http") ? url : `https://${url}`;
   // Make sure to including trailing `/`.
