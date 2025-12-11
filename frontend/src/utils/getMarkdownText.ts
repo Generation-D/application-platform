@@ -5,9 +5,8 @@ import Logger from "@/logger/logger";
 
 const log = new Logger("utils/getMarkdownText");
 
-const supabase = getSupabaseBrowserClient();
-
 export default async function getOverviewPageText() {
+  const supabase = getSupabaseBrowserClient();
   const currentTime = new Date(createCurrentTimestamp());
   const currentPhase = await extractCurrentPhase(currentTime);
   const phases_status = await fetch_phases_status();

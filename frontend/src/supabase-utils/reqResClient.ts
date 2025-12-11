@@ -1,4 +1,5 @@
 import { Database } from "@/types/database.types";
+import { getPublicEnv } from "@/utils/env";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -12,8 +13,8 @@ export const getSupabaseReqResClient = ({
   };
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    getPublicEnv("NEXT_PUBLIC_SUPABASE_URL") ?? "https://localhost",
+    getPublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY") ?? "fake-key",
     {
       cookies: {
         getAll() {

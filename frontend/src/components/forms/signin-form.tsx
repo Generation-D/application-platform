@@ -7,6 +7,7 @@ import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
+import { getPublicEnv } from "@/utils/env";
 
 interface messageType {
   message: string;
@@ -105,7 +106,7 @@ export default function SignInForm() {
         <div className="flex justify-center mx-auto">
           <Turnstile
             ref={ref}
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            siteKey={getPublicEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY")!}
             onSuccess={(token) => setCaptchaToken(token)}
             onExpire={() => {
               ref.current?.reset();

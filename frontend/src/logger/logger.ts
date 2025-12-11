@@ -2,6 +2,7 @@ import pino from "pino";
 import { logflarePinoVercel } from "pino-logflare";
 
 import { getURL } from "@/utils/helpers";
+import { getPublicEnv } from "@/utils/env";
 
 interface LogDetails {
   module: string;
@@ -16,10 +17,10 @@ class Logger {
 
   constructor(module: string) {
     const apiKey =
-      process.env.NEXT_PUBLIC_LOGFLARE_API_TOKEN ??
+      getPublicEnv("NEXT_PUBLIC_LOGFLARE_API_TOKEN") ??
       "76ba79dd-d85a-42cc-854f-8eaadbe1e095";
     const sourceToken =
-      process.env.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN ?? "woM7iW_BIlR3";
+      getPublicEnv("NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN") ?? "woM7iW_BIlR3";
     if (!apiKey || !sourceToken) {
       throw new Error(
         `Logflare API key and source token must be configured! apiKey: ${apiKey}; sourceToken: ${sourceToken}`,
