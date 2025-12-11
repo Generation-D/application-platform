@@ -21,7 +21,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o json | jq -r '.ANON_KEY')
           SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o json | jq -r '.SERVICE_ROLE_KEY')
 
-          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./.env
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./.env
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./.env
 
@@ -31,12 +30,14 @@ jobs:
           echo "  Service Role Key: ${SUPABASE_SERVICE_ROLE_KEY:0:20}..."
       - run: supabase db lint
       - run: supabase test db
-      - run: |
+      - name: Create additional env variables
+        run: |
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./.env 
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./.env
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./.env
           echo "DOMAIN=http://localhost" >> ./.env
+          echo "NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321" >> ./.env
       - run: npm ci
         working-directory: ./e2e
       - name: Install Python dependencies
