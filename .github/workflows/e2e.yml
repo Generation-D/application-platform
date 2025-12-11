@@ -49,6 +49,11 @@ jobs:
         working-directory: ./backend
       - name: build and start frontend
         run: docker compose up -d --build
-      - name: Start frontend and run e2e tests
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server to be ready..."
+          timeout 60 bash -c 'until curl -s http://localhost > /dev/null; do sleep 2; done'
+          echo "Server is ready!"
+      - name: run e2e tests
         working-directory: ./e2e
         run: npm run test:e2e

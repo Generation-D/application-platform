@@ -1,6 +1,6 @@
 describe('registration', () => {
   it('passes', () => {
-    cy.visit('https://localhost')
+    cy.visit('/')
     cy.url().should('contain', 'login')
 
     cy.contains('button', 'Registrieren').click()
