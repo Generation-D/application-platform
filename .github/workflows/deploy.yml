@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+        type: string
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY_TST }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST_TST }} >> ~/.ssh/known_hosts
+          echo "Host ${{ secrets.DEPLOY_HOST_TST }}" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/deploy_key" >> ~/.ssh/config
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image locally
+        run: |
+          docker buildx build --load -t application-platform:latest .
+
+      - name: Transfer image to server
+        run: |
+          docker save application-platform:latest | gzip | ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST_TST }} 'gunzip | docker load'
+
+      - name: Set environment variables
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL_TST }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY_TST }}" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY_TST }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL_TST }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_API_TOKEN_TST }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=${{ secrets.NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN_TST }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}" >> $GITHUB_ENV
+          echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> $GITHUB_ENV
+          echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> $GITHUB_ENV
+          echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> $GITHUB_ENV
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> $GITHUB_ENV
+          echo "TURNSTILE_SECRET_KEY=${{ secrets.TURNSTILE_SECRET_KEY }}" >> $GITHUB_ENV
+
+      - name: Deploy via Docker context
+        run: |
+          export DOCKER_HOST=ssh://${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST_TST }}
+          ./deploy.sh
