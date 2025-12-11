@@ -35,14 +35,14 @@ jobs:
 
       - name: Build image locally
         run: |
-          docker buildx build --load -t application-platform:latest .
+          docker compose build
 
       - name: Transfer image to server
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST_TST }}
         run: |
-          docker save application-platform:latest | gzip | ssh "$DEPLOY_USER@$DEPLOY_HOST" 'gunzip | docker load'
+          docker save 'ghcr.io/generation-d/application-platform:latest' | gzip | ssh "$DEPLOY_USER@$DEPLOY_HOST" 'gunzip | docker load'
 
       - name: Copy Caddyfile to server
         env:
@@ -69,4 +69,4 @@ jobs:
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         run: |
           export DOCKER_HOST="ssh://$DEPLOY_USER@$DEPLOY_HOST"
-          ./deploy.sh
+          docker compose -f compose.yml -f compose.test.yml up -d --remove-orphans
