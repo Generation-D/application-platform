@@ -67,6 +67,7 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
+          DOMAIN: "bewerbung-test.generation-d.org" 
         run: |
           export DOCKER_HOST="ssh://$DEPLOY_USER@$DEPLOY_HOST"
           docker compose -f compose.yml -f compose.test.yml up -d --remove-orphans
