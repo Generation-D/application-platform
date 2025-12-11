@@ -36,6 +36,7 @@ jobs:
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./.env
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./.env
+          echo "DOMAIN=http://localhost" >> ./.env
       - run: npm ci
         working-directory: ./e2e
       - name: Install Python dependencies
