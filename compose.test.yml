@@ -1,4 +1,6 @@
 services:
   frontend:
     extra_hosts: []
-    
+  caddy:
+    volumes:
+      - /home/core/Caddyfile:/etc/caddy/Caddyfile
