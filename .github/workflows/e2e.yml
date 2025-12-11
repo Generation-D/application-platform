@@ -21,9 +21,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o json | jq -r '.ANON_KEY')
           SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o json | jq -r '.SERVICE_ROLE_KEY')
 
-          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./frontend/.env
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./frontend/.env
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./frontend/.env
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> ./.env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> ./.env
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> ./.env
 
           echo "Supabase configuration:"
           echo "  API URL: $NEXT_PUBLIC_SUPABASE_URL"
@@ -32,24 +32,20 @@ jobs:
       - run: supabase db lint
       - run: supabase test db
       - run: |
-          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./frontend/.env 
-          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
-          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
-          echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
-      # - run: npm ci
-      #   working-directory: ./frontend
-      # - run: npm run build
-      #   working-directory: ./frontend
-      # - run: npm ci
+          echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./.env 
+          echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./.env
+          echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./.env
+          echo "TURNSTILE_SECRET_KEY=123" >> ./.env
+      - run: npm ci
         working-directory: ./e2e
       - name: Install Python dependencies
         run: pip install poetry && poetry install
         working-directory: ./backend
       - name: Process application configuration
-        run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../frontend/.env
+        run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../.env
         working-directory: ./backend
       - name: Sync application texts
-        run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+        run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../.env
         working-directory: ./backend
       - name: build and start frontend
         run: docker compose up -d --build
