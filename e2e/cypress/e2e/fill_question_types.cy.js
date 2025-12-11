@@ -2,7 +2,7 @@ import 'cypress-file-upload';
 
 describe('template spec', () => {
   it('fill_question_types', function() {
-    cy.visit('http://localhost:3000/login');
+    cy.visit('https://localhost/login');
     cy.get('#email').type('user1@example.com');
     cy.get('#password').type('password123');
     cy.get('.apl-button-expanded').click();

@@ -1,6 +1,6 @@
 describe('login', () => {
   it('passes', () => {
-    cy.visit('http://localhost:3000')
+    cy.visit('https://localhost')
     cy.url().should('contain', 'login')
 
     cy.get('#email').type('user2@example.com');

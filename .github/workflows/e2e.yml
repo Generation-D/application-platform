@@ -36,11 +36,11 @@ jobs:
           echo "NEXT_PUBLIC_LOGFLARE_API_TOKEN=123" >> ./frontend/.env
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./frontend/.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./frontend/.env
-      - run: npm ci
-        working-directory: ./frontend
-      - run: npm run build
-        working-directory: ./frontend
-      - run: npm ci
+      # - run: npm ci
+      #   working-directory: ./frontend
+      # - run: npm run build
+      #   working-directory: ./frontend
+      # - run: npm ci
         working-directory: ./e2e
       - name: Install Python dependencies
         run: pip install poetry && poetry install
@@ -51,5 +51,8 @@ jobs:
       - name: Sync application texts
         run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
         working-directory: ./backend
+      - name: build and start frontend
+        run: docker compose up -d --build
       - name: Start frontend and run e2e tests
-        run: npx start-server-and-test "npm start --prefix frontend -- --port 3000" http://localhost:3000 "npm run test:e2e --prefix e2e"
+        working-directory: ./e2e
+        run: npm run test:e2e
