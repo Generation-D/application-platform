@@ -26,9 +26,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <head>
-        {!isDev && <script src="/env.js" async />}
-      </head>
+      <head>{!isDev && <script src="/env.js" async />}</head>
       <body className={`${inter.className} bg-primary`}>
         <ReduxProvider>
           <div className="flex flex-col min-h-screen">

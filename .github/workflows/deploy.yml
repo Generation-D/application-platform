@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Testing
 
 on:
   workflow_dispatch:
@@ -43,6 +43,13 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST_TST }}
         run: |
           docker save application-platform:latest | gzip | ssh "$DEPLOY_USER@$DEPLOY_HOST" 'gunzip | docker load'
+
+      - name: Copy Caddyfile to server
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST_TST }}
+        run: |
+          scp Caddyfile "$DEPLOY_USER@$DEPLOY_HOST:/home/core/Caddyfile"
 
       - name: Deploy via Docker context
         env:

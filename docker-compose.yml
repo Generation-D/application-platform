@@ -19,6 +19,8 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
     image: 'ghcr.io/generation-d/application-platform:latest'
     container_name: frontend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   caddy:
     image: caddy:latest
     restart: unless-stopped

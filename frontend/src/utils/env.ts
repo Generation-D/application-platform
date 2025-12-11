@@ -1,5 +1,5 @@
 export const getPublicEnv = (key: string) => {
-  if (typeof window !== 'undefined' && window.env && window.env[key]) {
+  if (typeof window !== "undefined" && window.env && window.env[key]) {
     return window.env[key];
   }
 
