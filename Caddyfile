@@ -1,4 +1,14 @@
 {$DOMAIN:localhost} {
-  reverse_proxy frontend:3000
   encode zstd gzip
+
+  handle_errors {
+    @maintenance expression {err.status_code} >= 500
+    handle @maintenance {
+      root * /srv
+      rewrite * /fallback.html
+      file_server
+    }
+  }
+
+  reverse_proxy frontend:3000
 }
