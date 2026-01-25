@@ -1,7 +1,7 @@
 create sequence "public"."user_roles_table_userroleid_seq";
 
 create table "public"."answer_table" (
-    "answerid" uuid not null default uuid_generate_v4(),
+    "answerid" uuid not null default gen_random_uuid(),
     "questionid" uuid not null,
     "applicationid" uuid not null,
     "created" timestamp with time zone not null,
@@ -12,7 +12,7 @@ create table "public"."answer_table" (
 alter table "public"."answer_table" enable row level security;
 
 create table "public"."application_table" (
-    "applicationid" uuid not null default uuid_generate_v4(),
+    "applicationid" uuid not null default gen_random_uuid(),
     "userid" uuid not null
 );
 
@@ -28,7 +28,7 @@ create table "public"."checkbox_answer_table" (
 alter table "public"."checkbox_answer_table" enable row level security;
 
 create table "public"."checkbox_question_table" (
-    "questionid" uuid not null default uuid_generate_v4()
+    "questionid" uuid not null default gen_random_uuid()
 );
 
 
@@ -43,7 +43,7 @@ create table "public"."conditional_answer_table" (
 alter table "public"."conditional_answer_table" enable row level security;
 
 create table "public"."conditional_question_choice_table" (
-    "choiceid" uuid not null default uuid_generate_v4(),
+    "choiceid" uuid not null default gen_random_uuid(),
     "questionid" uuid not null,
     "choicevalue" text not null
 );
@@ -52,7 +52,7 @@ create table "public"."conditional_question_choice_table" (
 alter table "public"."conditional_question_choice_table" enable row level security;
 
 create table "public"."conditional_question_table" (
-    "questionid" uuid not null default uuid_generate_v4()
+    "questionid" uuid not null default gen_random_uuid()
 );
 
 
@@ -67,7 +67,7 @@ create table "public"."date_picker_answer_table" (
 alter table "public"."date_picker_answer_table" enable row level security;
 
 create table "public"."date_picker_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "mindate" date not null,
     "maxdate" date not null
 );
@@ -84,7 +84,7 @@ create table "public"."datetime_picker_answer_table" (
 alter table "public"."datetime_picker_answer_table" enable row level security;
 
 create table "public"."datetime_picker_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "mindatetime" timestamp with time zone not null,
     "maxdatetime" timestamp with time zone not null
 );
@@ -101,7 +101,7 @@ create table "public"."dropdown_answer_table" (
 alter table "public"."dropdown_answer_table" enable row level security;
 
 create table "public"."dropdown_question_option_table" (
-    "optionid" uuid not null default uuid_generate_v4(),
+    "optionid" uuid not null default gen_random_uuid(),
     "questionid" uuid not null,
     "optiontext" text not null
 );
@@ -110,7 +110,7 @@ create table "public"."dropdown_question_option_table" (
 alter table "public"."dropdown_question_option_table" enable row level security;
 
 create table "public"."dropdown_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "minanswers" integer not null,
     "maxanswers" integer not null,
     "userinput" boolean not null
@@ -128,7 +128,7 @@ create table "public"."image_upload_answer_table" (
 alter table "public"."image_upload_answer_table" enable row level security;
 
 create table "public"."image_upload_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "maxfilesizeinmb" numeric not null
 );
 
@@ -144,7 +144,7 @@ create table "public"."long_text_answer_table" (
 alter table "public"."long_text_answer_table" enable row level security;
 
 create table "public"."long_text_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "maxtextlength" integer not null
 );
 
@@ -160,7 +160,7 @@ create table "public"."multiple_choice_answer_table" (
 alter table "public"."multiple_choice_answer_table" enable row level security;
 
 create table "public"."multiple_choice_question_choice_table" (
-    "choiceid" uuid not null default uuid_generate_v4(),
+    "choiceid" uuid not null default gen_random_uuid(),
     "questionid" uuid not null,
     "choicetext" text not null
 );
@@ -169,7 +169,7 @@ create table "public"."multiple_choice_question_choice_table" (
 alter table "public"."multiple_choice_question_choice_table" enable row level security;
 
 create table "public"."multiple_choice_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "minanswers" integer not null,
     "maxanswers" integer not null,
     "userinput" boolean not null
@@ -187,7 +187,7 @@ create table "public"."number_picker_answer_table" (
 alter table "public"."number_picker_answer_table" enable row level security;
 
 create table "public"."number_picker_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "minnumber" integer not null,
     "maxnumber" integer not null
 );
@@ -204,7 +204,7 @@ create table "public"."pdf_upload_answer_table" (
 alter table "public"."pdf_upload_answer_table" enable row level security;
 
 create table "public"."pdf_upload_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "maxfilesizeinmb" numeric not null
 );
 
@@ -212,7 +212,7 @@ create table "public"."pdf_upload_question_table" (
 alter table "public"."pdf_upload_question_table" enable row level security;
 
 create table "public"."phase_assignment_table" (
-    "assignment_id" uuid not null default uuid_generate_v4(),
+    "assignment_id" uuid not null default gen_random_uuid(),
     "phase_id" uuid not null,
     "user_role_1_id" uuid not null,
     "user_role_2_id" uuid not null
@@ -222,7 +222,7 @@ create table "public"."phase_assignment_table" (
 alter table "public"."phase_assignment_table" enable row level security;
 
 create table "public"."phase_outcome_table" (
-    "outcome_id" uuid not null default uuid_generate_v4(),
+    "outcome_id" uuid not null default gen_random_uuid(),
     "phase_id" uuid not null,
     "user_id" uuid not null,
     "outcome" boolean not null,
@@ -234,7 +234,7 @@ create table "public"."phase_outcome_table" (
 alter table "public"."phase_outcome_table" enable row level security;
 
 create table "public"."phase_table" (
-    "phaseid" uuid not null default uuid_generate_v4(),
+    "phaseid" uuid not null default gen_random_uuid(),
     "phasename" text not null,
     "phaselabel" text not null,
     "phaseorder" integer not null,
@@ -248,7 +248,7 @@ create table "public"."phase_table" (
 alter table "public"."phase_table" enable row level security;
 
 create table "public"."question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "questiontype" text not null,
     "questionorder" integer not null,
     "phaseid" uuid not null,
@@ -265,7 +265,7 @@ create table "public"."question_table" (
 alter table "public"."question_table" enable row level security;
 
 create table "public"."sections_table" (
-    "sectionid" uuid not null default uuid_generate_v4(),
+    "sectionid" uuid not null default gen_random_uuid(),
     "sectionname" text not null,
     "sectiondescription" text not null,
     "sectionorder" integer not null,
@@ -284,7 +284,7 @@ create table "public"."short_text_answer_table" (
 alter table "public"."short_text_answer_table" enable row level security;
 
 create table "public"."short_text_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "maxtextlength" integer not null,
     "formattingregex" text,
     "formattingdescription" text
@@ -319,7 +319,7 @@ create table "public"."video_upload_answer_table" (
 alter table "public"."video_upload_answer_table" enable row level security;
 
 create table "public"."video_upload_question_table" (
-    "questionid" uuid not null default uuid_generate_v4(),
+    "questionid" uuid not null default gen_random_uuid(),
     "maxfilesizeinmb" numeric not null
 );
 

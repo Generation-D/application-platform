@@ -22,7 +22,7 @@ INSERT INTO
     ) (
         select
             '00000000-0000-0000-0000-000000000000',
-            uuid_generate_v4 (),
+            gen_random_uuid(),
             'authenticated',
             'authenticated',
             'user' || (ROW_NUMBER() OVER ()) || '@example.com',
@@ -54,7 +54,7 @@ INSERT INTO
         updated_at
     ) (
         select
-            uuid_generate_v4 (),
+            gen_random_uuid(),
             id,
             id,
             format('{"sub":"%s","email":"%s"}', id :: text, email) :: jsonb,
@@ -87,7 +87,7 @@ INSERT INTO application_table (
     userid
 )
 SELECT
-    uuid_generate_v4 (),
+    gen_random_uuid(),
     id
 FROM
     auth.users
