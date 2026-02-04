@@ -1,3 +1,4 @@
+
 ### Uncomment to configure additional attributes of Application
 # application:
 #   timezone: Europe/Berlin  #default
@@ -8,27 +9,27 @@
 questions:
   phase-1:
     phaseLabel: "Kurzbewerbung"
-    startDate: 2026-03-02  # format: %Y-%m-%d
-    endDate: 2026-03-22  # format: %Y-%m-%d
+    startDate: 2024-12-23  # format: %Y-%m-%d
+    endDate: 2024-01-10  # format: %Y-%m-%d
     sections:
       - name: Allgemein
         description: "Bitte beantwortet folgende Fragen so ausführlich, dass wir Euer Projekt bestmöglich nachvollziehen können, achtet dabei jedoch bitte auf die Zeichenbegrenzungen:"
       - name: Euer Team
-        description: "Folgende Fragen gehen <b>nicht</b> in die Bewertung mit ein, sondern dienen dazu, Euch während des Wettbewerbsverlaufs zu kontaktieren oder Ausschlusskriterien zu überprüfen (Frage zum HGB-Eintrag und zur Bayerischen EliteAkademie). Die restlichen Fragen sind für unsere Statistik und zur Weiterentwicklung des Wettbewerbs."
+        description: "Folgende Fragen gehen <b>nicht</b> in die Bewertung mit ein, sondern dienen dazu, Euch während des Wettbewerbsverlaufs kontaktieren (Frage 9) oder Ausschlusskriterien zu überprüfen (Fragen 10-11). Die restlichen Fragen sind für unsere Statistik, damit wir den Wettbewerb stets weiter verbessern können (Fragen 12-16)."
 
     questions:
       # Section 1
       - questionType: shortText
         order: 1
-        question: "Bitte nennt den Namen des Start-ups bzw. Eures Projekts/ Eurer Idee."
+        question: "Bitte nennt den Namen Eurer Idee, des Projekts oder des Start-ups."
         mandatory: true
         maxTextLength: 60
-        note: "Beispiel: Wenn eure Initiative ‘GreenHarbor’ heißt schreibt bitte ins Textfeld nur: GreenHarbor"
+        note: "Beispiel: \"Unsere Initiative trägt den Namen 'GreenHarbor'.\""
         sectionNumber: 1
 
       - questionType: longText
         order: 2
-        question: "Was ist das gesellschaftliche Problem, das Ihr lösen möchtet? Warum ist es besonders wichtig genau dieses Problem zu lösen?"
+        question: "Was ist das gesellschaftliche Problem, das Ihr lösen möchtet? Warum ist es besonders wichtig dieses Problem zu lösen?"
         mandatory: true
         maxTextLength: 500
         note: "Beispiel: \"Wir möchten die hohe Plastikverschmutzung der Ozeane reduzieren, da dies eine akute Bedrohung für die Meeresbewohner und das globale Ökosystem darstellt…\""
@@ -67,7 +68,6 @@ questions:
           - "17. Partnerschaften zur Erreichung der Ziele"
         mandatory: true
         userInput: false
-        note: "Mehr zu den SDGs der UN: https://sdgs.un.org/goals"
         sectionNumber: 1
 
       - questionType: longText
@@ -104,16 +104,17 @@ questions:
 
       - questionType: imageUpload
         order: 9
-        question: "Welches Bild habt Ihr im Kopf, wenn Ihr an Eure Idee denkt? Ladet dazu genau ein Bild hoch. (Lasst Eurer Kreativität freien Lauf und verzichtet wenn möglich auf KI! Das Bild wird nicht veröffentlicht.)"
-        maxFileSizeInMB: 2.0
-        note: "Beispiele: Prototyp, Teamfoto, Vision, Logo, Problem"
-        mandatory: true
+        question: "Welches Bild habt Ihr im Kopf, wenn Ihr an Eure Idee denkt? Ladet dazu genau ein Bild hoch. (Lasst Eurer Kreativität freien Lauf und verzichtet wenn möglich auf KI! Das Bild wird in die Bewertung nicht mit einbezogen)"
+        maxFileSizeInMB: 2.0  # in Mega Byte
+        note: "Beispiel: [Bild hochladen: \"Strand mit sauberem Wasser und glücklichen Meeresbewohnern.\"]"
+        mandatory: false
         sectionNumber: 1
+
 
       # Section 2
       - questionType: shortText
         order: 10
-        preInformationBox: "Wir benötigen für den Wettbewerb Kontaktdaten zu einer Person im Gründerteam. Falls ihr ein größeres Team seid, möchtet ihr vielleicht einen Hauptansprechpartner außerhalb des Gründerteams benennen. Dies ist hier möglich, jedoch rein optional."
+        preInformationBox: "Wir benötigen für den Wettbewerb Kontaktdaten zu einer Person im Gründerteam. Falls ihr ein größeres Team seid, möchtet ihr vielleicht einen Hauptansprechpartner außerhalb des Gründerteams benennen. Dies ist hier möglich, jedoch rein optional. "
         question: "Bitte gib die E-Mailadresse einer Person im Gründerteam an."
         mandatory: true
         maxTextLength: 60
@@ -156,7 +157,6 @@ questions:
                 question: "Was ist Eure Handelsregisternummer?"
                 mandatory: true
                 maxTextLength: 100
-                note: "Beispiel: HRB 123456"
               - questionType: pdfUpload
                 question: "Bitte ladet ein Dokument hoch, in dem erkennbar ist, dass Eure Handelsregistereintragung nicht vor 2020 geschehen ist (max. 5 Jahre)"
                 maxFileSizeInMB: 2.0  # in Mega Byte
@@ -167,28 +167,43 @@ questions:
 
       - questionType: conditional
         order: 15
+        mandatory: true
         sectionNumber: 2
         question: "Habt ihr eine Webseite?"
         Answers:
           - value: "Ja"
             questions:
               - questionType: shortText
-                question: "Wie lautet der Link zur Webseite?"
+                question: "Wenn ja: Gibt gerne die Webadresse an."
                 mandatory: true
                 maxTextLength: 60
           - value: "Nein"
             questions: []
 
-      - questionType: shortText
+      - questionType: multipleChoice
         order: 16
+        question: "Ist eine Person aus Eurem Team Mitglied der Bayerischen EliteAkademie?"
+        minAnswers: 1
+        maxAnswers: 1
+        Answers:
+          - "Ja"
+          - "Nein"
+        mandatory: true
+        userInput: false
+        sectionNumber: 2
+
+      - questionType: shortText
+        order: 17
         question: "In welcher Stadt lokalisiert Ihr Euch hauptsächlich?"
         mandatory: true
         maxTextLength: 60
         note: "Beispiel: \"München\"."
         sectionNumber: 2
 
+
+
       - questionType: conditional
-        order: 17
+        order: 18
         mandatory: true
         sectionNumber: 2
         question: "Habt Ihr Euch mit Eurem Start-up zuvor schon einmal bei Generation-D beworben?"
@@ -212,56 +227,104 @@ questions:
           - value: "Nein"
             questions: []
 
+
       - questionType: multipleChoice
-        order: 18
-        question: "Wie seid Ihr zum ersten Mal auf Generation-D aufmerksam geworden? Eine möglichst genaue Antwort hilft uns sehr, den Wettbewerb bekannter zu machen! (Mehrfachauswahl möglich)"
+        order: 19
+        question: "Wie seid Ihr zum ersten Mal auf Generation-D aufmerksam geworden? (Mehrfachauswahl möglich) "
         minAnswers: 1
         maxAnswers: 3
         Answers:
-          - "Generation-D LinkedIn"
-          - "Generation-D Instagram"
-          - "Social-Media Post bei einem Partner"
-          - "Andere Social-Media-Kanäle"
-          - "Channel Beitrag (Slack, etc.)"
-          - "Website/Suchanfrage (Google, etc.)"
-          - "Flyer & Plakate in einer Hochschuleinrichtung"
-          - "Flyer & Plakate in einem Gründungszentrum/-initiative"
-          - "Flyer & Plakate woanders ausgehängt/ ausgehändigt"
-          - "Veranstaltung / Event"
-          - "Hochschulinterne Kanäle (z.B. Rundmail)"
-          - "Hochschulunabhängige Newsletter"
-          - "Empfehlung durch Professor:in oder Hochschulpersonal"
-          - "Empfehlung durch Gründungszentrum"
-          - "Empfehlung durch andere Organisation"
-          - "Empfehlung von Freunden und Bekannten"
-          - "Sonstige (bitte bei der nächsten Frage spezifizieren!)"
+        - "Generation-D LinkedIn"
+        - "Generation-D Instagram"
+        - "Social Media Post bei einem Partner"
+        - "Slack Channel Beitrag"
+        - "Website/Suchanfrage (Google, etc.)"
+        - "Pressemitteilung"
+        - "Flyer & Plakate in einer Hochschuleinrichtung"
+        - "Flyer & Plakate in einem Gründungszentrum/-initiative"
+        - "Flyer & Plakate woanders ausgehängt"
+        - "Empfehlung von Freunden und Bekannten"
+        - "Sonstiges"
         mandatory: true
         userInput: false
         sectionNumber: 2
 
-      - questionType: longText
-        order: 19
-        question: "(optional) Wie habt Ihr uns <u>konkret</u> gefunden? Auch hier würde uns ein Hinweis sehr helfen!"
-        mandatory: false
-        maxTextLength: 500
-        sectionNumber: 2
 
       - questionType: shortText
         order: 20
-        question: "Wie setzt sich Euer Team zusammen?"
-        mandatory: true
+        question: "Welche Staatsbürgerschaften haben Eure Teammitglieder?"
+        mandatory: false
         maxTextLength: 60
-        note: "Format: “männlich (Anzahl), weiblich (Anzahl), divers (Anzahl)”. Beispiel: “männlich 1, weiblich 2, divers 0”"
         sectionNumber: 2
 
-      - questionType: checkBox
+      - questionType: multipleChoice
         order: 21
-        question: "Ich bestätige, dass keine Person aus dem Team Mitglied der Bayerischen EliteAkademie ist."
-        mandatory: true
+        question: "Gibt es eine Frau oder nicht-binäre Person bei Euch im Gründerteam?"
+        minAnswers: 1
+        maxAnswers: 1
+        Answers:
+          - "Wir sind ein Team, das nur aus Frauen und non-binären Personen besteht"
+          - "Wir sind mind. paritätisch besetzt"
+          - "Wir haben mind. eine Frau/ non-binäre Person"
+          - "Wir haben keine Frau/ non-binäre Person"
+        mandatory: false
+        userInput: false
         sectionNumber: 2
 
       - questionType: checkBox
         order: 22
-        question: 'Ich habe die <u><a href="https://generation-d.org/gend_einverstaendniserklaerung_2026-docx/" target="_blank">Einverständnis-Erklärung</a></u> zur Teilnahme am Wettbewerb gelesen und stimme dieser zu.'
+        question: 'Ich habe die <u><a href="https://bewerbung.generation-d.org/files/Ablauf_des_Bewerbungsprozesses_2025.pdf" target="_blank">Einverständnis-Erklärung</a></u> zur Teilnahme am Wettbewerb gelesen und stimme dieser zu.'
         mandatory: true
         sectionNumber: 2
+
+  phase-2:
+    phaseLabel: "Read-Deck"
+    startDate: 2025-03-10
+    endDate: 2025-04-06
+    questions:
+      - questionType: shortText
+        order: 1
+        question: "Bitte gebt hier, im Format <i>Vorname</i> <i>Nachname</i>, durch Kommas getrennt, die Namen eures Gründungs- oder Kernteams an."
+        mandatory: true
+        maxTextLength: 300
+        note: "Beispiel: \"Marie Müller, Max Mustermann\""
+
+      - questionType: longText
+        order: 2
+        question: "Falls ihr einen Webauftritt (Website, LinkedIn, etc.) besitzt, bitte gebt hier alle betreffenden URLs an."
+        mandatory: false
+        maxTextLength: 500
+
+      - questionType: pdfUpload
+        order: 3
+        question: "Bitte ladet hier euer Read-Deck im PDF-Format hoch"
+        maxFileSizeInMB: 25.0  # in Mega Byte
+        mandatory: true
+        note: "[Dokument hochladen: Read-Deck]"
+
+  phase-3:
+    phaseLabel: "Lebensläufe & Interviews"
+    startDate: 2025-05-05
+    endDate: 2025-05-25
+    questions: []
+
+  phase-4:
+    phaseLabel: "LinkedIn Voting"
+    startDate: 2025-06-02
+    endDate: 2025-06-06
+    questions: 
+      - questionType: imageUpload
+        order: 1
+        question: "Bitte ladet hier ein Logo eures Startups hoch. Bitte benennt die Datei nach eurem Startup. (max. 10 MB) (ACHTUNG: Sollte das Logo nicht gespeichert werden, wenn ihr die Seite neuladet, dann löscht bitte eure Cookies/Browserdaten und probiert es erneut. Sollte es weiterhin nicht funktionieren, sendet das Logo (und Video) bitte an startups@generation-d.org.)"
+        maxFileSizeInMB: 10.0  # in Mega Byte
+        mandatory: true
+      - questionType: videoUpload
+        order: 2
+        question: "Bitte ladet hier das veröffentlichungsfertige Video für das LinkedIn-Voting hoch. Bitte benennt die Datei nach eurem Startup. (max. 50 MB) (ACHTUNG: Sollte euer Video größer als 50 MB sein, dann sendet uns bitte einen Link zum Download des Videos an startups@generation-d.org zu. Dies gilt auch, sollte das Video nicht gespeichert werden, wenn ihr die Seite neuladet.)"
+        maxFileSizeInMB: 50.0  # in Mega Byte
+        mandatory: true
+      - questionType: longText
+        order: 3
+        question: "Bitte gebt hier den druckfertigen Text für euren LinkedIn-Post an. (max. 1000 Zeichen)"
+        maxTextLength: 1000
+        mandatory: true
