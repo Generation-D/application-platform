@@ -97,7 +97,7 @@ export const ProgressBar = ({
         ) : (
           <div className="md-3 italic text-gray-500">
             Eure Bewerbungsphase ist vollständig. Die Phase ist seit dem{" "}
-            {stringDate} zu Ende. Ihr könnt eure Ergebnisse weiterhin einsehen.
+            {stringDate} zu Ende. Ihr könnt Eure Ergebnisse weiterhin einsehen.
           </div>
         ))}
     </AwaitingChild>

@@ -89,7 +89,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
       !checkRegex(formattingregex, textinput)
     ) {
       updateAnswerState("");
-      alert(`Dieses ${formattingdescription} Format wird nicht unterstützt!`);
+      alert(`Dieses Format wird nicht unterstützt!`);
       return;
     }
     saveShortTextAnswer(textinput, questionid);
