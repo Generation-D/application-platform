@@ -169,6 +169,7 @@ questions:
         order: 15
         sectionNumber: 2
         question: "Habt ihr eine Webseite?"
+        mandatory: true
         Answers:
           - value: "Ja"
             questions:
