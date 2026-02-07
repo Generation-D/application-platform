@@ -56,7 +56,7 @@ describe('template spec', () => {
       .next('div.mt-1')
       .find('form')
       .find('input[type="file"]')
-      .attachFile('files/file_example_MP4_1280_10MG.mp4');
+      .attachFile('files/file_example_MP4_1280_10MB.mp4');
     cy.get('.mt-4 > .apl-button-fixed').click();
     
     cy.get('.items-start > :nth-child(4)').click();

@@ -36,7 +36,7 @@ questions:
 
       - questionType: longText
         order: 3
-        question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet ihr euch gerade in der Projektumsetzung?"
+        question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet Ihr euch gerade in der Projektumsetzung?"
         mandatory: true
         maxTextLength: 500
         note: "Beispiel: \"Unsere Idee ist die Entwicklung biologisch abbaubarer Verpackungen und die Implementierung eines Recycling-Netzwerks für Küstenregionen. Wir haben vor 2 Monaten unsere GmbH gegründet und erste Interviews mit Stakeholdern geführt…\""
@@ -72,7 +72,7 @@ questions:
 
       - questionType: longText
         order: 5
-        question: "Inwiefern erfüllt ihr die ausgewählten SDGs?"
+        question: "Inwiefern erfüllt Ihr die ausgewählten SDGs?"
         mandatory: true
         maxTextLength: 500
         note: "Beispiel: \"Durch die Reduzierung von Plastikverpackungen tragen wir zum Wohl der Lebewesen unter und im Wasser bei, was zur Erreichung des SDGs 17 beiträgt. Darüber hinaus…\""
@@ -88,7 +88,7 @@ questions:
 
       - questionType: longText
         order: 7
-        question: "Bitte erläutert Euer Geschäftsmodell bzw. wie Ihr Einnahmen generieren möchtet. Es geht hierbei besonders um das Konzept, ihr müsst noch keine genauen Zahlen nennen."
+        question: "Bitte erläutert Euer Geschäftsmodell bzw. wie Ihr Einnahmen generieren möchtet. Es geht hierbei besonders um das Konzept, Ihr müsst noch keine genauen Zahlen nennen."
         mandatory: true
         maxTextLength: 500
         note: "Beispiel: \"Unser Geschäftsmodell basiert auf dem Verkauf der nachhaltigen Verpackungen an Unternehmen sowie auf Partnerschaften mit Recyclingunternehmen…\""
@@ -105,16 +105,16 @@ questions:
       - questionType: imageUpload
         order: 9
         question: "Welches Bild habt Ihr im Kopf, wenn Ihr an Eure Idee denkt? Ladet dazu genau ein Bild hoch. (Lasst Eurer Kreativität freien Lauf und verzichtet wenn möglich auf KI! Das Bild wird nicht veröffentlicht.)"
-        maxFileSizeInMB: 2.0
-        note: "Beispiele: Prototyp, Teamfoto, Vision, Logo, Problem"
+        maxFileSizeInMB: 5.0
+        note: "Beispiele: Prototyp, Teamfoto, Vision, Logo, Problem (max. 5 MB)"
         mandatory: true
         sectionNumber: 1
 
       # Section 2
       - questionType: shortText
         order: 10
-        preInformationBox: "Wir benötigen für den Wettbewerb Kontaktdaten zu einer Person im Gründerteam. Falls ihr ein größeres Team seid, möchtet ihr vielleicht einen Hauptansprechpartner außerhalb des Gründerteams benennen. Dies ist hier möglich, jedoch rein optional."
-        question: "Bitte gib die E-Mailadresse einer Person im Gründerteam an."
+        preInformationBox: "Wir benötigen für den Wettbewerb Kontaktdaten zu einer Person im Gründerteam. Falls Ihr ein größeres Team seid, möchtet Ihr vielleicht einen Hauptansprechpartner/ eine Hauptansprechpartnerin außerhalb des Gründerteams benennen. Dies ist hier möglich, jedoch rein optional. "
+        question: "Bitte gib die E-Mail-Adresse einer Person im Gründerteam an."
         mandatory: true
         maxTextLength: 60
         formattingRegex: EMAIL
@@ -130,7 +130,7 @@ questions:
 
       - questionType: shortText
         order: 12
-        question: "Bitte gib die E-Mailadresse Eures Hauptansprechpartners an."
+        question: "Bitte gib die E-Mail-Adresse Eures Hauptansprechpartners/ Eurer Hauptansprechpartnerin an."
         mandatory: false
         maxTextLength: 60
         formattingRegex: EMAIL
@@ -159,7 +159,7 @@ questions:
                 note: "Beispiel: HRB 123456"
               - questionType: pdfUpload
                 question: "Bitte ladet ein Dokument hoch, in dem erkennbar ist, dass Eure Handelsregistereintragung nicht vor 2020 geschehen ist (max. 5 Jahre)"
-                maxFileSizeInMB: 2.0  # in Mega Byte
+                maxFileSizeInMB: 5.0  # in Mega Byte
                 mandatory: true
                 note: "[Dokument hochladen: Handelsregistereintragung]"
           - value: "Nein"
@@ -168,7 +168,7 @@ questions:
       - questionType: conditional
         order: 15
         sectionNumber: 2
-        question: "Habt ihr eine Webseite?"
+        question: "Habt Ihr eine Webseite?"
         mandatory: true
         Answers:
           - value: "Ja"
@@ -231,7 +231,7 @@ questions:
           - "Veranstaltung / Event"
           - "Hochschulinterne Kanäle (z.B. Rundmail)"
           - "Hochschulunabhängige Newsletter"
-          - "Empfehlung durch Professor:in oder Hochschulpersonal"
+          - "Empfehlung durch Professor*in oder Hochschulpersonal"
           - "Empfehlung durch Gründungszentrum"
           - "Empfehlung durch andere Organisation"
           - "Empfehlung von Freunden und Bekannten"
@@ -252,7 +252,7 @@ questions:
         question: "Wie setzt sich Euer Team zusammen?"
         mandatory: true
         maxTextLength: 60
-        note: "Format: “männlich (Anzahl), weiblich (Anzahl), divers (Anzahl)”. Beispiel: “männlich 1, weiblich 2, divers 0”"
+        note: "Bitte antworte im Format: “männlich (Anzahl), weiblich (Anzahl), divers (Anzahl)”. Wenn Euer Team z.B. aus einer männlichen Person und zwei weiblichen Personen besteht, schreibt bitte: “männlich 1, weiblich 2, divers 0”"
         sectionNumber: 2
 
       - questionType: checkBox
