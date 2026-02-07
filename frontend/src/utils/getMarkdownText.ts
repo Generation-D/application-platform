@@ -1,12 +1,12 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
 import { createCurrentTimestamp } from "./helpers";
-import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import Logger from "@/logger/logger";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = new Logger("utils/getMarkdownText");
 
 export default async function getOverviewPageText() {
-  const supabase = getSupabaseBrowserClient();
+  const supabase = await getSupabaseCookiesUtilClient();
   const currentTime = new Date(createCurrentTimestamp());
   const currentPhase = await extractCurrentPhase(currentTime);
   const phases_status = await fetch_phases_status();
