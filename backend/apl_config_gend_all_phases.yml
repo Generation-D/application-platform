@@ -23,7 +23,7 @@ questions:
         question: "Bitte nennt den Namen des Start-ups bzw. Eures Projekts/ Eurer Idee."
         mandatory: true
         maxTextLength: 60
-        note: "Beispiel: Wenn eure Initiative ‘GreenHarbor’ heißt schreibt bitte ins Textfeld nur: GreenHarbor"
+        note: "Beispiel: Wenn Eure Initiative ‘GreenHarbor’ heißt schreibt bitte ins Textfeld nur: GreenHarbor"
         sectionNumber: 1
 
       - questionType: longText
@@ -36,7 +36,7 @@ questions:
 
       - questionType: longText
         order: 3
-        question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet Ihr euch gerade in der Projektumsetzung?"
+        question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet Ihr Euch gerade in der Projektumsetzung?"
         mandatory: true
         maxTextLength: 500
         note: "Beispiel: \"Unsere Idee ist die Entwicklung biologisch abbaubarer Verpackungen und die Implementierung eines Recycling-Netzwerks für Küstenregionen. Wir haben vor 2 Monaten unsere GmbH gegründet und erste Interviews mit Stakeholdern geführt…\""

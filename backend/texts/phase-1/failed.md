@@ -1,7 +1,7 @@
-## Schön, dass ihr dabei gewesen seid!
+## Schön, dass Ihr dabei gewesen seid!
 
-Danke, dass ihr 2025 am Wettbewerb von Generation-D teilgenommen habt. Auch wenn ihr dieses Mal nicht weiterkommt, möchten wir euch ermutigen, weiter an eurer Idee zu arbeiten.
+Danke, dass dieses Jahr am Wettbewerb von Generation-D teilgenommen habt. Auch wenn Ihr dieses Mal nicht weiterkommt, möchten wir Euch ermutigen, weiter an Eurer Idee zu arbeiten.
 
-Wir wünschen euch viel Erfolg auf eurem weiteren Weg!
+Wir wünschen Euch viel Erfolg auf Eurem weiteren Weg!
 
-Die nächste Wettbewerbsrunde von Generation-D startet voraussichtlich im Januar 2025 und wir freuen uns, euch mit einer neuen oder weiterentwickelten Idee erneut kennenzulernen.
+Die nächste Wettbewerbsrunde von Generation-D startet voraussichtlich im Frühjahr 2027 und wir freuen uns, Euch mit einer neuen oder weiterentwickelten Idee erneut wiederzusehen!

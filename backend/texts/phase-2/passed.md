@@ -1,5 +1,5 @@
-## Gratulation, ihr seid Spitze! …und eine weitere Runde weiter!
+## Gratulation, Ihr seid Spitze! …und eine weitere Runde weiter!
 
-Wir freuen uns, euch mitteilen zu dürfen, dass die Bewertung eurer Beiträge abgeschlossen ist. Eure Idee hat uns überzeugt, und wir möchten euch herzlich dazu gratulieren, dass ihr es in die nächste Runde unseres Wettbewerbs geschafft habt!
+Wir freuen uns, Euch mitteilen zu dürfen, dass die Bewertung Eurer Beiträge abgeschlossen ist. Eure Idee hat uns überzeugt, und wir möchten Euch herzlich dazu gratulieren, dass Ihr es in die nächste Runde unseres Wettbewerbs geschafft habt!
 
-Wir werden uns bis zum 22. April mit euch in Verbindung setzen, um die Details der nächsten Runde und den Zeitplan für weitere Schritte zu besprechen. In der Zwischenzeit stehen wir euch gerne zur Verfügung, wenn ihr Fragen habt oder weitere Informationen benötigt.
+Wir werden uns zeitnah mit Euch in Verbindung setzen, um die Details der nächsten Runde und den Zeitplan für weitere Schritte zu besprechen. In der Zwischenzeit stehen wir Euch gerne zur Verfügung, wenn Ihr Fragen habt oder weitere Informationen benötigt.
