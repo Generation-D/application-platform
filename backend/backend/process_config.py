@@ -161,7 +161,7 @@ def create_data_phase_table(
         'phaselabel': phaselabel,
         'phaseorder': ordernumber,
         'startdate': convert_to_timezone(startdate),
-        'enddate': convert_to_timezone(enddate),
+        'enddate': convert_to_timezone(enddate, end_of_day=True),
         'sectionsenabled': sectionsenabled,
     }
 

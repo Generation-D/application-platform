@@ -17,9 +17,12 @@ def dt_is_iso8601(date_string):
         return False
 
 
-def convert_to_timezone(date: datetime):
+def convert_to_timezone(date: datetime, end_of_day: bool = False):
     preferred_timezone = pytz.timezone('Europe/Berlin')
     utc_tz = pytz.timezone('UTC')
-    preferred_datetime = preferred_timezone.localize(datetime(date.year, date.month, date.day, 0, 0, 0))
+    if end_of_day:
+        preferred_datetime = preferred_timezone.localize(datetime(date.year, date.month, date.day, 23, 59, 0))
+    else:
+        preferred_datetime = preferred_timezone.localize(datetime(date.year, date.month, date.day, 0, 0, 0))
     utc_datetime = preferred_datetime.astimezone(utc_tz)
     return utc_datetime.strftime(DATETIME_FORMAT)
