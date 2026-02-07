@@ -4,3 +4,11 @@ create table if not exists phase_texts (
   html_content text not null,
   updated_at timestamptz default now()
 );
+
+alter table "public"."phase_texts" enable row level security;
+
+create policy "Users can read phase texts"
+on public.phase_texts
+for select
+to authenticated
+using (true);
