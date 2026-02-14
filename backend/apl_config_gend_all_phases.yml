@@ -106,6 +106,7 @@ questions:
         order: 9
         question: "Welches Bild habt Ihr im Kopf, wenn Ihr an Eure Idee denkt? Ladet dazu genau ein Bild hoch. (Lasst Eurer Kreativität freien Lauf und verzichtet wenn möglich auf KI! Das Bild wird nicht veröffentlicht.)"
         maxFileSizeInMB: 5.0
+        preInformationBox: "Bitte wartet, bis das Bild vollständig hochgeladen ist, bevor Ihr zur nächsten Frage weitergeht oder die Seite verlässt."
         note: "Beispiele: Prototyp, Teamfoto, Vision, Logo, Problem (max. 5 MB)"
         mandatory: true
         sectionNumber: 1

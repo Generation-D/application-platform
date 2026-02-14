@@ -3746,4 +3746,6 @@ using ((EXISTS ( SELECT 1
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
 
 
+create view public.users as select * from auth.users;
+revoke all on public.users from anon, authenticated;
 
