@@ -67,7 +67,7 @@ questions:
           - "17. Partnerschaften zur Erreichung der Ziele"
         mandatory: true
         userInput: false
-        note: "Mehr zu den SDGs der UN: https://sdgs.un.org/goals"
+        note: "Mehr zu den SDGs der UN findet Ihr unter https://sdgs.un.org/goals"
         sectionNumber: 1
 
       - questionType: longText
