@@ -267,3 +267,28 @@ questions:
         question: 'Ich habe die <u><a href="https://generation-d.org/gend_einverstaendniserklaerung_2026-docx/" target="_blank">Einverständnis-Erklärung</a></u> zur Teilnahme am Wettbewerb gelesen und stimme dieser zu.'
         mandatory: true
         sectionNumber: 2
+
+  phase-2:
+    phaseLabel: "Read-Deck"
+    startDate: 2026-04-13
+    endDate: 2026-05-10
+    questions:
+      - questionType: shortText
+        order: 1
+        question: "Bitte gebt hier, im Format <i>Vorname</i> <i>Nachname</i>, durch Kommas getrennt, die Namen Eures Gründungs- oder Kernteams an."
+        mandatory: true
+        maxTextLength: 300
+        note: "Beispiel: \"Marie Müller, Max Mustermann\""
+
+      - questionType: longText
+        order: 2
+        question: "Falls ihr einen Webauftritt (Website, LinkedIn, etc.) besitzt, bitte gebt hier alle betreffenden URLs an."
+        mandatory: false
+        maxTextLength: 500
+
+      - questionType: pdfUpload
+        order: 3
+        question: "Bitte ladet hier Euer Read-Deck im PDF-Format hoch."
+        maxFileSizeInMB: 25.0  # in Mega Byte
+        mandatory: true
+        note: "[Dokument hochladen: Read-Deck]"
