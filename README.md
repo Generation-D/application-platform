@@ -257,3 +257,27 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
     - HTTP/2 Support: On
     - HSTS Enabled: On
     - Agree to Terms of Service
+
+
+## DB Reset Workflow, Load Phases and Phase Texts 
+
+Link the Supabase CLI to your project. You will have to authenticate yourself in the browser and select the correct project.
+```
+supabase login
+supabase link
+```
+
+### Reset the linked Supabase DB
+This will not delete the database, but will only reset the data.<br>
+IMPORTANT: Do not reset the DB after the start of the competition year!<br>
+`supabase db reset --linked --no-seed`
+
+### Load the current phase config and phase texts
+IMPORTANT: Check the .env file beforehand to make sure that the correct DB is linked.<br>
+From the project root folder, run:
+```
+cd backend
+poetry run python backend/process_config.py --config apl_config_gend_all_phases.yml --env_file ../frontend/.env 
+poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+```
+
