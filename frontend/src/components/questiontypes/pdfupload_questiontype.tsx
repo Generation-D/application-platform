@@ -33,7 +33,7 @@ export async function savePdfUploadAnswer(
     fileName: "pdfname",
     bucketPrefix: "pdf",
     validTypes: ["application/pdf"],
-    maxfilesizeinmb: 10, // or pass as prop if needed
+    maxfilesizeinmb: 25, // or pass as prop if needed
     storageSaveName,
   });
 }
