@@ -45,7 +45,7 @@ Ansonsten bitten wir Euch noch darum, Eure Folien gedanklich in 4 Abschnitte zu 
 
 Wir wünschen Euch viel Erfolg beim Erstellen Eures Read-Decks. Wir haben [hier](https://generation-d.org/wp-content/uploads/2026/04/2026_Erklaerung_der_Akronyme.pdf) eine Erklärung der Abkürzungen erstellt. Wie schon eingangs erwähnt: Wichtig ist, dass wir ein möglichst ehrliches, originelles und vollständiges Bild von Euch und Eurem Projekt oder Start-up erhalten und traut Euch ruhig, konkret zu werden.
 
-Weiterhin ist Eure Teilnahme an der 2. Phase von Generation-D auch mit der freiwilligen Aufnahme in unsere Alumni-Community verbunden. Wir laden regelmäßig Start-ups und Projekte aus diesem Kreis ein, um mit uns hochkarätige Gipfel oder Messen zu besuchen oder verweisen euch an andere großartige Gelegenheiten zum Netzwerken oder um Aufmerksamkeit für Eure Mission zu generieren. Nachfolgend der Link zu unserer Generation-D LinkedIn-Alumni-Gruppe: https://www.linkedin.com/groups/12789302/
+Weiterhin ist Eure Teilnahme an der 2. Phase von Generation-D auch mit der freiwilligen Aufnahme in unsere Alumni-Community verbunden. Wir laden regelmäßig Start-ups und Projekte aus diesem Kreis ein, um mit uns hochkarätige Gipfel oder Messen zu besuchen oder verweisen euch an andere großartige Gelegenheiten zum Netzwerken oder um Aufmerksamkeit für Eure Mission zu generieren. Nachfolgend der Link zu unserer Generation-D LinkedIn-Alumni-Gruppe: [https://www.linkedin.com/groups/12789302/](https://www.linkedin.com/groups/12789302/)
 
 Wie immer, meldet Euch bei Fragen jederzeit gerne unter [startups@generation-d.org](mailto:startups@generation-d.org).
 
