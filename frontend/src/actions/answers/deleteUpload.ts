@@ -3,11 +3,9 @@
 import { ImageAnswerResponse } from "@/components/questiontypes/imageupload_questiontype";
 import { PdfAnswerResponse } from "@/components/questiontypes/pdfupload_questiontype";
 import { VideoAnswerResponse } from "@/components/questiontypes/videoupload_questiontype";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import { getCurrentUser, deleteAnswer } from "./answers";
-
-const log = new Logger("actions/answers/deleteUpload");
 
 type UploadRpcName =
   | "fetch_image_upload_answer_table"
@@ -30,7 +28,7 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
     })
     .single<T>();
   if (uploadError) {
-    log.error(JSON.stringify(uploadError));
+    logger.error(JSON.stringify(uploadError));
   }
   const bucket_name = `${bucketPrefix}-${questionid}`;
   const fileName = uploadData?.[fileProperty];
@@ -39,7 +37,7 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
       .from(bucket_name)
       .remove([`${user.id}_${fileName}`]);
     if (deleteError) {
-      log.error(JSON.stringify(deleteError));
+      logger.error(JSON.stringify(deleteError));
     }
   }
   await deleteAnswer(questionid);

@@ -6,9 +6,9 @@ import Link from "next/link";
 
 const Apl_Footer: React.FC = () => {
   return (
-    <footer className="bg-primary h-[256px] items-center justify-center space-y-8 mt-4">
-      <div className="items-end md:items-center justify-center flex flex-row md:flex-col space-y-8 md:space-x-8">
-        <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-4 md:space-y-0 text-secondary font-nunito">
+    <footer className="bg-primary h-[256px] flex flex-col items-center justify-center gap-8 mt-4">
+      <div className="items-end md:items-center justify-center flex flex-row md:flex-col gap-8">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-secondary font-nunito">
           <Link
             href="https://generation-d.org/legal/"
             target="_blank"
@@ -31,7 +31,7 @@ const Apl_Footer: React.FC = () => {
             Datenschutzerklärung
           </Link>
         </div>
-        <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-4 md:space-y-0 ml-3 md:ml-0">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8 ml-3 md:ml-0">
           {/*
           <Link href="https://de-de.facebook.com/GenerationD/" target="_blank"  className="m-0 p-0">
             <Image
@@ -84,7 +84,7 @@ const Apl_Footer: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="items-center justify-center text-secondary font-nunito flex flex-col ">
+      <div className="text-secondary font-nunito flex flex-col items-center">
         ©{new Date(Date.now()).getFullYear()} Generation-D. All rights
         reserved.
       </div>

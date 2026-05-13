@@ -1,11 +1,10 @@
 "use server";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("actions/answers/multipleChoice");
 
 export async function saveMultipleChoiceAnswer(
   answertext: string,
@@ -24,7 +23,7 @@ export async function saveMultipleChoiceAnswer(
           selectedchoice: answertext,
         });
       if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
+        logger.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "updated") {
       const { error: updateAnswerError } = await supabase
@@ -34,7 +33,7 @@ export async function saveMultipleChoiceAnswer(
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
+        logger.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -66,7 +65,7 @@ export async function fetchMultipleChoiceAnswer(
     if (multipleChoiceError.code == "PGRST116") {
       return initialstate;
     }
-    log.error(JSON.stringify(multipleChoiceError));
+    logger.error(JSON.stringify(multipleChoiceError));
   }
   return multipleChoiceData || initialstate;
 }

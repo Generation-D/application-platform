@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -15,7 +15,6 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
 
-const log = new Logger("ImageUploadQuestionType");
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -96,7 +95,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        log.error(JSON.stringify(error));
+        logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -171,7 +170,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     try {
       await saveImageUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
-      log.error(JSON.stringify(error));
+      logger.error(JSON.stringify(error));
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

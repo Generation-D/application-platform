@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -12,8 +12,6 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
-
-const log = new Logger("PDFUploadQuestionType");
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
@@ -96,7 +94,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        log.error(JSON.stringify(error));
+        logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -173,7 +171,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     try {
       await savePdfUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
-      log.error(JSON.stringify(error));
+      logger.error(JSON.stringify(error));
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

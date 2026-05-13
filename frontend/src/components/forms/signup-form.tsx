@@ -9,7 +9,6 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
-import { getPublicEnv } from "@/utils/env";
 
 interface messageType {
   message: string;
@@ -131,8 +130,7 @@ export default function SignUpForm() {
         <div className="flex justify-center mx-auto">
           <Turnstile
             siteKey={
-              getPublicEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY") ||
-              "1x00000000000000000000AA"
+              process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!
             }
             onSuccess={(token) => {
               setCaptchaToken(token);

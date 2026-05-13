@@ -5,14 +5,12 @@ import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import Logger from "@/logger/logger";
 import { getURL, isValidPassword } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
 } from "@/supabase-utils/cookiesUtilClient";
-
-const log = new Logger("actions/auth");
+import { logger } from "@/logger/logger";
 
 export async function signUpUser(prevState: any, formData: FormData) {
   const schema = z.object({
@@ -30,19 +28,19 @@ export async function signUpUser(prevState: any, formData: FormData) {
     captchaToken: formData.get("captcha"),
   });
   if (!signUpFormData.success) {
-    log.error(JSON.stringify(signUpFormData.error));
+    logger.error(JSON.stringify(signUpFormData.error));
     return { message: "User Registrierung fehlgeschlagen", status: "ERROR" };
   }
 
   if (signUpFormData.data.legalConfirmation != "on") {
-    log.debug("Legal Confirmation must be accepted");
+    logger.debug("Legal Confirmation must be accepted");
     return {
       message: "Du musst der Datenschutzerklärung zustimmen",
       status: "ERROR",
     };
   }
   if (!isValidPassword(signUpFormData.data.password)) {
-    log.debug("Password Requirements don't match");
+    logger.debug("Password Requirements don't match");
     return {
       message:
         "Das Passwort muss mind. 1 Goßbuchstaben, mind. 1 Kleinbuchstaben, mind. 1 Zahl, mind. 1 Sonderzeichen enthalten und 8-72 Zeichen lang sein!",
@@ -53,7 +51,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
   if (
     signUpFormData.data.password != signUpFormData.data.passwordConfirmation
   ) {
-    log.debug("Passwords don't match");
+    logger.debug("Passwords don't match");
     return { message: `Passwörter stimmen nicht überein!`, status: "ERROR" };
   }
   try {
@@ -68,7 +66,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
     });
     revalidatePath("/login");
     if (userError) {
-      log.error(JSON.stringify(userError));
+      logger.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
 
@@ -77,7 +75,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
       userData.user.identities &&
       userData.user.identities.length === 0
     ) {
-      log.debug("It already exists an Profile with this Email Address.");
+      logger.debug("It already exists an Profile with this Email Address.");
       return {
         message: "Es existiert bereits ein Profil mit dieser Email Adresse!",
         status: "ERROR",
@@ -89,14 +87,14 @@ export async function signUpUser(prevState: any, formData: FormData) {
       .insert({ userid: userData.user!.id, userrole: 1, isactive: true });
     if (userProfileError) {
       if (userProfileError.code == "23505") {
-        log.debug("User already registered. Resent Confirmation Email");
+        logger.debug("User already registered. Resent Confirmation Email");
         return {
           message:
             "Der User war zwar bereits registriert, dir wurde jedoch erneut eine Email gesendet, bitte schau in dein Postfach!",
           status: "SUCCESS",
         };
       }
-      log.error(JSON.stringify(userProfileError));
+      logger.error(JSON.stringify(userProfileError));
       return { message: userProfileError.message, status: "ERROR" };
     }
     const sendData = { userid: userData!.user!.id };
@@ -104,16 +102,16 @@ export async function signUpUser(prevState: any, formData: FormData) {
       .from("application_table")
       .insert(sendData);
     if (applicationError) {
-      log.error(JSON.stringify(applicationError));
+      logger.error(JSON.stringify(applicationError));
       return { message: applicationError.message, status: "ERROR" };
     }
-    log.info(`Signed Up the following User: ${userData.user?.email}`);
+    logger.info(`Signed Up the following User: ${userData.user?.email}`);
     return {
       message: `Wir haben dir eine Email geschickt!`,
       status: "SUCCESS",
     };
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     return {
       message: "Etwas ist schief gelaufen, bitte probiere es nocheinmal.",
       status: "ERROR",
@@ -134,7 +132,7 @@ export async function signInUser(prevState: any, formData: FormData) {
   });
 
   if (!signInFormData.success) {
-    log.error(JSON.stringify(signInFormData.error));
+    logger.error(JSON.stringify(signInFormData.error));
     return { message: "User Login fehlgeschlagen" };
   }
 
@@ -153,11 +151,11 @@ export async function signInUser(prevState: any, formData: FormData) {
       });
     if (userError) {
       if (userError.status == 400) {
-        log.debug("Invalid Login Credentials");
-        log.error(userError.message);
+        logger.debug("Invalid Login Credentials");
+        logger.error(userError.message);
         return { message: "Deine Login Daten sind ungültig!" };
       }
-      log.error(JSON.stringify(userError));
+      logger.error(JSON.stringify(userError));
       return { message: `Fehler: ${userError.message}` };
     }
     const { data: profileData, error: profileError } = await supabase
@@ -166,11 +164,11 @@ export async function signInUser(prevState: any, formData: FormData) {
       .eq("userid", userData.user.id)
       .single();
     if (profileError) {
-      log.error(JSON.stringify(profileError));
+      logger.error(JSON.stringify(profileError));
       return { message: `Fehler: ${profileError.message}` };
     }
     if (profileData && !profileData.isactive) {
-      log.error(`Deactivated User (${userData.user.email}) tried to login`);
+      logger.error(`Deactivated User (${userData.user.email}) tried to login`);
       await supabase.auth.signOut();
       return {
         message:
@@ -179,7 +177,7 @@ export async function signInUser(prevState: any, formData: FormData) {
     }
     revalidatePath("/");
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     return {
       message: "Etwas ist schief gelaufen. Bitte probiere es nocheinmal",
     };
@@ -201,7 +199,7 @@ export async function sendResetPasswordLink(
   });
 
   if (!resetPasswordFormData.success) {
-    log.error(JSON.stringify(resetPasswordFormData.error));
+    logger.error(JSON.stringify(resetPasswordFormData.error));
     return { message: "Passwort zurücksetzen fehlgeschlagen", status: "ERROR" };
   }
   try {
@@ -216,17 +214,17 @@ export async function sendResetPasswordLink(
         captchaToken: resetPasswordFormData.data.captchaToken,
       });
     if (PasswordResetError) {
-      log.error(JSON.stringify(PasswordResetError));
+      logger.error(JSON.stringify(PasswordResetError));
       return { message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    logger.info(`Reset Password for ${email}`);
     return {
       message: `Wenn du einen Account bei uns besitzt wurde dir ein Passwort Zurücksetzen Link gesendet!`,
       status: "SUCCESS",
     };
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     return {
       message: "Etwas ist schief gelaufen. Bitte probiere es nocheinmal",
       status: "ERROR",
@@ -242,26 +240,26 @@ export async function deleteUser(): Promise<{
     const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) {
-      log.error(JSON.stringify(userError));
+      logger.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
-    log.info(`Deleting User ${userData.user.email}`);
+    logger.info(`Deleting User ${userData.user.email}`);
     const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
     const { error: deleteUserError } =
       await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
     if (deleteUserError) {
-      log.error(JSON.stringify(deleteUserError));
+      logger.error(JSON.stringify(deleteUserError));
       return { message: deleteUserError.message, status: "ERROR" };
     }
     revalidatePath("/");
   } catch (error) {
-    log.info(JSON.stringify(error));
+    logger.info(JSON.stringify(error));
     return {
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",
     };
   }
-  log.info("Successfully deleted User!");
+  logger.info("Successfully deleted User!");
   return {
     message: "Der User wurde erfolgreich gelöscht!",
     status: "SUCCESS",
@@ -281,11 +279,11 @@ export async function updatePassword(prevState: any, formData: FormData) {
     reenter_password: formData.get("reenter_password"),
   });
   if (!updatePasswordFormData.success) {
-    log.error(JSON.stringify(updatePasswordFormData.error));
+    logger.error(JSON.stringify(updatePasswordFormData.error));
     return { message: "Passwort updaten fehlgeschlagen", status: "ERROR" };
   }
   if (!isValidPassword(updatePasswordFormData.data.new_password)) {
-    log.debug("Password Requirements don't match");
+    logger.debug("Password Requirements don't match");
     return {
       message:
         "Das Passwort muss mind. 1 Goßbuchstaben, mind. 1 Kleinbuchstaben, mind. 1 Zahl, mind. 1 Sonderzeichen enthalten und 8-72 Zeichen lang sein!",
@@ -296,7 +294,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
     updatePasswordFormData.data.new_password !=
     updatePasswordFormData.data.reenter_password
   ) {
-    log.debug("Passwords don't match");
+    logger.debug("Passwords don't match");
     return { message: "Passwörter stimmen nicht überein!", status: "ERROR" };
   }
   try {
@@ -309,7 +307,7 @@ export async function updatePassword(prevState: any, formData: FormData) {
         userError.message ==
         "New password should be different from the old password."
       ) {
-        log.debug("Old and new Passwords have to differ.");
+        logger.debug("Old and new Passwords have to differ.");
         return {
           message:
             "Dein neues Passwort muss sich vom vorherigen Passwort unterscheiden!",
@@ -321,13 +319,13 @@ export async function updatePassword(prevState: any, formData: FormData) {
     }
     revalidatePath("/");
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     return {
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",
     };
   }
-  log.info("Successfully updated Password.");
+  logger.info("Successfully updated Password.");
   redirect("/");
 }
 
@@ -342,7 +340,7 @@ export async function signInWithSlack() {
   });
 
   if (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     throw error;
   }
   if (data && data.url) {
@@ -368,7 +366,7 @@ export async function signInWithMagicLink(prevState: any, formData: FormData) {
     },
   });
   if (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     throw error;
   }
 }
@@ -388,17 +386,17 @@ export async function sendResetPasswordLinkFromSettings(
         },
       );
     if (PasswordResetError) {
-      log.error(JSON.stringify(PasswordResetError));
+      logger.error(JSON.stringify(PasswordResetError));
       return { message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    logger.info(`Reset Password for ${email}`);
     return {
       message: `Dir wurde ein Passwort Zurücksetzen Link gesendet!`,
       status: "SUCCESS",
     };
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     return {
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",

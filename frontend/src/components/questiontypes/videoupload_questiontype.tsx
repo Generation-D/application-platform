@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -12,8 +12,6 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
-
-const log = new Logger("VideoUploadQuestionType");
 
 export interface VideoAnswerResponse {
   answerid: string;
@@ -94,7 +92,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        log.error(JSON.stringify(error));
+        logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -172,7 +170,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       await saveVideoUploadAnswer(questionid, formData, maxfilesizeinmb);
       // Handle success (e.g., showing a success message, resetting states)
     } catch (error) {
-      log.error(JSON.stringify(error));
+      logger.error(JSON.stringify(error));
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

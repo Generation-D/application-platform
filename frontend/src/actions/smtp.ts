@@ -2,9 +2,7 @@
 
 import nodemailer from "nodemailer";
 
-import Logger from "@/logger/logger";
-
-const log = new Logger("actions/smtp");
+import { logger } from "@/logger/logger";
 
 export async function sendEmail(to: string, subject: string, html: string) {
   try {
@@ -27,6 +25,6 @@ export async function sendEmail(to: string, subject: string, html: string) {
       html, // HTML body content
     });
   } catch (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
   }
 }

@@ -6,7 +6,7 @@ import { UserRole } from "./utils/userRole";
 
 // Can't use own Logger in middleware, because of https://nextjs.org/docs/messages/node-module-in-edge-runtime
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { supabase, response } = getSupabaseReqResClient({ request: request });
 
   const {

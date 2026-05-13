@@ -2,12 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 
-import CircularProgress from "@mui/material/CircularProgress";
 import { User } from "@supabase/supabase-js";
 
 import SendPasswordResetForm from "@/components/forms/sendPasswordReset-form";
 import SubmitDeletionForm from "@/components/forms/submitDeletionForm";
-import Awaiting from "@/components/layout/awaiting";
+import Awaiting, { LoadingSpinner } from "@/components/layout/awaiting";
 import Apl_Header from "@/components/layout/header";
 import Popup from "@/components/layout/popup";
 import OverviewButton from "@/components/overviewButton";
@@ -55,7 +54,7 @@ const SettingsPage: React.FC = () => {
             Email-Adresse ein Link gesendet.
           </h2>
           {user?.email == undefined ? (
-            <CircularProgress size={"1rem"} />
+            <LoadingSpinner />
           ) : (
             <SendPasswordResetForm email={user!.email!} />
           )}

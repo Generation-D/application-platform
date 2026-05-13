@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -29,13 +29,11 @@ export interface Answer {
   created: string;
 }
 
-const log = new Logger("actions/answers/answers");
-
 export async function getCurrentUser(supabase: SupabaseClient) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
-    log.error(JSON.stringify(userError));
-    log.info("Redirecting to /login");
+    logger.error(JSON.stringify(userError));
+    logger.info("Redirecting to /login");
     redirect("/login");
   }
   return userData.user;
@@ -51,7 +49,7 @@ export async function getApplicationIdOfCurrentUser(
     .eq("userid", user.id)
     .single();
   if (applicationError) {
-    log.error(JSON.stringify(applicationError));
+    logger.error(JSON.stringify(applicationError));
   }
   return applicationData?.applicationid;
 }
@@ -69,7 +67,7 @@ export async function fetchAnswerId(
     .eq("applicationid", applicationid);
 
   if (answerError) {
-    log.error(JSON.stringify(answerError));
+    logger.error(JSON.stringify(answerError));
   }
   if (answerData!.length == 0) {
     return "";
@@ -96,10 +94,10 @@ export async function fetchAllAnswersOfApplication(applicationid?: string): Prom
 
   if (answerError) {
     if (answerError.code == "PGRST116") {
-      log.error(JSON.stringify(answerError));
+      logger.error(JSON.stringify(answerError));
       throw answerError;
     }
-    log.error(JSON.stringify(answerError));
+    logger.error(JSON.stringify(answerError));
   }
   const answerIds = answerData!.map((answer) => answer.answerid);
   const { data: answerConditionalData, error: answerConditionalError } =
@@ -110,10 +108,10 @@ export async function fetchAllAnswersOfApplication(applicationid?: string): Prom
 
   if (answerConditionalError) {
     if (answerConditionalError.code == "PGRST116") {
-      log.debug(JSON.stringify(answerConditionalError));
+      logger.debug(JSON.stringify(answerConditionalError));
       return [];
     }
-    log.debug(JSON.stringify(answerConditionalError));
+    logger.debug(JSON.stringify(answerConditionalError));
   }
 
   return (
@@ -147,7 +145,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
       .select()
       .single();
     if (insertAnswerError) {
-      log.error(JSON.stringify(insertAnswerError));
+      logger.error(JSON.stringify(insertAnswerError));
     }
     answerid = insertAnswerData?.answerid;
     reqtype = "created";
@@ -162,7 +160,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
       .select()
       .single();
     if (updateAnswerError) {
-      log.error(JSON.stringify(updateAnswerError));
+      logger.error(JSON.stringify(updateAnswerError));
     }
     answerid = updateAnswerData?.answerid;
     reqtype = "updated";
@@ -193,7 +191,7 @@ export async function deleteAnswer(questionid: string) {
       .eq("questionid", questionid)
       .eq("applicationid", applicationid);
     if (deleteAnswerError) {
-      log.error(JSON.stringify(deleteAnswerError));
+      logger.error(JSON.stringify(deleteAnswerError));
     }
   }
 }

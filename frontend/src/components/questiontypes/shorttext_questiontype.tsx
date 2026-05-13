@@ -5,7 +5,7 @@ import {
   fetchShortTextAnswer,
   saveShortTextAnswer,
 } from "@/actions/answers/shortText";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkRegex } from "@/utils/helpers";
@@ -19,8 +19,6 @@ export interface ShortTextQuestionTypeProps extends DefaultQuestionTypeProps {
   formattingregex: string | null;
   formattingdescription: string | null;
 }
-
-const log = new Logger("ShortTextQuestionType");
 
 const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   phasename,
@@ -53,7 +51,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
         const savedAnswer = await fetchShortTextAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
-        log.error(JSON.stringify(error));
+        logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

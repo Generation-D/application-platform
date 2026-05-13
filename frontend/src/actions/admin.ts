@@ -1,14 +1,12 @@
 "use server";
 import { ApplicantsStateType } from "@/components/applicantslist";
-import Logger from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
 } from "@/supabase-utils/cookiesUtilClient";
 import { createCurrentTimestamp } from "@/utils/helpers";
 import { UserRole } from "@/utils/userRole";
-
-const log = new Logger("actions/admin");
 
 export interface userData {
   id: string;
@@ -47,14 +45,14 @@ export async function fetchAllUsers() {
     error: adminError,
   } = await supabaseAdmin.auth.admin.listUsers();
   if (adminError) {
-    log.error(JSON.stringify(adminError));
+    logger.error(JSON.stringify(adminError));
     throw adminError;
   }
   const { data: profileData, error: profileError } = await supabaseAdmin
     .from("user_profiles_table")
     .select("*");
   if (profileError) {
-    log.error(JSON.stringify(profileError));
+    logger.error(JSON.stringify(profileError));
     throw profileError;
   }
   return mergeUserDatas(users, profileData!);
@@ -69,17 +67,17 @@ export async function toggleStatusOfUser(currUser: userData) {
       .eq("userid", currUser.id);
 
     if (userProfileError) {
-      log.error(JSON.stringify(userProfileError));
+      logger.error(JSON.stringify(userProfileError));
       throw userProfileError;
     }
-    log.info(
+    logger.info(
       `Changed Status of User (${currUser.email} to '${
         currUser.isactive ? "inactive" : "active"
       }')`,
     );
     return { ...currUser, isactive: !currUser.isactive };
   } catch (error) {
-    log.error(`Error toggling user status: ${error}`);
+    logger.error(`Error toggling user status: ${error}`);
     return null;
   }
 }
@@ -93,13 +91,13 @@ export async function changeRoleOfUser(currUser: userData, role: UserRole) {
       .eq("userid", currUser.id);
 
     if (userProfileError) {
-      log.error(JSON.stringify(userProfileError));
+      logger.error(JSON.stringify(userProfileError));
       throw userProfileError;
     }
-    log.info(`Changed Userrole of User (${currUser.email} to '${role}')`);
+    logger.info(`Changed Userrole of User (${currUser.email} to '${role}')`);
     return { ...currUser, userrole: role.valueOf() };
   } catch (error) {
-    log.error(`Error changing user status: ${error}`);
+    logger.error(`Error changing user status: ${error}`);
     return null;
   }
 }
@@ -118,7 +116,7 @@ export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
   const { data: applicantsStatusData, error: applicantsStatusError } =
     await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
-    log.error(JSON.stringify(applicantsStatusError));
+    logger.error(JSON.stringify(applicantsStatusError));
     throw applicantsStatusError;
   }
   return applicantsStatusData;
@@ -143,7 +141,7 @@ export async function saveApplicationOutcome(
         review_date: createCurrentTimestamp(),
       });
     if (applicantStatusError) {
-      log.error(JSON.stringify(applicantStatusError));
+      logger.error(JSON.stringify(applicantStatusError));
       throw applicantStatusError;
     }
   } else {
@@ -156,7 +154,7 @@ export async function saveApplicationOutcome(
       })
       .eq("outcome_id", applicantStatus.outcome_id);
     if (applicantStatusError) {
-      log.error(JSON.stringify(applicantStatusError));
+      logger.error(JSON.stringify(applicantStatusError));
       throw applicantStatusError;
     }
   }
@@ -195,7 +193,7 @@ export async function finishEvaluationOfPhase(
       isFirstPhase || previousPhaseApplicantState.status?.outcome;
 
     if (userIsInPhase) {
-      log.info(
+      logger.info(
         `Set Application Outcome of ${user.email} in Phase ${phase_id} to failed.`,
       );
       await saveApplicationOutcome(
@@ -213,8 +211,8 @@ export async function finishEvaluationOfPhase(
     .update({ finished_evaluation: createCurrentTimestamp() })
     .eq("phaseid", phase_id);
   if (applicantStatusError) {
-    log.error(JSON.stringify(applicantStatusError));
+    logger.error(JSON.stringify(applicantStatusError));
     throw applicantStatusError;
   }
-  log.info(`Finished Evaluation of Phase ${phase_id}`);
+  logger.info(`Finished Evaluation of Phase ${phase_id}`);
 }

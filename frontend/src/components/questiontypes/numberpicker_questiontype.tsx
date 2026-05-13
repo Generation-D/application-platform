@@ -5,7 +5,7 @@ import {
   fetchNumberPickerAnswer,
   saveNumberPickerAnswer,
 } from "@/actions/answers/numberPicker";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -19,7 +19,6 @@ export interface NumberPickerQuestionTypeProps
   maxnumber: number;
 }
 
-const log = new Logger("NumberPickerQuestionType");
 
 const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   phasename,
@@ -50,7 +49,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
         const savedAnswer = await fetchNumberPickerAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.pickednumber, savedAnswer.answerid);
       } catch (error) {
-        log.error(JSON.stringify(error));
+        logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

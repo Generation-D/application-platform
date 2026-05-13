@@ -1,11 +1,9 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
-const log = new Logger("auth/callback/route");
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -18,7 +16,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (error) {
       // TODO: return the user to an error page with some instructions
-      log.error(JSON.stringify(error));
+      logger.error(JSON.stringify(error));
     }
   }
 

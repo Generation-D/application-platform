@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
-const log = new Logger("auth/admin/callback/route");
 
 export async function GET() {
   const options: { redirectTo: string; scopes?: string } = {
@@ -18,7 +16,7 @@ export async function GET() {
   });
 
   if (error) {
-    log.error(JSON.stringify(error));
+    logger.error(JSON.stringify(error));
     throw error;
   }
 

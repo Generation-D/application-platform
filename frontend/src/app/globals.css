@@ -1,10 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --primary-color: #fdcc89;
   --secondary-color: #153757;
+}
+
+@theme {
+  /* 1. Custom Colors */
+  /* This maps to text-primary, bg-primary, etc. */
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+
+  /* 2. Custom Background Images */
+  /* This maps to bg-gradient-radial and bg-gradient-conic */
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(
+    from 180deg at 50% 50%, 
+    var(--tw-gradient-stops)
+  );
 }
 
 .apl-button-fixed-short {

@@ -1,10 +1,8 @@
 "use server";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
-const log = new Logger("actions/answers/dateTimePicker");
 
 export async function saveDateTimePickerAnswer(
   pickeddatetime: string,
@@ -23,7 +21,7 @@ export async function saveDateTimePickerAnswer(
           pickeddatetime: new Date(pickeddatetime),
         });
       if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
+        logger.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "update") {
       const { error: updateAnswerError } = await supabase
@@ -33,7 +31,7 @@ export async function saveDateTimePickerAnswer(
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
+        logger.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -62,7 +60,7 @@ export async function fetchDateTimePickerAnswer(questionid: string, applicationi
     if (dateTimePickerError.code == "PGRST116") {
       return initialstate;
     }
-    log.error(JSON.stringify(dateTimePickerError));
+    logger.error(JSON.stringify(dateTimePickerError));
   }
   return dateTimePickerData || initialstate;
 }

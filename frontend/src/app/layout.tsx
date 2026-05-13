@@ -22,11 +22,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isDev = process.env.NODE_ENV === "development";
-
   return (
-    <html lang="en">
-      <head>{!isDev && <script src="/env.js" async />}</head>
+    <html lang="de">
       <body className={`${inter.className} bg-primary`}>
         <ReduxProvider>
           <div className="flex flex-col min-h-screen">

@@ -1,8 +1,6 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
-import Logger from "@/logger/logger";
-
-const log = new Logger("UploadHelpers");
+import { logger } from "@/logger/logger";
 
 export type UploadTableName =
   | "image_upload_answer_table"
@@ -30,7 +28,7 @@ export async function saveUploadAnswer(
   if (!file) return;
   const fileSizeInMB = file.size / 1024 / 1024;
   if (!options.validTypes.includes(file.type)) {
-    log.error(
+    logger.error(
       `Invalid file type: ${file.type}. Allowed: ${options.validTypes.join(
         ", ",
       )}`,
@@ -38,7 +36,7 @@ export async function saveUploadAnswer(
     return;
   }
   if (fileSizeInMB > options.maxfilesizeinmb) {
-    log.error(
+    logger.error(
       `File too large: ${fileSizeInMB} MB. Max: ${options.maxfilesizeinmb} MB.`,
     );
     return;
@@ -62,14 +60,14 @@ export async function saveUploadAnswer(
     } else if (options.fileName === "videoname") {
       insertObj = { answerid, videoname: uploadFile.name };
     } else {
-      log.error(`Invalid fileName option: ${options.fileName}`);
+      logger.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
     const { error: insertAnswerError } = await supabase
       .from(options.table)
-      .insert(insertObj);
+      .insert(insertObj as any);
     if (insertAnswerError) {
-      log.error(JSON.stringify(insertAnswerError));
+      logger.error(JSON.stringify(insertAnswerError));
     }
     const { error: bucketError } = await supabase.storage
       .from(bucket_name)
@@ -78,7 +76,7 @@ export async function saveUploadAnswer(
         uploadFile,
       );
     if (bucketError) {
-      log.error(JSON.stringify(bucketError));
+      logger.error(JSON.stringify(bucketError));
     }
   } else if (reqtype == "updated") {
     const { data: oldData, error: oldError } = await supabase
@@ -87,7 +85,7 @@ export async function saveUploadAnswer(
       .eq("answerid", answerid)
       .single();
     if (oldError) {
-      log.error(JSON.stringify(oldError));
+      logger.error(JSON.stringify(oldError));
     }
     let updateObj:
       | { imagename: string }
@@ -100,7 +98,7 @@ export async function saveUploadAnswer(
     } else if (options.fileName === "videoname") {
       updateObj = { videoname: uploadFile.name };
     } else {
-      log.error(`Invalid fileName option: ${options.fileName}`);
+      logger.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
     const { error: updatedError } = await supabase
@@ -108,7 +106,7 @@ export async function saveUploadAnswer(
       .update(updateObj)
       .eq("answerid", answerid);
     if (updatedError) {
-      log.error(JSON.stringify(updatedError));
+      logger.error(JSON.stringify(updatedError));
     }
     let oldFileName = "";
     if (oldData && typeof oldData === "object" && options.fileName in oldData) {
@@ -121,7 +119,7 @@ export async function saveUploadAnswer(
         uploadFile,
       );
     if (updatedBucketError) {
-      log.error(JSON.stringify(updatedBucketError));
+      logger.error(JSON.stringify(updatedBucketError));
     }
   }
 }
@@ -137,7 +135,10 @@ export async function fetchUploadAnswer<T extends { [key: string]: any }>(
   const supabase = getSupabaseBrowserClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
-    log.error(JSON.stringify(userError));
+    logger.error(JSON.stringify(userError));
+  }
+  if (!applicationid) {
+    return null
   }
   const user_id = userData.user!.id;
   const { data: uploadData, error: uploadError } = await supabase
@@ -147,11 +148,15 @@ export async function fetchUploadAnswer<T extends { [key: string]: any }>(
     })
     .maybeSingle<T>();
   if (uploadError) {
-    log.error(JSON.stringify(uploadError));
+    logger.error({
+      question_id: questionid,
+      application_id: applicationid
+    })
+    logger.error(JSON.stringify(uploadError));
     return null;
   }
   if (!uploadData) {
-    log.info("No existing upload data found for this question.");
+    logger.info("No existing upload data found for this question.");
     return null;
   } else {
     return { ...uploadData, userid: user_id };

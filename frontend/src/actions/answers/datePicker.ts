@@ -1,10 +1,8 @@
 "use server";
-import Logger from "@/logger/logger";
+import {logger} from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
-const log = new Logger("actions/answers/datePicker");
 
 export async function saveDatePickerAnswer(
   pickeddate: string,
@@ -23,7 +21,7 @@ export async function saveDatePickerAnswer(
           pickeddate: new Date(pickeddate),
         });
       if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
+        logger.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "updated") {
       const { error: updateAnswerError } = await supabase
@@ -33,7 +31,7 @@ export async function saveDatePickerAnswer(
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
+        logger.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -61,7 +59,7 @@ export async function fetchDatePickerAnswer(questionid: string, applicationid: s
     if (datePickerError.code == "PGRST116") {
       return initialstate;
     }
-    log.error(JSON.stringify(datePickerError));
+    logger.error(JSON.stringify(datePickerError));
   }
   return datePickerData || initialstate;
 }

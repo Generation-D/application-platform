@@ -9,7 +9,7 @@ questions:
   phase-1:
     phaseLabel: "Kurzbewerbung"
     startDate: 2026-03-02  # format: %Y-%m-%d
-    endDate: 2026-03-22  # format: %Y-%m-%d
+    endDate: 2026-05-22  # format: %Y-%m-%d
     sections:
       - name: Allgemein
         description: "Bitte beantwortet folgende Fragen so ausführlich, dass wir Euer Projekt bestmöglich nachvollziehen können, achtet dabei jedoch bitte auf die Zeichenbegrenzungen:"
