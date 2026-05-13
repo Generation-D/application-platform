@@ -128,6 +128,7 @@ export async function saveUploadAnswer(
 
 export async function fetchUploadAnswer<T extends { [key: string]: any }>(
   questionid: string,
+  applicationid: string,
   options: {
     rpcName: UploadRpcName;
     fileName: UploadFileName;
@@ -142,7 +143,7 @@ export async function fetchUploadAnswer<T extends { [key: string]: any }>(
   const { data: uploadData, error: uploadError } = await supabase
     .rpc(options.rpcName, {
       question_id: questionid,
-      user_id: user_id,
+      application_id: applicationid
     })
     .maybeSingle<T>();
   if (uploadError) {

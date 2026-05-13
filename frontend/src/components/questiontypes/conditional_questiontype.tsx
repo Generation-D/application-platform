@@ -51,6 +51,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   choices,
   phaseAnswers,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -72,7 +73,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchConditionalAnswer(questionid);
+        const savedAnswer = await fetchConditionalAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -155,7 +156,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   const togglePopup = async () => {
     setPopupOpen(!isPopupOpen);
     setIsLoading(true);
-    await deleteAnswersOfQuestions(dependingQuestions[answer]);
+    await deleteAnswersOfQuestions(dependingQuestions[answer], applicationid);
     resetDependingAnswers();
     await saveConditionalAnswer(choiceHelper, questionid);
     updateAnswerState(choiceHelper);
@@ -164,6 +165,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

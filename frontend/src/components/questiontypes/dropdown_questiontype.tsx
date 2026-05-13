@@ -38,6 +38,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -50,7 +51,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDropdownAnswer(questionid);
+        const savedAnswer = await fetchDropdownAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.selectedoptions, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -105,6 +106,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

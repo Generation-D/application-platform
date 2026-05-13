@@ -27,19 +27,20 @@ export interface PdfAnswerResponse {
 export async function savePdfUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "pdf_upload_answer_table",
     fileName: "pdfname",
     bucketPrefix: "pdf",
     validTypes: ["application/pdf"],
-    maxfilesizeinmb: 25, // or pass as prop if needed
+    maxfilesizeinmb, // or pass as prop if needed
     storageSaveName,
   });
 }
 
-export async function fetchPdfUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<PdfAnswerResponse>(questionid, {
+export async function fetchPdfUploadAnswer(questionid: string, applicationid: string) {
+  return fetchUploadAnswer<PdfAnswerResponse>(questionid, applicationid, {
     rpcName: "fetch_pdf_upload_answer_table",
     fileName: "pdfname",
   });
@@ -57,6 +58,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -79,15 +81,13 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }
 
       try {
-        const savedAnswer = await fetchPdfUploadAnswer(questionid);
+        const savedAnswer = await fetchPdfUploadAnswer(questionid, applicationid);
         if (savedAnswer && savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,
           );
-          console.log(imageUploadBucketData);
           const url = URL.createObjectURL(imageUploadBucketData!);
-          console.log(url);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {
@@ -150,7 +150,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deletePdfUploadAnswer(questionid);
+    deletePdfUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     updateAnswerState("");
     setWasUploaded(false);
@@ -171,7 +171,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await savePdfUploadAnswer(questionid, formData);
+      await savePdfUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
     }
@@ -202,6 +202,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       iseditable={iseditable}
       questionid={questionid}

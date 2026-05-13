@@ -52,16 +52,14 @@ const initialstate: MultipleChoiceAnswerResponse = {
 
 export async function fetchMultipleChoiceAnswer(
   questionid: string,
+  applicationid: string
 ): Promise<MultipleChoiceAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: multipleChoiceData, error: multipleChoiceError } =
     await supabase
       .rpc("fetch_multiple_choice_answer_table", {
         question_id: questionid,
-        user_id: user?.id ?? "",
+        application_id: applicationid
       })
       .single<MultipleChoiceAnswerResponse>();
   if (multipleChoiceError) {

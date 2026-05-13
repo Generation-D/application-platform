@@ -52,15 +52,13 @@ const initialstate: ShortTextAnswerResponse = {
 
 export async function fetchShortTextAnswer(
   questionid: string,
+  applicationid: string
 ): Promise<ShortTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: shortTextData, error: shortTextError } = await supabase
     .rpc("fetch_short_text_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid,
     })
     .single<ShortTextAnswerResponse>();
   if (shortTextError) {

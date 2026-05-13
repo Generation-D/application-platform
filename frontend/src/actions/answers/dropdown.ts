@@ -52,6 +52,7 @@ const initialstate: DropdownAnswerResponse = {
 
 export async function fetchDropdownAnswer(
   questionid: string,
+  applicationid: string
 ): Promise<DropdownAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const {
@@ -60,7 +61,7 @@ export async function fetchDropdownAnswer(
   const { data: dropdownData, error: dropdownError } = await supabase
     .rpc("fetch_dropdown_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid
     })
     .single<DropdownAnswerResponse>();
   if (dropdownError) {

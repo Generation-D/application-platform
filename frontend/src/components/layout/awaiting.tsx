@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from "react";
 
-import { CircularProgress } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function Awaiting(isLoading: boolean, input: any) {
   return <>{isLoading ? <CircularProgress size={"1rem"} /> : input}</>;

@@ -18,12 +18,14 @@ export function SectionView({
   phaseAnswers,
   phaseSections,
   iseditable,
+  applicationid
 }: {
   phaseData: PhaseData;
   mapQuestions: SectionQuestionsMap;
   phaseAnswers: ExtendedAnswerType[];
   phaseSections: SectionData[];
   iseditable: boolean;
+  applicationid: string
 }) {
   const searchParams = useSearchParams();
 
@@ -147,6 +149,7 @@ export function SectionView({
               className="w-full"
             />
             <Questionnaire
+              applicationid={applicationid}
               phaseData={phaseData}
               phaseQuestions={mapQuestions[phaseSection.sectionid]}
               phaseAnswers={phaseAnswers}

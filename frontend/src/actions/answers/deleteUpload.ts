@@ -16,6 +16,7 @@ type UploadRpcName =
 
 async function deleteUploadAnswer<T extends { [key: string]: any }>(
   questionid: string,
+  applicationid: string,
   rpcName: UploadRpcName,
   bucketPrefix: string,
   fileProperty: string,
@@ -25,7 +26,7 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
   const { data: uploadData, error: uploadError } = await supabase
     .rpc(rpcName, {
       question_id: questionid,
-      user_id: user.id,
+      application_id: applicationid
     })
     .single<T>();
   if (uploadError) {
@@ -44,27 +45,30 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
   await deleteAnswer(questionid);
 }
 
-export async function deleteImageUploadAnswer(questionid: string) {
+export async function deleteImageUploadAnswer(questionid: string, applicationid: string) {
   return deleteUploadAnswer<ImageAnswerResponse>(
     questionid,
+    applicationid,
     "fetch_image_upload_answer_table",
     "image",
     "imagename",
   );
 }
 
-export async function deletePdfUploadAnswer(questionid: string) {
+export async function deletePdfUploadAnswer(questionid: string, applicationid: string) {
   return deleteUploadAnswer<PdfAnswerResponse>(
     questionid,
+    applicationid,
     "fetch_pdf_upload_answer_table",
     "pdf",
     "pdfname",
   );
 }
 
-export async function deleteVideoUploadAnswer(questionid: string) {
+export async function deleteVideoUploadAnswer(questionid: string, applicationid: string) {
   return deleteUploadAnswer<VideoAnswerResponse>(
     questionid,
+    applicationid,
     "fetch_video_upload_answer_table",
     "video",
     "videoname",

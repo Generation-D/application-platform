@@ -1,6 +1,6 @@
 import { RedirectType, redirect } from "next/navigation";
 
-import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
+import { fetchAllAnswersOfApplication, getApplicationIdOfCurrentUser, getCurrentUser } from "@/actions/answers/answers";
 import { fetch_phases_status, fetch_sections_by_phase } from "@/actions/phase";
 import Apl_Header from "@/components/layout/header";
 import {
@@ -17,6 +17,7 @@ import {
   cached_fetch_phase_questions,
 } from "@/utils/cached";
 import { createCurrentTimestamp } from "@/utils/helpers";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 export default async function Page({
   params,
@@ -63,7 +64,11 @@ export default async function Page({
     }, {} as SectionQuestionsMap);
   }
 
-  const phase_answers = await fetchAllAnswersOfApplication();
+  const supabase = await getSupabaseCookiesUtilClient();
+  const user = await getCurrentUser(supabase);
+  const  applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+
+  const phase_answers = await fetchAllAnswersOfApplication(applicationid);
   const mandatoryQuestionIds = phase_questions
     .filter((q: Question) => q.mandatory)
     .map((q: Question) => q.questionid);
@@ -99,6 +104,7 @@ export default async function Page({
           <div className="space-y-4 max-w-screen-xl">
             {phaseData.sectionsenabled ? (
               <SectionView
+                applicationid={applicationid}
                 phaseData={phaseData}
                 mapQuestions={mapQuestions}
                 phaseAnswers={phase_answers}
@@ -107,6 +113,7 @@ export default async function Page({
               />
             ) : (
               <Questionnaire
+                applicationid={applicationid}
                 phaseData={phaseData}
                 phaseQuestions={phase_questions}
                 phaseAnswers={phase_answers}

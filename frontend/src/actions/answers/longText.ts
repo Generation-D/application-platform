@@ -51,15 +51,13 @@ const initialstate: LongTextAnswerResponse = {
 
 export async function fetchLongTextAnswer(
   questionid: string,
+  applicationid: string
 ): Promise<LongTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: longTextData, error: longTextError } = await supabase
     .rpc("fetch_long_text_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid
     })
     .single<LongTextAnswerResponse>();
   if (longTextError) {

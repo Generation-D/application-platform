@@ -40,6 +40,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -52,7 +53,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchMultipleChoiceAnswer(questionid);
+        const savedAnswer = await fetchMultipleChoiceAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -123,6 +124,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   };
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

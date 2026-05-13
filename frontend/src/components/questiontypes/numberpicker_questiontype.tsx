@@ -34,6 +34,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -46,7 +47,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchNumberPickerAnswer(questionid);
+        const savedAnswer = await fetchNumberPickerAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.pickednumber, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -120,6 +121,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

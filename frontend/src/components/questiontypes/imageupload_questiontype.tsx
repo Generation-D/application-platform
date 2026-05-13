@@ -30,19 +30,20 @@ export interface ImageAnswerResponse {
 export async function saveImageUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "image_upload_answer_table",
     fileName: "imagename",
     bucketPrefix: "image",
     validTypes: ["image/png", "image/jpeg"],
-    maxfilesizeinmb: 5, // or pass as prop if needed
+    maxfilesizeinmb,
     storageSaveName,
   });
 }
 
-export async function fetchImageUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<ImageAnswerResponse>(questionid, {
+export async function fetchImageUploadAnswer(questionid: string, applicationid: string) {
+  return fetchUploadAnswer<ImageAnswerResponse>(questionid, applicationid, {
     rpcName: "fetch_image_upload_answer_table",
     fileName: "imagename",
   });
@@ -60,6 +61,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -80,7 +82,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
       try {
-        const savedAnswer = await fetchImageUploadAnswer(questionid);
+        const savedAnswer = await fetchImageUploadAnswer(questionid, applicationid);
         if (savedAnswer && savedAnswer.imagename != "") {
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
@@ -147,7 +149,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deleteImageUploadAnswer(questionid);
+    deleteImageUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     setUploadedFile(null);
     updateAnswerState("");
@@ -167,7 +169,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await saveImageUploadAnswer(questionid, formData);
+      await saveImageUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
     }
@@ -198,6 +200,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

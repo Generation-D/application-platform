@@ -81,16 +81,18 @@ export interface ExtendedAnswerType extends Answer {
   answervalue?: string | null;
 }
 
-export async function fetchAllAnswersOfApplication(): Promise<
+export async function fetchAllAnswersOfApplication(applicationid?: string): Promise<
   ExtendedAnswerType[]
 > {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
-  const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  if (!applicationid) {
+    applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  }
   const { data: answerData, error: answerError } = await supabase
     .from("answer_table")
     .select("*")
-    .eq("applicationid", applicationid);
+    .eq("applicationid", applicationid!);
 
   if (answerError) {
     if (answerError.code == "PGRST116") {
@@ -196,14 +198,14 @@ export async function deleteAnswer(questionid: string) {
   }
 }
 
-export async function deleteAnswersOfQuestions(questions: Question[]) {
+export async function deleteAnswersOfQuestions(questions: Question[], applicationid: string) {
   for (const question of questions) {
     if (question.questiontype == QuestionType.ImageUpload) {
-      await deleteImageUploadAnswer(question.questionid);
+      await deleteImageUploadAnswer(question.questionid, applicationid);
     } else if (question.questiontype == QuestionType.VideoUpload) {
-      await deleteVideoUploadAnswer(question.questionid);
+      await deleteVideoUploadAnswer(question.questionid, applicationid);
     } else if (question.questiontype == QuestionType.PDFUpload) {
-      await deletePdfUploadAnswer(question.questionid);
+      await deletePdfUploadAnswer(question.questionid, applicationid);
     } else {
       await deleteAnswer(question.questionid);
     }

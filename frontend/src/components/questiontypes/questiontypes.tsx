@@ -11,6 +11,7 @@ export interface DefaultQuestionTypeProps {
   selectedSection?: string | null;
   selectedCondChoice?: string | null;
   questionsuborder?: string;
+  applicationid: string;
 }
 
 interface QuestionTypesProps extends DefaultQuestionTypeProps {

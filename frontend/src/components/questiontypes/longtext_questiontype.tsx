@@ -32,6 +32,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -44,7 +45,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchLongTextAnswer(questionid);
+        const savedAnswer = await fetchLongTextAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -74,6 +75,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

@@ -25,7 +25,7 @@ INSERT INTO
             gen_random_uuid(),
             'authenticated',
             'authenticated',
-            'user' || (ROW_NUMBER() OVER ()) || '@example.com',
+            email_val,
             crypt ('password123', gen_salt ('bf')),
             current_timestamp,
             current_timestamp,
@@ -39,7 +39,7 @@ INSERT INTO
             '',
             ''
         FROM
-            generate_series(1, 10)
+            unnest(ARRAY['user1@test.com', 'user2@test.com', 'user3@test.com', 'user4@test.com', 'user5@test.com','user6@test.com','user7@test.com','viewer@test.com','admin@test.com']) AS email_val
     );
 
 INSERT INTO
@@ -66,21 +66,9 @@ INSERT INTO
             auth.users
     );
 
+UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'viewer@test.com' AND userid = id;
 
-INSERT INTO user_profiles_table (
-    userid,
-    userrole,
-    isactive
-)
-SELECT
-    id,
-    1 AS userrole,
-    TRUE AS isactive
-FROM
-    auth.users
-WHERE
-    email LIKE 'user%@example.com';
-
+UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'admin@test.com' AND userid = id;
 
 INSERT INTO application_table (
     applicationid,
@@ -92,4 +80,5 @@ SELECT
 FROM
     auth.users
 WHERE
-    email LIKE 'user%@example.com';
+    email LIKE 'user%@test.com';
+    

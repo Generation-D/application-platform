@@ -29,6 +29,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -41,7 +42,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchCheckBoxAnswer(questionid);
+        const savedAnswer = await fetchCheckBoxAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));

@@ -35,6 +35,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -47,7 +48,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDateTimePickerAnswer(questionid);
+        const savedAnswer = await fetchDateTimePickerAnswer(questionid, applicationid);
         updateAnswerState(
           setToPrefferedTimeZone(savedAnswer.pickeddatetime),
           savedAnswer.answerid,
@@ -109,6 +110,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

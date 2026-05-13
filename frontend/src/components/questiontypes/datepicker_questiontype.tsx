@@ -33,6 +33,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -45,7 +46,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDatePickerAnswer(questionid);
+        const savedAnswer = await fetchDatePickerAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.pickeddate, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -101,6 +102,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

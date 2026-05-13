@@ -27,19 +27,20 @@ export interface VideoUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 export async function saveVideoUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "video_upload_answer_table",
     fileName: "videoname",
     bucketPrefix: "video",
     validTypes: ["video/mp4"],
-    maxfilesizeinmb: 100, // or pass as prop if needed
+    maxfilesizeinmb,
     storageSaveName,
   });
 }
 
-export async function fetchVideoUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<VideoAnswerResponse>(questionid, {
+export async function fetchVideoUploadAnswer(questionid: string, appliactionid: string) {
+  return fetchUploadAnswer<VideoAnswerResponse>(questionid, appliactionid, {
     rpcName: "fetch_video_upload_answer_table",
     fileName: "videoname",
   });
@@ -57,6 +58,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -78,7 +80,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
       try {
-        const savedAnswer = await fetchVideoUploadAnswer(questionid);
+        const savedAnswer = await fetchVideoUploadAnswer(questionid, applicationid);
         if (savedAnswer && savedAnswer?.videoname != "") {
           const VideoUploadBucketData = await downloadFile(
             `video-${questionid}`,
@@ -147,7 +149,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deleteVideoUploadAnswer(questionid);
+    deleteVideoUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     setUploadedFile(null);
     updateAnswerState("");
@@ -167,7 +169,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await saveVideoUploadAnswer(questionid, formData);
+      await saveVideoUploadAnswer(questionid, formData, maxfilesizeinmb);
       // Handle success (e.g., showing a success message, resetting states)
     } catch (error) {
       log.error(JSON.stringify(error));
@@ -199,6 +201,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

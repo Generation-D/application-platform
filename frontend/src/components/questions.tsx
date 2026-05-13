@@ -43,6 +43,7 @@ interface QuestionnaireProps {
   iseditable: boolean;
   selectedSection: string | null;
   selectedCondChoice: string | null;
+  applicationid: string;
 }
 
 const Questionnaire: React.FC<QuestionnaireProps> = ({
@@ -52,6 +53,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   iseditable,
   selectedSection,
   selectedCondChoice,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
   // need a copy, so I can modify it beneath
@@ -110,6 +112,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 />
               )}
               <QuestionComponent
+                applicationid={applicationid}
                 key={phaseQuestion.questionid}
                 phasename={phaseData.phasename}
                 questionid={phaseQuestion.questionid}

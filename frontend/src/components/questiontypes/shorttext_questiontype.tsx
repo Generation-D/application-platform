@@ -37,6 +37,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid
 }) => {
   const dispatch = useAppDispatch();
 
@@ -49,7 +50,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchShortTextAnswer(questionid);
+        const savedAnswer = await fetchShortTextAnswer(questionid, applicationid);
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
         log.error(JSON.stringify(error));
@@ -97,6 +98,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}
