@@ -5,7 +5,7 @@ import {
   fetchShortTextAnswer,
   saveShortTextAnswer,
 } from "@/actions/answers/shortText";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkRegex } from "@/utils/helpers";
@@ -35,7 +35,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -44,11 +44,24 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchShortTextAnswer(questionid, applicationid);
+        const savedAnswer = await fetchShortTextAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -60,15 +73,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, answerid, selectedSection, selectedCondChoice]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

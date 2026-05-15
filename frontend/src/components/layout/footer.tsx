@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 const Apl_Footer: React.FC = () => {
   return (
     <footer className="bg-primary h-[256px] flex flex-col items-center justify-center gap-8 mt-4">
@@ -85,8 +87,7 @@ const Apl_Footer: React.FC = () => {
         </div>
       </div>
       <div className="text-secondary font-nunito flex flex-col items-center">
-        ©{new Date(Date.now()).getFullYear()} Generation-D. All rights
-        reserved.
+        ©{CURRENT_YEAR} Generation-D. All rights reserved.
       </div>
     </footer>
   );

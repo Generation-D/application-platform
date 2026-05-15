@@ -15,7 +15,7 @@
   /* This maps to bg-gradient-radial and bg-gradient-conic */
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
-    from 180deg at 50% 50%, 
+    from 180deg at 50% 50%,
     var(--tw-gradient-stops)
   );
 }

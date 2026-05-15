@@ -6,7 +6,7 @@ import {
   fetchMultipleChoiceAnswer,
   saveMultipleChoiceAnswer,
 } from "@/actions/answers/multipleChoice";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -14,8 +14,7 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { Choice, ChoiceProps } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface MultipleChoiceQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+export interface MultipleChoiceQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   choices: ChoiceProps[];
   minanswers: number;
@@ -38,7 +37,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -47,11 +46,25 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchMultipleChoiceAnswer(questionid, applicationid);
+        const savedAnswer = await fetchMultipleChoiceAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -62,15 +75,6 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleSingleChange = async (choice: ChoiceProps) => {
     if (!iseditable) {

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -25,7 +25,7 @@ export interface VideoUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 export async function saveVideoUploadAnswer(
   questionid: string,
   formData: FormData,
-  maxfilesizeinmb: number
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "video_upload_answer_table",
@@ -37,7 +37,10 @@ export async function saveVideoUploadAnswer(
   });
 }
 
-export async function fetchVideoUploadAnswer(questionid: string, appliactionid: string) {
+export async function fetchVideoUploadAnswer(
+  questionid: string,
+  appliactionid: string,
+) {
   return fetchUploadAnswer<VideoAnswerResponse>(questionid, appliactionid, {
     rpcName: "fetch_video_upload_answer_table",
     fileName: "videoname",
@@ -56,7 +59,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -70,6 +73,16 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["video/mp4"];
 
+   const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
@@ -78,7 +91,10 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
       try {
-        const savedAnswer = await fetchVideoUploadAnswer(questionid, applicationid);
+        const savedAnswer = await fetchVideoUploadAnswer(
+          questionid,
+          applicationid,
+        );
         if (savedAnswer && savedAnswer?.videoname != "") {
           const VideoUploadBucketData = await downloadFile(
             `video-${questionid}`,
@@ -98,17 +114,9 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [questionid, selectedSection, selectedCondChoice, applicationid]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+ 
 
   function set_video_for_upload(file: File) {
     if (!iseditable) {

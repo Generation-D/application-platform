@@ -3,7 +3,7 @@
 import { ImageAnswerResponse } from "@/components/questiontypes/imageupload_questiontype";
 import { PdfAnswerResponse } from "@/components/questiontypes/pdfupload_questiontype";
 import { VideoAnswerResponse } from "@/components/questiontypes/videoupload_questiontype";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import { getCurrentUser, deleteAnswer } from "./answers";
 
@@ -24,7 +24,7 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
   const { data: uploadData, error: uploadError } = await supabase
     .rpc(rpcName, {
       question_id: questionid,
-      application_id: applicationid
+      application_id: applicationid,
     })
     .single<T>();
   if (uploadError) {
@@ -43,7 +43,10 @@ async function deleteUploadAnswer<T extends { [key: string]: any }>(
   await deleteAnswer(questionid);
 }
 
-export async function deleteImageUploadAnswer(questionid: string, applicationid: string) {
+export async function deleteImageUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   return deleteUploadAnswer<ImageAnswerResponse>(
     questionid,
     applicationid,
@@ -53,7 +56,10 @@ export async function deleteImageUploadAnswer(questionid: string, applicationid:
   );
 }
 
-export async function deletePdfUploadAnswer(questionid: string, applicationid: string) {
+export async function deletePdfUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   return deleteUploadAnswer<PdfAnswerResponse>(
     questionid,
     applicationid,
@@ -63,7 +69,10 @@ export async function deletePdfUploadAnswer(questionid: string, applicationid: s
   );
 }
 
-export async function deleteVideoUploadAnswer(questionid: string, applicationid: string) {
+export async function deleteVideoUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   return deleteUploadAnswer<VideoAnswerResponse>(
     questionid,
     applicationid,

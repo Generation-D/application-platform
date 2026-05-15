@@ -105,8 +105,7 @@ export default function SignInForm() {
         <div className="flex justify-center mx-auto">
           <Turnstile
             ref={ref}
-            siteKey={
-              process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
             onSuccess={(token) => setCaptchaToken(token)}
             onExpire={() => {
               ref.current?.reset();

@@ -1,6 +1,6 @@
 "use server";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -48,13 +48,16 @@ const initialstate: ConditionalAnswerResponse = {
   selectedchoice: "",
 };
 
-export async function fetchConditionalAnswer(questionid: string, applicationid: string) {
+export async function fetchConditionalAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   const supabase = await getSupabaseCookiesUtilClient();
   const { data: conditionalTextData, error: conditionalTextError } =
     await supabase
       .rpc("fetch_conditional_answer_table", {
         question_id: questionid,
-        application_id: applicationid
+        application_id: applicationid,
       })
       .single<ConditionalAnswerResponse>();
   if (conditionalTextError) {

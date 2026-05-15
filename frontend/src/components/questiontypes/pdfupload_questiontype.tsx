@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -25,7 +25,7 @@ export interface PdfAnswerResponse {
 export async function savePdfUploadAnswer(
   questionid: string,
   formData: FormData,
-  maxfilesizeinmb: number
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "pdf_upload_answer_table",
@@ -37,7 +37,10 @@ export async function savePdfUploadAnswer(
   });
 }
 
-export async function fetchPdfUploadAnswer(questionid: string, applicationid: string) {
+export async function fetchPdfUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   return fetchUploadAnswer<PdfAnswerResponse>(questionid, applicationid, {
     rpcName: "fetch_pdf_upload_answer_table",
     fileName: "pdfname",
@@ -56,7 +59,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -70,6 +73,17 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["application/pdf"];
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
@@ -79,7 +93,10 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }
 
       try {
-        const savedAnswer = await fetchPdfUploadAnswer(questionid, applicationid);
+        const savedAnswer = await fetchPdfUploadAnswer(
+          questionid,
+          applicationid,
+        );
         if (savedAnswer && savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
@@ -101,16 +118,6 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   function set_pdf_for_upload(file: File) {
     if (!iseditable) {

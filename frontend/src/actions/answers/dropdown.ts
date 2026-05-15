@@ -1,6 +1,6 @@
 "use server";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -50,7 +50,7 @@ const initialstate: DropdownAnswerResponse = {
 
 export async function fetchDropdownAnswer(
   questionid: string,
-  applicationid: string
+  applicationid: string,
 ): Promise<DropdownAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const {
@@ -59,7 +59,7 @@ export async function fetchDropdownAnswer(
   const { data: dropdownData, error: dropdownError } = await supabase
     .rpc("fetch_dropdown_answer_table", {
       question_id: questionid,
-      application_id: applicationid
+      application_id: applicationid,
     })
     .single<DropdownAnswerResponse>();
   if (dropdownError) {

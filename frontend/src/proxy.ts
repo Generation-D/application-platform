@@ -10,8 +10,7 @@ export async function proxy(request: NextRequest) {
   const { supabase, response } = getSupabaseReqResClient({ request: request });
 
   const {
-    data: { user },
-    error: getUserError,
+    data: { user }
   } = await supabase.auth.getUser();
   await supabase.auth.getSession();
 

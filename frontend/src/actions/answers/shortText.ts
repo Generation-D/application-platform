@@ -1,10 +1,9 @@
 "use server";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
 
 export async function saveShortTextAnswer(
   answertext: string,
@@ -51,7 +50,7 @@ const initialstate: ShortTextAnswerResponse = {
 
 export async function fetchShortTextAnswer(
   questionid: string,
-  applicationid: string
+  applicationid: string,
 ): Promise<ShortTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const { data: shortTextData, error: shortTextError } = await supabase

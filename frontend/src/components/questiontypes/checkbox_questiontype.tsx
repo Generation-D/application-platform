@@ -5,7 +5,7 @@ import {
   fetchCheckBoxAnswer,
   saveCheckBoxAnswer,
 } from "@/actions/answers/checkBox";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -15,7 +15,6 @@ import { AwaitingChild } from "../layout/awaiting";
 export interface CheckBoxQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
 }
-
 
 const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   phasename,
@@ -28,7 +27,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -36,22 +35,6 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     (state) => state.answerReducer[questionid]?.answervalue || false,
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchCheckBoxAnswer(questionid, applicationid);
-        updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
-      } catch (error) {
-        logger.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answer: boolean, answerid?: string) => {
     dispatch(
@@ -62,6 +45,25 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchCheckBoxAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
+      } catch (error) {
+        logger.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
 
   const handleChange = () => {
     if (!iseditable) {

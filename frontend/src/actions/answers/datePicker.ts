@@ -1,5 +1,5 @@
 "use server";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -47,12 +47,15 @@ const initialstate: DateAnswerResponse = {
   pickeddate: "",
 };
 
-export async function fetchDatePickerAnswer(questionid: string, applicationid: string) {
+export async function fetchDatePickerAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   const supabase = await getSupabaseCookiesUtilClient();
   const { data: datePickerData, error: datePickerError } = await supabase
     .rpc("fetch_date_picker_answer_table", {
       question_id: questionid,
-      application_id: applicationid
+      application_id: applicationid,
     })
     .single<DateAnswerResponse>();
   if (datePickerError) {

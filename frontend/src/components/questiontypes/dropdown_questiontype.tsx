@@ -5,7 +5,7 @@ import {
   fetchDropdownAnswer,
   saveDropdownAnswer,
 } from "@/actions/answers/dropdown";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -36,7 +36,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -45,11 +45,24 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDropdownAnswer(questionid, applicationid);
+        const savedAnswer = await fetchDropdownAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.selectedoptions, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -59,16 +72,6 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, maxanswers, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleSingleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!iseditable) {

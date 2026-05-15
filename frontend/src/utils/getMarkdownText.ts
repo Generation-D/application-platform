@@ -1,6 +1,6 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
 import { createCurrentTimestamp } from "./helpers";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 export default async function getOverviewPageText() {

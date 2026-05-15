@@ -6,7 +6,7 @@ import {
   fetchLongTextAnswer,
   saveLongTextAnswer,
 } from "@/actions/answers/longText";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -30,7 +30,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -39,11 +39,24 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchLongTextAnswer(questionid, applicationid);
+        const savedAnswer = await fetchLongTextAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -53,16 +66,6 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!iseditable) {

@@ -70,9 +70,11 @@ export const ProgressBar = ({
   };
 
   useEffect(() => {
+    (async () => {
     setIsLoading(true);
     calculateProgress();
     setIsLoading(false);
+  })()
   }, [mandatoryQuestionIds, progressbarId, phaseQuestions, answeredQuestions]);
 
   const stringDate = transformReadableDate(endDate);

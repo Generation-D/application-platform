@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,

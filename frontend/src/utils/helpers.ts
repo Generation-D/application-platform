@@ -1,10 +1,10 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 // import moment from "moment-timezone";
-import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 export const getURL = () => {
-  let url = process.env.NEXT_PUBLIC_SITE_URL!
+  let url = process.env.NEXT_PUBLIC_SITE_URL!;
   // Make sure to include `https://` when not localhost.
   url = url.includes("http") ? url : `https://${url}`;
   // Make sure to including trailing `/`.
@@ -12,7 +12,7 @@ export const getURL = () => {
   return url;
 };
 
-const TIMEZONE = 'Europe/Berlin';
+const TIMEZONE = "Europe/Berlin";
 
 export function createCurrentTimestamp() {
   // Get current date, convert to Berlin time

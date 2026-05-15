@@ -5,20 +5,18 @@ import {
   fetchNumberPickerAnswer,
   saveNumberPickerAnswer,
 } from "@/actions/answers/numberPicker";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface NumberPickerQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+export interface NumberPickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   minnumber: number;
   maxnumber: number;
 }
-
 
 const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   phasename,
@@ -33,7 +31,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -42,11 +40,25 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchNumberPickerAnswer(questionid, applicationid);
+        const savedAnswer = await fetchNumberPickerAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.pickednumber, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -57,15 +69,6 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

@@ -3,7 +3,7 @@ import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import ApplicationOverview from "@/components/applicationOverview";
 import Apl_Header from "@/components/layout/header";
 import { Question } from "@/components/questions";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { cached_fetch_phase_questions } from "@/utils/cached";
 import getOverviewPageText from "@/utils/getMarkdownText";
 import "github-markdown-css/github-markdown-light.css";

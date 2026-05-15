@@ -1,9 +1,8 @@
 "use server";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
 
 export async function saveLongTextAnswer(
   answertext: string,
@@ -50,13 +49,13 @@ const initialstate: LongTextAnswerResponse = {
 
 export async function fetchLongTextAnswer(
   questionid: string,
-  applicationid: string
+  applicationid: string,
 ): Promise<LongTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const { data: longTextData, error: longTextError } = await supabase
     .rpc("fetch_long_text_answer_table", {
       question_id: questionid,
-      application_id: applicationid
+      application_id: applicationid,
     })
     .single<LongTextAnswerResponse>();
   if (longTextError) {

@@ -5,7 +5,7 @@ import {
   fetchDateTimePickerAnswer,
   saveDateTimePickerAnswer,
 } from "@/actions/answers/dateTimePicker";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setToPrefferedTimeZone } from "@/utils/helpers";
@@ -13,8 +13,7 @@ import { setToPrefferedTimeZone } from "@/utils/helpers";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface DatetimePickerQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+export interface DatetimePickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   mindatetime: Date;
   maxdatetime: Date;
@@ -33,7 +32,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -42,11 +41,24 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDateTimePickerAnswer(questionid, applicationid);
+        const savedAnswer = await fetchDateTimePickerAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(
           setToPrefferedTimeZone(savedAnswer.pickeddatetime),
           savedAnswer.answerid,
@@ -59,16 +71,6 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

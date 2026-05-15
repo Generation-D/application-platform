@@ -1,6 +1,10 @@
 import { RedirectType, redirect } from "next/navigation";
 
-import { fetchAllAnswersOfApplication, getApplicationIdOfCurrentUser, getCurrentUser } from "@/actions/answers/answers";
+import {
+  fetchAllAnswersOfApplication,
+  getApplicationIdOfCurrentUser,
+  getCurrentUser,
+} from "@/actions/answers/answers";
 import { fetch_phases_status, fetch_sections_by_phase } from "@/actions/phase";
 import Apl_Header from "@/components/layout/header";
 import {
@@ -66,7 +70,7 @@ export default async function Page({
 
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
-  const  applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
 
   const phase_answers = await fetchAllAnswersOfApplication(applicationid);
   const mandatoryQuestionIds = phase_questions

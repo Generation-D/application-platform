@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -79,9 +79,9 @@ export interface ExtendedAnswerType extends Answer {
   answervalue?: string | null;
 }
 
-export async function fetchAllAnswersOfApplication(applicationid?: string): Promise<
-  ExtendedAnswerType[]
-> {
+export async function fetchAllAnswersOfApplication(
+  applicationid?: string,
+): Promise<ExtendedAnswerType[]> {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   if (!applicationid) {
@@ -196,7 +196,10 @@ export async function deleteAnswer(questionid: string) {
   }
 }
 
-export async function deleteAnswersOfQuestions(questions: Question[], applicationid: string) {
+export async function deleteAnswersOfQuestions(
+  questions: Question[],
+  applicationid: string,
+) {
   for (const question of questions) {
     if (question.questiontype == QuestionType.ImageUpload) {
       await deleteImageUploadAnswer(question.questionid, applicationid);

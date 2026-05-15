@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -14,7 +14,6 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
-
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -29,7 +28,7 @@ export interface ImageAnswerResponse {
 export async function saveImageUploadAnswer(
   questionid: string,
   formData: FormData,
-  maxfilesizeinmb: number
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "image_upload_answer_table",
@@ -41,7 +40,10 @@ export async function saveImageUploadAnswer(
   });
 }
 
-export async function fetchImageUploadAnswer(questionid: string, applicationid: string) {
+export async function fetchImageUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
   return fetchUploadAnswer<ImageAnswerResponse>(questionid, applicationid, {
     rpcName: "fetch_image_upload_answer_table",
     fileName: "imagename",
@@ -60,7 +62,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -72,6 +74,17 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [wasUploaded, setWasUploaded] = useState(false);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
+
   const validImgTypes = ["image/png", "image/jpeg"];
   useEffect(() => {
     async function loadAnswer() {
@@ -81,7 +94,10 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
       try {
-        const savedAnswer = await fetchImageUploadAnswer(questionid, applicationid);
+        const savedAnswer = await fetchImageUploadAnswer(
+          questionid,
+          applicationid,
+        );
         if (savedAnswer && savedAnswer.imagename != "") {
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
@@ -103,15 +119,6 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   function set_image_for_upload(file: File) {
     if (!iseditable) {

@@ -10,7 +10,7 @@ import {
   fetchConditionalAnswer,
   saveConditionalAnswer,
 } from "@/actions/answers/conditional";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { numberToLetter } from "@/utils/helpers";
@@ -49,7 +49,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   choices,
   phaseAnswers,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -67,11 +67,25 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     },
     {} as { [key: string]: Question[] },
   );
+
+ const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchConditionalAnswer(questionid, applicationid);
+        const savedAnswer = await fetchConditionalAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -82,15 +96,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice, phaseAnswers]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+ 
 
   const handleChange = (choice: conditionalChoicesProps) => {
     if (!iseditable) {

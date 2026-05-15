@@ -5,7 +5,7 @@ import {
   fetchDatePickerAnswer,
   saveDatePickerAnswer,
 } from "@/actions/answers/datePicker";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -31,7 +31,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
-  applicationid
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -40,11 +40,24 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+    const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDatePickerAnswer(questionid, applicationid);
+        const savedAnswer = await fetchDatePickerAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(savedAnswer.pickeddate, savedAnswer.answerid);
       } catch (error) {
         logger.error(JSON.stringify(error));
@@ -55,15 +68,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

@@ -6,7 +6,7 @@ import { ExtendedAnswerType } from "@/actions/answers/answers";
 import getQuestionComponent, {
   QuestionType,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 import { INIT_PLACEHOLDER, UpdateAnswer } from "@/store/slices/answerSlice";
 import { PhaseData, setPhase } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
@@ -65,17 +65,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       phasequestions: phaseQuestions,
     }),
   );
-  useEffect(() => {
-    phaseAnswers.forEach((answer) => {
-      updateAnswerState(
-        answer.questionid,
-        answer.answerid,
-        answer?.answervalue,
-      );
-    });
-  }, [phaseAnswers]);
 
-  const updateAnswerState = (
+   const updateAnswerState = (
     questionid: string,
     answerid?: string,
     answervalue?: string | null,
@@ -89,6 +80,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     );
   };
 
+  useEffect(() => {
+    phaseAnswers.forEach((answer) => {
+      updateAnswerState(
+        answer.questionid,
+        answer.answerid,
+        answer?.answervalue,
+      );
+    });
+  }, [phaseAnswers]);
+
   return (
     <div className="mt-5 mb-7 border-b border-r rounded-xl shadow shadow-secondary p-5">
       {copyPhaseQuestions
@@ -98,7 +99,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             phaseQuestion.questiontype,
           );
           if (!QuestionComponent) {
-            logger.error(`Unknown question type: ${phaseQuestion.questiontype}`);
+            logger.error(
+              `Unknown question type: ${phaseQuestion.questiontype}`,
+            );
             return null;
           }
           return (

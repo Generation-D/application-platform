@@ -1,10 +1,9 @@
 "use server";
 
-import {logger} from "@/logger/logger";
+import { logger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
-
 
 export async function saveMultipleChoiceAnswer(
   answertext: string,
@@ -51,14 +50,14 @@ const initialstate: MultipleChoiceAnswerResponse = {
 
 export async function fetchMultipleChoiceAnswer(
   questionid: string,
-  applicationid: string
+  applicationid: string,
 ): Promise<MultipleChoiceAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const { data: multipleChoiceData, error: multipleChoiceError } =
     await supabase
       .rpc("fetch_multiple_choice_answer_table", {
         question_id: questionid,
-        application_id: applicationid
+        application_id: applicationid,
       })
       .single<MultipleChoiceAnswerResponse>();
   if (multipleChoiceError) {

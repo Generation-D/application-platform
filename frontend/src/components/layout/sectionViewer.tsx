@@ -18,14 +18,14 @@ export function SectionView({
   phaseAnswers,
   phaseSections,
   iseditable,
-  applicationid
+  applicationid,
 }: {
   phaseData: PhaseData;
   mapQuestions: SectionQuestionsMap;
   phaseAnswers: ExtendedAnswerType[];
   phaseSections: SectionData[];
   iseditable: boolean;
-  applicationid: string
+  applicationid: string;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -39,9 +39,10 @@ export function SectionView({
   // 2. Derive state directly from URL (No useState or useEffect needed for selection)
   const urlSecParam = searchParams.get("sec");
   const urlIndex = parseInt(urlSecParam ?? "1", 10) - 1;
-  
+
   // Ensure the index is within bounds, otherwise default to first section
-  const activeIndex = (urlIndex >= 0 && urlIndex < sortedSections.length) ? urlIndex : 0;
+  const activeIndex =
+    urlIndex >= 0 && urlIndex < sortedSections.length ? urlIndex : 0;
   const selectedSection = sortedSections[activeIndex]?.sectionid ?? "";
 
   // 3. Navigation helper using Next.js Router
@@ -52,7 +53,7 @@ export function SectionView({
   };
 
   const setSelectedSectionWithUrl = (sectionId: string) => {
-    const index = sortedSections.findIndex(s => s.sectionid === sectionId);
+    const index = sortedSections.findIndex((s) => s.sectionid === sectionId);
     if (index !== -1) navigateToSection(index);
   };
 
@@ -71,7 +72,7 @@ export function SectionView({
 
   const nextSectionName = sortedSections[activeIndex + 1]?.sectionname || null;
   const prevSectionName = sortedSections[activeIndex - 1]?.sectionname || null;
-  
+
   const isNotFirstSection = activeIndex > 0;
   const isNotLastSection = activeIndex < sortedSections.length - 1;
 
@@ -103,7 +104,7 @@ export function SectionView({
         const isVisible = selectedSection === phaseSection.sectionid;
         phaseSection.sectionname;
         if (!isVisible) {
-          return null
+          return null;
         }
         return (
           <div
