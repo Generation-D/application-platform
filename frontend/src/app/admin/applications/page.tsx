@@ -1,69 +1,69 @@
-"use client";
-
-import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import InternalHeader from "@/components/layout/internalHeader";
+import PaginationControls from "@/components/paginationControls";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
-interface ListItem {
-  applicationid: string;
-  email: string;
+interface SearchParams {
+  page?: string
 }
 
-export default function Users() {
-  const supabase = getSupabaseBrowserClient();
-  const [users, setApplications] = useState<ListItem[]>([]);
-  const [totalCount, setTotalCount] = useState<number | undefined>();
-  const [isLoading, setIsLoading] = useState(true);
+interface PageProps {
+  searchParams: Promise<SearchParams>;
+}
 
-  async function getTotalCount() {
-    const { count, error } = await supabase
-      .from("application_table")
-      .select("*", { count: "exact", head: true });
+const pageSize = 50
 
-    console.log(error);
-    console.log(count);
-    if (count) {
-      setTotalCount(count);
-    }
-  }
+export default async function Applications({ searchParams }: PageProps) {
+  const { page } = await searchParams;
+  const supabase = await getSupabaseCookiesUtilClient();
 
-  async function getUsers() {
-    const { data, error } = await supabase.rpc("fetch_applications_paginated", {
-      page_size: 20,
-      page_number: 1,
-    });
+  const pageNumber = Number(page) || 1
 
-    console.log(error);
+  const { count, error } = await supabase
+        .from("application_table")
+        .select("*", { count: "exact", head: true });
 
-    console.log(data);
-    if (data) {
-      setApplications(data);
-      setIsLoading(false);
-    }
-  }
+      const { data } = await supabase.rpc("fetch_applications_paginated", {
+        page_size: pageSize,
+        page_number: pageNumber,
+      });
 
-  useEffect(() => {
-    getTotalCount();
-    getUsers();
-  }, []);
-
-  if (isLoading) {
-    return <>Loading</>;
-  }
+    const applications = data ? data : [] 
+    const totalPages = Math.ceil(count! / pageSize)
 
   return (
     <>
-      <h1>Applications</h1>
-      {totalCount}
-      <ul>
-        {users.map((u) => (
-          <li key={u.applicationid}>
-            <Link href={`/admin/applications/${u.applicationid}`}>
-              {u.applicationid} {u.email}
+      <InternalHeader />
+      {/* {count} */}
+      <div className="max-w-4xl mx-auto p-8">
+      <h1 className="text-2xl font-bold mb-6">Bewerbungen</h1>
+      <h2 className="text-xl mb-4">Insgesamt: {count}</h2>
+
+      {/* 2. Server-Rendered "Table" using CSS Grid Links */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm mb-6">
+        <div className="grid grid-cols-2 bg-gray-50 p-4 font-semibold text-gray-700 border-b border-gray-200 text-sm">
+          <div>Bewerbungs ID</div>
+          <div>E-Mail</div>
+        </div>
+
+        {/* Rows (Each row is a real, clickable HTML link) */}
+        <div className="divide-y divide-gray-200 bg-white">
+          {applications.map((application) => (
+            <Link
+              key={application.applicationid}
+              href={`/admin/applications/${application.applicationid}`}
+              className="grid grid-cols-2 p-4 text-sm text-secondary hover:bg-gray-50 transition-colors items-center"
+            >
+              <div className="font-medium text-secondary hover:underline">{application.applicationid}</div>
+              <div>
+                {application.email}
+              </div>
             </Link>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
+      <PaginationControls currentPage={pageNumber} totalPages={totalPages} /> 
+    </div>
     </>
   );
 }

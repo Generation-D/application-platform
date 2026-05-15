@@ -82,7 +82,7 @@ export default async function Application({
         <Apl_Header />
         <OverviewButton
           slug={`admin/applications/${application_id}`}
-          text="<- Appliaction Overview"
+          text="<- Bewerbungs Übersicht"
         />
         <div className="w-full">
           <h2 className="p-4 rounded text-secondary">
