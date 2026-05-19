@@ -121,6 +121,7 @@ const PhaseOverview: React.FC<{
             Phase einsehen
           </button>
         ) : (
+          <>
           <button
             type="button"
             aria-disabled={true}
@@ -129,6 +130,14 @@ const PhaseOverview: React.FC<{
           >
             Phase bearbeiten
           </button>
+          <button 
+            type="button"
+            className="apl-button-fixed-short"
+            onClick={() => alert("Phase abgeschickt.")}
+          >
+            Phase abschicken
+          </button>
+          </>
         )}
       </div>
     </div>
