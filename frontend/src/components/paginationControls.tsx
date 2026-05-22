@@ -1,4 +1,3 @@
-// components/PaginationControls.tsx
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -26,7 +25,7 @@ export default function PaginationControls({ currentPage, totalPages }: Paginati
       <button
         onClick={() => handlePageChange('prev')}
         disabled={currentPage <= 1}
-        className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </button>
@@ -37,7 +36,7 @@ export default function PaginationControls({ currentPage, totalPages }: Paginati
       <button
         onClick={() => handlePageChange('next')}
         disabled={currentPage >= totalPages}
-        className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>

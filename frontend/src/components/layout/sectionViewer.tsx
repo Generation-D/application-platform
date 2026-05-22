@@ -86,7 +86,7 @@ export function SectionView({
             <button
               type="button"
               key={phaseSection.sectionid}
-              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary ${
+              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary cursor-pointer ${
                 selectedSection === phaseSection.sectionid
                   ? "text-secondary border-b-2"
                   : "text-gray-500"
@@ -131,7 +131,7 @@ export function SectionView({
                 <button
                   type="button"
                   onClick={moveToPreviousSection}
-                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded"
+                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded cursor-pointer"
                 >
                   Zurück zu &quot;{prevSectionName}&quot;
                 </button>
@@ -142,7 +142,7 @@ export function SectionView({
                 <button
                   type="button"
                   onClick={moveToNextSection}
-                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded"
+                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded cursor-pointer"
                 >
                   Weiter zu &quot;{nextSectionName}&quot;
                 </button>

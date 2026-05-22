@@ -21,29 +21,29 @@
 }
 
 .apl-button-fixed-short {
-  @apply rounded px-1 py-2 text-primary bg-secondary max-h-14;
+  @apply rounded px-1 py-2 text-primary bg-secondary max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-button-fixed {
-  @apply rounded px-4 py-2 text-primary bg-secondary max-h-14;
+  @apply rounded px-4 py-2 text-primary bg-secondary max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-button-fixed-big {
-  @apply rounded px-6 py-3 text-primary bg-secondary max-h-14;
+  @apply rounded px-6 py-3 text-primary bg-secondary max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-button-expanded {
-  @apply w-full flex justify-center rounded px-4 py-2 text-primary bg-secondary max-h-14;
+  @apply w-full flex justify-center rounded px-4 py-2 text-primary bg-secondary max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-alert-button-fixed {
-  @apply rounded px-4 py-2 text-white bg-red-600 max-h-14;
+  @apply rounded px-4 py-2 text-white bg-red-600 max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-alert-button-fixed-big {
-  @apply rounded px-6 py-3 text-white bg-red-600 max-h-14;
+  @apply rounded px-6 py-3 text-white bg-red-600 max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .apl-alert-button-fixed-expanded {
-  @apply w-full flex justify-center rounded px-4 py-2 text-white bg-red-600 max-h-14;
+  @apply w-full flex justify-center rounded px-4 py-2 text-white bg-red-600 max-h-14 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60;
 }
