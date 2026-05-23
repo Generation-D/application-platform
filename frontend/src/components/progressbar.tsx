@@ -89,14 +89,14 @@ export const ProgressBar = ({
       </div>
       {numAnswered === numMandatory &&
         (new Date(endDate) > new Date() ? (
-          <div className="md-3 italic text-gray-500">
-            Eure Bewerbungsunterlagen sind vollständig und wurden automatisch gespeichert.
-            Ihr müsst nun nichts weiter unternehmen, könnt bis zum{" "}{stringDate} aber weiterhin Änderungen vornehmen.
+          <div className="mb-3 italic text-gray-500 text-sm">
+            <p>Eure Bewerbungsunterlagen sind vollständig und wurden automatisch gespeichert.</p>
+            <p>Ihr müsst nun nichts weiter unternehmen, könnt aber bis zum {stringDate} weiterhin Änderungen vornehmen.</p>
           </div>
         ) : (
-          <div className="md-3 italic text-gray-500">
-            Eure Bewerbungsphase ist vollständig. Die Phase ist seit dem{" "}
-            {stringDate} zu Ende. Ihr könnt Eure Ergebnisse weiterhin einsehen.
+          <div className="mb-3 italic text-gray-500 text-sm">
+            <p>Eure Bewerbungsphase ist abgeschlossen (seit {stringDate}).</p>
+            <p>Ihr könnt Eure Ergebnisse weiterhin einsehen.</p>
           </div>
         ))}
     </AwaitingChild>
