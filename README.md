@@ -59,6 +59,19 @@ npx cypress run
 npx cypress open
 ```
 
+### 6. Linting & Formatting
+```bash
+# Check for ESLint issues
+cd frontend
+npm run lint
+
+# Check formatting (Prettier – check only, does not modify files)
+npm run format
+
+# Auto-fix all Prettier formatting issues
+npx prettier --write --ignore-path .gitignore .
+```
+
 ## Remote DB Workflow
 
 ### 1. Link the Supabase CLI to your project
