@@ -58,8 +58,8 @@ export const ProgressBar = ({
 
           answeredConditional += isChosen
             ? choice.questions.filter(
-              (q) => q.mandatory && q.questionid in answeredQuestions,
-            ).length
+                (q) => q.mandatory && q.questionid in answeredQuestions,
+              ).length
             : 0;
         },
       );
@@ -83,15 +83,22 @@ export const ProgressBar = ({
       <div className="w-full bg-gray-300 rounded-2xl border">
         <div
           style={{ width: `${progressPercentage}%` }}
-          className={`h-4 rounded-2xl border ${numAnswered !== numMandatory ? "bg-secondary" : "bg-green-600"
-            }`}
+          className={`h-4 rounded-2xl border ${
+            numAnswered !== numMandatory ? "bg-secondary" : "bg-green-600"
+          }`}
         />
       </div>
       {numAnswered === numMandatory &&
         (new Date(endDate) > new Date() ? (
           <div className="mb-3 italic text-gray-500 text-sm">
-            <p>Eure Bewerbungsunterlagen sind vollständig und wurden automatisch gespeichert.</p>
-            <p>Ihr müsst nun nichts weiter unternehmen, könnt aber bis zum {stringDate} weiterhin Änderungen vornehmen.</p>
+            <p>
+              Eure Bewerbungsunterlagen sind vollständig und wurden automatisch
+              gespeichert.
+            </p>
+            <p>
+              Ihr müsst nun nichts weiter unternehmen, könnt aber bis zum{" "}
+              {stringDate} weiterhin Änderungen vornehmen.
+            </p>
           </div>
         ) : (
           <div className="mb-3 italic text-gray-500 text-sm">
