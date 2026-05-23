@@ -51,7 +51,7 @@ export default async function Applications({ searchParams }: PageProps) {
           {applications.map((application) => (
             <Link
               key={application.applicationid}
-              href={`/admin/applications/${application.applicationid}`}
+              href={`/review/applications/${application.applicationid}`}
               className="grid grid-cols-2 p-4 text-sm text-secondary hover:bg-gray-50 transition-colors items-center"
             >
               <div className="font-medium text-secondary hover:underline">{application.applicationid}</div>

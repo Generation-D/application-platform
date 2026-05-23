@@ -25,7 +25,7 @@ export default async function Application({
         {phasesData.map((phase) => (
             <Link
               key={phase.phaseid}
-              href={`/admin/applications/${application_id}/${phase.phasename}`}
+              href={`/review/applications/${application_id}/${phase.phasename}`}
             >
               {phase.phasename}
             </Link>

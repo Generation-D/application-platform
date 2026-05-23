@@ -66,7 +66,7 @@ INSERT INTO
             auth.users
     );
 
-UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'viewer@test.com' AND userid = id;
+UPDATE user_profiles_table SET userrole = 2 FROM auth.users WHERE email = 'viewer@test.com' AND userid = id;
 
 UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'admin@test.com' AND userid = id;
 

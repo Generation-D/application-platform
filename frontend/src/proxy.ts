@@ -12,9 +12,9 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user }
   } = await supabase.auth.getUser();
-  await supabase.auth.getSession();
 
   const pathname = request.nextUrl.pathname;
+
   if (!user) {
     if (pathname != "/login") {
       console.log("Not logged in! Redirect to /login");
@@ -31,6 +31,19 @@ export async function proxy(request: NextRequest) {
     redirectUrl = await isAuthorized(supabase, UserRole.Admin);
   }
 
+  const { data: userRoleData } = await supabase.from("user_profiles_table")
+    .select("userrole")
+    .eq("userid", user!.id)
+    .single();
+
+  if (pathname == "/" && userRoleData?.userrole == 2) {
+    redirectUrl = "/review"
+  } 
+
+  if (pathname == "/" && userRoleData?.userrole == 3) {
+    redirectUrl = "/admin"
+  } 
+
   if (redirectUrl) {
     console.log(
       `The User ${user.email} is not authorized to access ${pathname}. Redirect to ${redirectUrl}`,
@@ -46,6 +59,7 @@ export async function proxy(request: NextRequest) {
       .single();
     if (roleError) {
       console.error(roleError);
+      return NextResponse.redirect(new URL("/login", request.url))
     }
     if (roleData && !roleData.isactive) {
       console.log(`The User ${user.email} is not active. Redirect to /403`);
@@ -61,5 +75,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/review", "/admin", "/settings"],
+  matcher: ["/", "/login", "/review/:path*", "/admin/:path*", "/settings"],
 };
