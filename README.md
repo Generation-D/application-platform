@@ -1,5 +1,89 @@
 # application-platform
 
+## Local Testing
+
+### 1. Prerequisites
+- Make sure you have **Docker** running on your machine.
+- Select/enable the right Supabase credentials in `frontend/.env` (LocalDB/ TestDB).
+
+### 2. Startup & Reset Supabase
+To start the local database, auth, and storage services:
+```bash
+supabase start
+```
+*Note: This automatically provisions your database, applies all schema migrations (under `supabase/migrations/`), and loads seed data from `supabase/seed.sql`.*
+
+Once started, you can check the status of your local services and get your API keys at any time by running:
+```bash
+supabase status
+```
+
+**💡 Quick Links:**
+*   **Supabase Studio Dashboard**: [http://127.0.0.1:54323](http://127.0.0.1:54323) (visual table editor, auth logs, etc.)
+*   **Mailpit Testing Server**: [http://127.0.0.1:54324](http://127.0.0.1:54324) (view local registration/confirmation emails)
+
+If you ever want to reset your local database to a clean seed state:
+```bash
+supabase db reset
+```
+*(If you need to stop services and delete the local docker volumes entirely, run `supabase stop --no-backup` followed by `supabase start`)*
+
+### 3. Load Phase Configurations and Texts
+To populate your local database with phase questions and localized texts, run the following from the project root:
+```bash
+cd backend
+poetry install
+poetry run python backend/process_config.py --config apl_config_gend_all_phases.yml --env_file ../frontend/.env 
+poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+```
+
+### 4. Startup Frontend
+To launch the Next.js development server:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view the portal.
+
+### 5. Running End-to-End (Cypress) Tests
+To run end-to-end integration tests locally:
+1. Ensure the frontend server is running in a separate terminal.
+2. Run the Cypress tests from the `e2e` folder:
+```bash
+cd e2e
+npm install
+# To run tests headlessly
+npx cypress run
+# To open the Cypress GUI Test Runner
+npx cypress open
+```
+
+## Remote DB Workflow
+
+### 1. Link the Supabase CLI to your project
+You will have to authenticate yourself in the browser and select the correct project.
+```bash
+supabase login
+supabase link
+```
+
+### 2. Reset the Linked Remote DB
+> [!IMPORTANT]
+> **Do NOT reset the database after the start of the competition year!**
+*This will not delete the database, but will only reset the schema data.*
+```bash
+supabase db reset --linked --no-seed
+```
+
+### 3. Load Configurations and Texts to Remote / Staging
+Both the configuration seeding and text synchronization scripts run against whatever database is currently selected/active in **`frontend/.env`** (e.g. Test or Prod). 
+
+To load configurations or sync texts to your remote environment, simply follow the exact same steps in [Load Phase Configurations and Texts](#3-load-phase-configurations-and-texts), ensuring you have enabled the correct remote credentials in your `.env` file first.
+
+
+
+
 ## Naming Convention
 
 Everything in English (naming, comments, commits, ...)
@@ -257,27 +341,4 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
     - HTTP/2 Support: On
     - HSTS Enabled: On
     - Agree to Terms of Service
-
-
-## DB Reset Workflow, Load Phases and Phase Texts 
-
-Link the Supabase CLI to your project. You will have to authenticate yourself in the browser and select the correct project.
-```
-supabase login
-supabase link
-```
-
-### Reset the linked Supabase DB
-This will not delete the database, but will only reset the data.<br>
-IMPORTANT: Do not reset the DB after the start of the competition year!<br>
-`supabase db reset --linked --no-seed`
-
-### Load the current phase config and phase texts
-IMPORTANT: Check the .env file beforehand to make sure that the correct DB is linked.<br>
-From the project root folder, run:
-```
-cd backend
-poetry run python backend/process_config.py --config apl_config_gend_all_phases.yml --env_file ../frontend/.env 
-poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
-```
 
