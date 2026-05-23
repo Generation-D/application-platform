@@ -88,15 +88,16 @@ $function$
 ;
 
 CREATE OR REPLACE FUNCTION public.fetch_image_upload_answer_table(question_id uuid, application_id uuid)
- RETURNS TABLE(answerid uuid, imagename text)
+ RETURNS TABLE(userid uuid, answerid uuid, imagename text)
  LANGUAGE plpgsql
  STABLE
 AS $function$
 BEGIN
     RETURN QUERY
-    SELECT t.answerid, t.imagename
+    SELECT app.userid, t.answerid, t.imagename
     FROM IMAGE_UPLOAD_ANSWER_TABLE t
     INNER JOIN answer_table a ON t.answerid = a.answerid
+    INNER JOIN application_table app ON app.applicationid = a.applicationid 
     WHERE a.questionid = question_id AND a.applicationid = application_id;
 END;
 $function$
@@ -148,15 +149,16 @@ $function$
 ;
 
 CREATE OR REPLACE FUNCTION public.fetch_pdf_upload_answer_table(question_id uuid, application_id uuid)
- RETURNS TABLE(answerid uuid, pdfname text)
+ RETURNS TABLE(userid uuid, answerid uuid, pdfname text)
  LANGUAGE plpgsql
  STABLE
 AS $function$
 BEGIN
     RETURN QUERY
-    SELECT t.answerid, t.pdfname
+    SELECT app.userid, t.answerid, t.pdfname
     FROM PDF_UPLOAD_ANSWER_TABLE t
     INNER JOIN answer_table a ON t.answerid = a.answerid
+    INNER JOIN application_table app ON app.applicationid = a.applicationid 
     WHERE a.questionid = question_id AND a.applicationid = application_id;
 END;
 $function$
@@ -178,15 +180,16 @@ $function$
 ;
 
 CREATE OR REPLACE FUNCTION public.fetch_video_upload_answer_table(question_id uuid, application_id uuid)
- RETURNS TABLE(answerid uuid, videoname text)
+ RETURNS TABLE(userid uuid, answerid uuid, videoname text)
  LANGUAGE plpgsql
  STABLE
 AS $function$
 BEGIN
     RETURN QUERY
-    SELECT t.answerid, t.videoname
+    SELECT app.userid, t.answerid, t.videoname
     FROM VIDEO_UPLOAD_ANSWER_TABLE t
     INNER JOIN answer_table a ON t.answerid = a.answerid
+    INNER JOIN application_table app ON app.applicationid = a.applicationid 
     WHERE a.questionid = question_id AND a.applicationid = application_id;
 END;
 $function$

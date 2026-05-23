@@ -134,29 +134,25 @@ export async function saveUploadAnswer(
   }
 }
 
-export async function fetchUploadAnswer<T extends VideoAnswerResponse | PdfAnswerResponse | ImageAnswerResponse>(
+export async function fetchUploadAnswer<T extends UploadRpcName>(
   questionid: string,
   applicationid: string,
   options: {
-    rpcName: UploadRpcName;
+    rpcName: T;
     fileName: UploadFileName;
   },
-): Promise<(T & { userid: string }) | null> {
+) {
   const supabase = getSupabaseBrowserClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    logger.error(JSON.stringify(userError));
-  }
   if (!applicationid) {
     return null;
   }
-  const user_id = userData.user!.id;
+
   const { data: uploadData, error: uploadError } = await supabase
     .rpc(options.rpcName, {
       question_id: questionid,
       application_id: applicationid,
     })
-    .maybeSingle<T>();
+    .maybeSingle();
   if (uploadError) {
     logger.error({
       question_id: questionid,
@@ -169,6 +165,6 @@ export async function fetchUploadAnswer<T extends VideoAnswerResponse | PdfAnswe
     logger.info("No existing upload data found for this question.");
     return null;
   } else {
-    return { ...uploadData, userid: user_id };
+    return uploadData;
   }
 }

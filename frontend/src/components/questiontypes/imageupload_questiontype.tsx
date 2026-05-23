@@ -21,6 +21,7 @@ export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 }
 
 export interface ImageAnswerResponse {
+  userid: string;
   answerid: string;
   imagename: string;
 }
@@ -44,7 +45,7 @@ export async function fetchImageUploadAnswer(
   questionid: string,
   applicationid: string,
 ) {
-  return fetchUploadAnswer<ImageAnswerResponse>(questionid, applicationid, {
+  return fetchUploadAnswer(questionid, applicationid, {
     rpcName: "fetch_image_upload_answer_table",
     fileName: "imagename",
   });
@@ -99,10 +100,13 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
           applicationid,
         );
         if (savedAnswer && savedAnswer.imagename != "") {
+          console.log(savedAnswer)
+
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
           );
+          logger.debug(imageUploadBucketData)
           const url = URL.createObjectURL(imageUploadBucketData!);
           updateAnswerState(url || "");
           setWasUploaded(true);
@@ -111,6 +115,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
+        logger.info(error)
         logger.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);

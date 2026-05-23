@@ -18,6 +18,7 @@ export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 }
 
 export interface PdfAnswerResponse {
+  userid: string;
   answerid: string;
   pdfname: string;
 }
@@ -41,7 +42,7 @@ export async function fetchPdfUploadAnswer(
   questionid: string,
   applicationid: string,
 ) {
-  return fetchUploadAnswer<PdfAnswerResponse>(questionid, applicationid, {
+  return fetchUploadAnswer(questionid, applicationid, {
     rpcName: "fetch_pdf_upload_answer_table",
     fileName: "pdfname",
   });

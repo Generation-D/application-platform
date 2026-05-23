@@ -14,6 +14,7 @@ import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
 
 export interface VideoAnswerResponse {
+  userid: string
   answerid: string;
   videoname: string;
 }
@@ -41,7 +42,7 @@ export async function fetchVideoUploadAnswer(
   questionid: string,
   appliactionid: string,
 ) {
-  return fetchUploadAnswer<VideoAnswerResponse>(questionid, appliactionid, {
+  return fetchUploadAnswer(questionid, appliactionid, {
     rpcName: "fetch_video_upload_answer_table",
     fileName: "videoname",
   });
