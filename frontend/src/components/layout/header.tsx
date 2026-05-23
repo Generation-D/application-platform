@@ -10,6 +10,7 @@ import { toggle } from "@/store/slices/menuSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { SubmitButton } from "../submitButton";
+import { logoutAction } from "@/actions/auth";
 
 const Apl_Header: React.FC = () => {
   const isMenuOpen = useAppSelector((state) => state.menuReducer.isOpen);
@@ -17,6 +18,7 @@ const Apl_Header: React.FC = () => {
 
   function handleSubmit(): void {
     dispatch({ type: RESET_STATE });
+    logoutAction()
   }
 
   return (
@@ -60,7 +62,7 @@ const Apl_Header: React.FC = () => {
             Einstellungen
           </span>
         </Link>
-        <form action="/auth/signout" method="post" onSubmit={handleSubmit}>
+        <form action={handleSubmit}>
           <SubmitButton text={"Ausloggen"} expanded={false} />
         </form>
       </div>

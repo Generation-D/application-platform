@@ -403,3 +403,14 @@ export async function sendResetPasswordLinkFromSettings(
     };
   }
 }
+
+export async function logoutAction() {
+  const supabase = await getSupabaseCookiesUtilClient();
+  
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    await supabase.auth.signOut();
+  }
+
+  redirect('/login');
+}
