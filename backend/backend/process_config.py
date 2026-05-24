@@ -1,4 +1,5 @@
 import argparse
+import uuid
 from datetime import datetime
 
 from loguru import logger
@@ -116,10 +117,16 @@ def process_config(config_file_path: str, env_file_path: str | None = None):
             supabase.table('phase_table').select('phaseid, phasename').eq('phasename', phase_name).execute()
         )
 
+        phase_id = str(uuid.uuid4())
+
         if existing_phases.data and len(existing_phases.data) > 0:
-            log.info(f'Phase {phase_name} already exists, skipping...')
-            log.debug(str(existing_phases.data))
-            continue
+            phase_id = existing_phases.data[0]['phaseid']
+            exisiting_phase_questions = supabase.table('question_table').select('*').eq('phaseid', phase_id).execute()
+
+            if exisiting_phase_questions.data and len(exisiting_phase_questions.data) > 0:
+                log.info(f'Phase {phase_name} already exists, skipping...')
+                log.debug(str(existing_phases.data))
+                continue
 
         data_phase_table = create_data_phase_table(
             phase_name,
@@ -129,9 +136,10 @@ def process_config(config_file_path: str, env_file_path: str | None = None):
             phase['endDate'],
             'sections' in phase,
         )
-        log.info(f'Creating new Phase {phase_name}')
+        data_phase_table['phaseid'] = phase_id
 
-        response_phase_table = supabase.table('phase_table').insert(data_phase_table).execute()
+        log.info(f'Creating new Phase {phase_name}')
+        response_phase_table = supabase.table('phase_table').upsert(data_phase_table).execute()
         phase_sections = {}
         phase_id = response_phase_table.data[0]['phaseid']
         if 'sections' in phase:
