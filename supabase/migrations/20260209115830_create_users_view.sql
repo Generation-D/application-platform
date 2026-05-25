@@ -1,4 +1,4 @@
-create view public.users as select * from auth.users;
+create or replace view public.users as select * from auth.users;
   revoke all on public.users from anon, authenticated, public;
   grant select on public.users to service_role;
 
@@ -36,22 +36,6 @@ begin
 end;
 $$;
 
-
-create or replace function public.handle_sync_user_role()
-returns trigger 
-language plpgsql 
-security definer set search_path = auth
-as $$
-begin
-  update auth.users
-  set raw_app_meta_data = 
-    coalesce(raw_app_meta_data, '{}'::jsonb) || 
-    jsonb_build_object('userrole', new.userrole)
-  where id = new.userid;
-  return new;
-end;
-$$;
-
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -71,18 +55,3 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
-
-create trigger on_role_change
-  after insert or update of userrole
-  on public.user_profiles_table
-  for each row
-  execute function public.handle_sync_user_role();
-
-create policy "select_admin_application_table"
-on "public"."application_table"
-as permissive
-for select
-to public
-using (
-  (auth.jwt() -> 'user_metadata' ->> 'userrole')::int = 3
-);

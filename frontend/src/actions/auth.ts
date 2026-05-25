@@ -82,21 +82,6 @@ export async function signUpUser(prevState: any, formData: FormData) {
       };
     }
     const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
-    const { error: userProfileError } = await supabaseAdmin
-      .from("user_profiles_table")
-      .insert({ userid: userData.user!.id, userrole: 1, isactive: true });
-    if (userProfileError) {
-      if (userProfileError.code == "23505") {
-        logger.debug("User already registered. Resent Confirmation Email");
-        return {
-          message:
-            "Der User war zwar bereits registriert, dir wurde jedoch erneut eine Email gesendet, bitte schau in dein Postfach!",
-          status: "SUCCESS",
-        };
-      }
-      logger.error(JSON.stringify(userProfileError));
-      return { message: userProfileError.message, status: "ERROR" };
-    }
     const sendData = { userid: userData!.user!.id };
     const { error: applicationError } = await supabaseAdmin
       .from("application_table")

@@ -75,5 +75,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/review/:path*", "/admin/:path*", "/settings"],
+  matcher: ["/", "/login", "/review/:path*", "/admin/:path*", "/settings", "/((?!api|_next/static|_next/image|.*\\.(?:png|ico|svg|pdf)$).*)"],
 };

@@ -114,3 +114,5 @@ to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
+
+INSERT INTO "user_roles_table" (userroleid, userrolename) VALUES (1, 'applicant'), (2, 'reviewer'), (3, 'admin');
