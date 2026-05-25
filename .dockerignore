@@ -1,6 +1,7 @@
-.env
-node_modules
+**/.env
+./frontend/node_modules
 supabase
 .github
 .git
 backend
+./frontend/.next
