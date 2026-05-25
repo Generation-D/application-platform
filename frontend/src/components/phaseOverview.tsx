@@ -69,7 +69,7 @@ const PhaseOverview: React.FC<{
       }`}
     >
       <div className="grid grid-rows-3 md:grid-rows-1 md:grid-cols-3 gap-4">
-        <div className="grid grid-cols-1 grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 md:grid-cols-1 md:grid-rows-2">
+        <div className="flex flex-col justify-start gap-1">
           <div className="flex items-center">
             {statusIcon(previousFailed)}
             <h2 className="rounded font-bold ml-2">
