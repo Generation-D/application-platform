@@ -1,4 +1,4 @@
-FROM node:24
+FROM node:24 AS build
 
 WORKDIR /app
 
@@ -17,3 +17,8 @@ RUN chmod +x start.sh
 EXPOSE 3000
 
 CMD ["./start.sh"]
+
+FROM caddy:2 AS reverse_proxy
+
+COPY Caddyfile /etc/caddy/Caddyfile
+
