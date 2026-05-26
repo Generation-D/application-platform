@@ -1,5 +1,6 @@
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
 import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
+import Apl_Header from "@/components/layout/header";
 import InternalHeader from "@/components/layout/internalHeader";
 import OverviewButton from "@/components/overviewButton";
 import { Question } from "@/components/questions";
@@ -32,21 +33,23 @@ export default async function Application({
 
   const phaseAnswers = await fetchAllAnswersOfApplication(application_id);
 
-  console.log(phasesOutcome)
-
   return (
-    <>
-      <InternalHeader />
-      <OverviewButton slug="review/applications" text="Zu allen Bewerbungen" />
-      <h1>Bewerbung</h1>
-      <div>ID: {application_id}</div>
-      <ViewerApplicationOverview
-        phasesData={phasesData}
-        phasesQuestions={phasesQuestions}
-        phaseAnswers={phaseAnswers}
-        phasesOutcome={phasesOutcome}
-        applicationid={application_id}
-      />
-    </>
+    <span className="w-full">
+      <div className="flex flex-col items-start justify-between space-y-4">
+        <Apl_Header />
+        <OverviewButton slug="review/applications" text="<- Zu allen Bewerbungen" />
+        <div className="w-full">
+        <h1>Bewerbung</h1>
+        <div>ID: {application_id}</div>
+        <ViewerApplicationOverview
+          phasesData={phasesData}
+          phasesQuestions={phasesQuestions}
+          phaseAnswers={phaseAnswers}
+          phasesOutcome={phasesOutcome}
+          applicationid={application_id}
+        />
+        </div>
+      </div>
+    </span>
   );
 }

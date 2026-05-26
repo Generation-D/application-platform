@@ -1,3 +1,4 @@
+import Apl_Header from "@/components/layout/header";
 import InternalHeader from "@/components/layout/internalHeader";
 import PaginationControls from "@/components/paginationControls";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -33,7 +34,7 @@ export default async function Applications({ searchParams }: PageProps) {
 
   return (
     <>
-      <InternalHeader />
+      <Apl_Header />
       {/* {count} */}
       <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-2xl font-bold mb-6">Bewerbungen</h1>

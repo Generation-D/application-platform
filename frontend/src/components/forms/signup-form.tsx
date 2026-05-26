@@ -24,7 +24,7 @@ export default function SignUpForm() {
   const [state, formAction] = useActionState(signUpUser, initialState);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);

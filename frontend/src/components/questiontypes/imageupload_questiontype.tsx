@@ -100,8 +100,6 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
           applicationid,
         );
         if (savedAnswer && savedAnswer.imagename != "") {
-          console.log(savedAnswer)
-
           const imageUploadBucketData = await downloadFile(
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,

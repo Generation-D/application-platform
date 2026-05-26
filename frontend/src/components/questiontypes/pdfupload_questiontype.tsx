@@ -108,7 +108,6 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
           setWasUploaded(true);
         } else {
           updateAnswerState("");
-          console.log("no pdf found");
         }
         setTempAnswer("");
       } catch (error) {

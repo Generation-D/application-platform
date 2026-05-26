@@ -21,7 +21,7 @@ const initialState: messageType = {
 export default function SignInForm() {
   const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [email, setEmail] = useState("");
   const ref = useRef<TurnstileInstance>(null);
 
