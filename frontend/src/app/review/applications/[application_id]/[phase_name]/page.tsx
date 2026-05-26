@@ -76,13 +76,16 @@ export default async function Application({
       endDate={phaseData.enddate}
     />
   );
+
+  const backText = "<- Bewerbungsübersicht"
+
   return (
     <span className="w-full">
       <div className="flex flex-col items-start justify-between space-y-4">
         <Apl_Header />
         <OverviewButton
-          slug={`admin/applications/${application_id}`}
-          text="<- Bewerbungs Übersicht"
+          slug={`review/applications/${application_id}`}
+          text={backText}
         />
         <div className="w-full">
           <h2 className="p-4 rounded text-secondary">
@@ -126,7 +129,7 @@ export default async function Application({
         </div>
         <OverviewButton
           slug={`admin/applications/${application_id}`}
-          text="<- Appliaction Overview"
+          text={backText}
         />
       </div>
     </span>

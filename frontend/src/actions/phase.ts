@@ -416,14 +416,18 @@ export type PhaseOutcome = {
   };
 };
 
-export async function fetch_phases_status(): Promise<PhaseOutcome[]> {
+export async function fetch_phases_status(userId?: string): Promise<PhaseOutcome[]> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const user = await getCurrentUser(supabase);
+  if (!userId) {
+    const user = await getCurrentUser(supabase);
+    userId = user.id
+  }
+  
   const all_phases = await fetch_all_phases();
   const { data, error } = await supabase
     .from("phase_outcome_table")
     .select("outcome_id, outcome, review_date, phase_id")
-    .eq("user_id", user.id);
+    .eq("user_id", userId);
   if (error) {
     logger.error(JSON.stringify(error));
   }

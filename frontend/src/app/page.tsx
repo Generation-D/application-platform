@@ -19,6 +19,7 @@ export default async function Home() {
       phase.phaseid,
     );
   }
+
   const phaseAnswers = await fetchAllAnswersOfApplication();
 
   return (

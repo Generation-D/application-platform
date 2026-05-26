@@ -224,7 +224,8 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                  }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >

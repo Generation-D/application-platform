@@ -75,7 +75,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [wasUploaded, setWasUploaded] = useState(false);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -227,7 +227,8 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                  }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -270,9 +271,8 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             </div>
           </div>
           <div
-            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${
-              !(tempAnswer || answer) && "hidden"
-            }`}
+            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${!(tempAnswer || answer) && "hidden"
+              }`}
           >
             {iseditable && (
               <button

@@ -1,7 +1,11 @@
-import { fetch_all_phases } from "@/actions/phase";
+import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
+import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import InternalHeader from "@/components/layout/internalHeader";
 import OverviewButton from "@/components/overviewButton";
-import Link from "next/link";
+import { Question } from "@/components/questions";
+import ViewerApplicationOverview from "@/components/viewerApplicationOverview";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+import { cached_fetch_phase_questions } from "@/utils/cached";
 
 export default async function Application({
   params,
@@ -10,8 +14,25 @@ export default async function Application({
 }>) {
   const { application_id } = await params;
 
+  const supabase = await getSupabaseCookiesUtilClient();
+
+  const { data, error } = await supabase.from("application_table").select("userid").eq("applicationid", application_id).single()
+  if (error) {
+    return <>{error.message}</>
+  }
+
   const phasesData = await fetch_all_phases();
-  // const phasesOutcome = await fetch_phases_status();
+  const phasesOutcome = await fetch_phases_status(data.userid);
+  const phasesQuestions: Record<string, Question[]> = {};
+  for (const phase of phasesData) {
+    phasesQuestions[phase.phaseid] = await cached_fetch_phase_questions(
+      phase.phaseid,
+    );
+  }
+
+  const phaseAnswers = await fetchAllAnswersOfApplication(application_id);
+
+  console.log(phasesOutcome)
 
   return (
     <>
@@ -19,18 +40,13 @@ export default async function Application({
       <OverviewButton slug="admin/applications" />
       <h1>Bewerbung</h1>
       <div>ID: {application_id}</div>
-      {/* <div></div> */}
-      <h2>Phasen</h2>
-      <div>
-        {phasesData.map((phase) => (
-            <Link
-              key={phase.phaseid}
-              href={`/review/applications/${application_id}/${phase.phasename}`}
-            >
-              {phase.phasename}
-            </Link>
-        ))}
-      </div>
+      <ViewerApplicationOverview
+        phasesData={phasesData}
+        phasesQuestions={phasesQuestions}
+        phaseAnswers={phaseAnswers}
+        phasesOutcome={phasesOutcome}
+        applicationid={application_id}
+      />
     </>
   );
 }

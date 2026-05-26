@@ -93,7 +93,8 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
               checked={answer as boolean}
               onChange={handleChange}
               onClick={handleChange}
-              className="w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2"
+              className={`w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2 ${iseditable ? "cursor-pointer" : "cursor-not-allowed"
+                }`}
             />
           </AwaitingChild>
           {mandatory && <span className="text-red-500">*</span>}

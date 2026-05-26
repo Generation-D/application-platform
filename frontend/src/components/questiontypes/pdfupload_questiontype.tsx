@@ -74,7 +74,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["application/pdf"];
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -224,7 +224,8 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                  }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -267,14 +268,13 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             </div>
           </div>
           <div
-            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${
-              !(tempAnswer || answer) && "hidden"
-            }`}
+            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${!(tempAnswer || answer) && "hidden"
+              }`}
           >
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600 mb-1"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -286,6 +286,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
               height="600px max-w-xs max-h-96 self-center"
               style={{ border: "none" }}
             />
+            <a className="self-end mb-1 cursor-pointer" href={tempAnswer || answer || undefined} target="_blank">Öffnen</a>
             {!wasUploaded ? (
               <>
                 <div className="italic">
