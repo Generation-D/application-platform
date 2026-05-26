@@ -2,7 +2,7 @@ import pino from "pino";
 
 const isProd = process.env.NODE_ENV === "production";
 
-export const logger = pino({
+const logger = pino({
   level: isProd ? "info" : "debug",
   base: {
     env: process.env.NODE_ENV,
@@ -13,3 +13,7 @@ export const logger = pino({
     level: (label) => ({ level: label.toUpperCase() }),
   },
 });
+
+export const createLogger = (moduleName: string) => {
+  return logger.child({ module: moduleName })
+} 

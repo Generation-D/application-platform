@@ -1,6 +1,7 @@
 "use server";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/answers/shortText");
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -22,7 +23,7 @@ export async function saveShortTextAnswer(
           answertext: answertext,
         });
       if (insertAnswerError) {
-        logger.error(JSON.stringify(insertAnswerError));
+        log.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "updated") {
       const { error: updateAnswerError } = await supabase
@@ -32,7 +33,7 @@ export async function saveShortTextAnswer(
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        logger.error(JSON.stringify(updateAnswerError));
+        log.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -63,7 +64,7 @@ export async function fetchShortTextAnswer(
     if (shortTextError.code == "PGRST116") {
       return initialstate;
     }
-    logger.error(JSON.stringify(shortTextError));
+    log.error(JSON.stringify(shortTextError));
   }
   return shortTextData || initialstate;
 }

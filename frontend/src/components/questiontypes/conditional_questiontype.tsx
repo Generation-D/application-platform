@@ -10,7 +10,8 @@ import {
   fetchConditionalAnswer,
   saveConditionalAnswer,
 } from "@/actions/answers/conditional";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/conditional_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { numberToLetter } from "@/utils/helpers";
@@ -88,7 +89,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -210,7 +211,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
                   condQuestion.questiontype,
                 );
                 if (!QuestionComponent) {
-                  logger.error(
+                  log.error(
                     `Unknown question type: ${condQuestion.questiontype}`,
                   );
                   return null;

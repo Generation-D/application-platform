@@ -5,7 +5,8 @@ import {
   fetchDateTimePickerAnswer,
   saveDateTimePickerAnswer,
 } from "@/actions/answers/dateTimePicker";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/datetimepicker_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setToPrefferedTimeZone } from "@/utils/helpers";
@@ -64,7 +65,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
           savedAnswer.answerid,
         );
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

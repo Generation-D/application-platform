@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/imageupload_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -104,7 +105,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
           );
-          logger.debug(imageUploadBucketData)
+          log.debug(imageUploadBucketData)
           const url = URL.createObjectURL(imageUploadBucketData!);
           updateAnswerState(url || "");
           setWasUploaded(true);
@@ -113,8 +114,8 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        logger.info(error)
-        logger.error(JSON.stringify(error));
+        log.info(error)
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -180,7 +181,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     try {
       await saveImageUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
-      logger.error(JSON.stringify(error));
+      log.error(JSON.stringify(error));
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

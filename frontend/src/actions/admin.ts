@@ -1,6 +1,7 @@
 "use server";
 import { ApplicantsStateType } from "@/components/applicantslist";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/admin");
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
@@ -45,14 +46,14 @@ export async function fetchAllUsers() {
     error: adminError,
   } = await supabaseAdmin.auth.admin.listUsers();
   if (adminError) {
-    logger.error(JSON.stringify(adminError));
+    log.error(JSON.stringify(adminError));
     throw adminError;
   }
   const { data: profileData, error: profileError } = await supabaseAdmin
     .from("user_profiles_table")
     .select("*");
   if (profileError) {
-    logger.error(JSON.stringify(profileError));
+    log.error(JSON.stringify(profileError));
     throw profileError;
   }
   return mergeUserDatas(users, profileData!);
@@ -67,17 +68,17 @@ export async function toggleStatusOfUser(currUser: userData) {
       .eq("userid", currUser.id);
 
     if (userProfileError) {
-      logger.error(JSON.stringify(userProfileError));
+      log.error(JSON.stringify(userProfileError));
       throw userProfileError;
     }
-    logger.info(
+    log.info(
       `Changed Status of User (${currUser.email} to '${
         currUser.isactive ? "inactive" : "active"
       }')`,
     );
     return { ...currUser, isactive: !currUser.isactive };
   } catch (error) {
-    logger.error(`Error toggling user status: ${error}`);
+    log.error(`Error toggling user status: ${error}`);
     return null;
   }
 }
@@ -91,13 +92,13 @@ export async function changeRoleOfUser(currUser: userData, role: UserRole) {
       .eq("userid", currUser.id);
 
     if (userProfileError) {
-      logger.error(JSON.stringify(userProfileError));
+      log.error(JSON.stringify(userProfileError));
       throw userProfileError;
     }
-    logger.info(`Changed Userrole of User (${currUser.email} to '${role}')`);
+    log.info(`Changed Userrole of User (${currUser.email} to '${role}')`);
     return { ...currUser, userrole: role.valueOf() };
   } catch (error) {
-    logger.error(`Error changing user status: ${error}`);
+    log.error(`Error changing user status: ${error}`);
     return null;
   }
 }
@@ -116,7 +117,7 @@ export async function fetchAllApplicantsStatus(): Promise<ApplicantsStatus[]> {
   const { data: applicantsStatusData, error: applicantsStatusError } =
     await supabase.from("phase_outcome_table").select("*");
   if (applicantsStatusError) {
-    logger.error(JSON.stringify(applicantsStatusError));
+    log.error(JSON.stringify(applicantsStatusError));
     throw applicantsStatusError;
   }
   return applicantsStatusData;
@@ -141,7 +142,7 @@ export async function saveApplicationOutcome(
         review_date: createCurrentTimestamp(),
       });
     if (applicantStatusError) {
-      logger.error(JSON.stringify(applicantStatusError));
+      log.error(JSON.stringify(applicantStatusError));
       throw applicantStatusError;
     }
   } else {
@@ -154,7 +155,7 @@ export async function saveApplicationOutcome(
       })
       .eq("outcome_id", applicantStatus.outcome_id);
     if (applicantStatusError) {
-      logger.error(JSON.stringify(applicantStatusError));
+      log.error(JSON.stringify(applicantStatusError));
       throw applicantStatusError;
     }
   }
@@ -193,7 +194,7 @@ export async function finishEvaluationOfPhase(
       isFirstPhase || previousPhaseApplicantState.status?.outcome;
 
     if (userIsInPhase) {
-      logger.info(
+      log.info(
         `Set Application Outcome of ${user.email} in Phase ${phase_id} to failed.`,
       );
       await saveApplicationOutcome(
@@ -211,8 +212,8 @@ export async function finishEvaluationOfPhase(
     .update({ finished_evaluation: createCurrentTimestamp() })
     .eq("phaseid", phase_id);
   if (applicantStatusError) {
-    logger.error(JSON.stringify(applicantStatusError));
+    log.error(JSON.stringify(applicantStatusError));
     throw applicantStatusError;
   }
-  logger.info(`Finished Evaluation of Phase ${phase_id}`);
+  log.info(`Finished Evaluation of Phase ${phase_id}`);
 }

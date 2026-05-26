@@ -5,7 +5,8 @@ import {
   fetchShortTextAnswer,
   saveShortTextAnswer,
 } from "@/actions/answers/shortText";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/shorttext_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkRegex } from "@/utils/helpers";
@@ -64,7 +65,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

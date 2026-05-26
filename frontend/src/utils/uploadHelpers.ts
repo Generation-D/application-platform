@@ -1,9 +1,7 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
-import { logger } from "@/logger/logger";
-import { VideoAnswerResponse } from "@/components/questiontypes/videoupload_questiontype";
-import { ImageAnswerResponse } from "@/components/questiontypes/imageupload_questiontype";
-import { PdfAnswerResponse } from "@/components/questiontypes/pdfupload_questiontype";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("utils/uploadHelpers");
 
 export type UploadTableName =
   | "image_upload_answer_table"
@@ -31,7 +29,7 @@ export async function saveUploadAnswer(
   if (!file) return;
   const fileSizeInMB = file.size / 1024 / 1024;
   if (!options.validTypes.includes(file.type)) {
-    logger.error(
+    log.error(
       `Invalid file type: ${file.type}. Allowed: ${options.validTypes.join(
         ", ",
       )}`,
@@ -39,7 +37,7 @@ export async function saveUploadAnswer(
     return;
   }
   if (fileSizeInMB > options.maxfilesizeinmb) {
-    logger.error(
+    log.error(
       `File too large: ${fileSizeInMB} MB. Max: ${options.maxfilesizeinmb} MB.`,
     );
     return;
@@ -72,12 +70,12 @@ export async function saveUploadAnswer(
       .insert(insertObj);
       insertAnswerError = error
     } else {
-      logger.error(`Invalid fileName option: ${options.fileName}`);
+      log.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
     
     if (insertAnswerError) {
-      logger.error(JSON.stringify(insertAnswerError));
+      log.error(JSON.stringify(insertAnswerError));
     }
     const { error: bucketError } = await supabase.storage
       .from(bucket_name)
@@ -86,7 +84,7 @@ export async function saveUploadAnswer(
         uploadFile,
       );
     if (bucketError) {
-      logger.error(JSON.stringify(bucketError));
+      log.error(JSON.stringify(bucketError));
     }
   } else if (reqtype == "updated") {
     const { data: oldData, error: oldError } = await supabase
@@ -95,7 +93,7 @@ export async function saveUploadAnswer(
       .eq("answerid", answerid)
       .single();
     if (oldError) {
-      logger.error(JSON.stringify(oldError));
+      log.error(JSON.stringify(oldError));
     }
     let updateObj:
       | { imagename: string }
@@ -108,7 +106,7 @@ export async function saveUploadAnswer(
     } else if (options.fileName === "videoname") {
       updateObj = { videoname: uploadFile.name };
     } else {
-      logger.error(`Invalid fileName option: ${options.fileName}`);
+      log.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
     const { error: updatedError } = await supabase
@@ -116,7 +114,7 @@ export async function saveUploadAnswer(
       .update(updateObj)
       .eq("answerid", answerid);
     if (updatedError) {
-      logger.error(JSON.stringify(updatedError));
+      log.error(JSON.stringify(updatedError));
     }
     let oldFileName = "";
     if (oldData && typeof oldData === "object" && options.fileName in oldData) {
@@ -129,7 +127,7 @@ export async function saveUploadAnswer(
         uploadFile,
       );
     if (updatedBucketError) {
-      logger.error(JSON.stringify(updatedBucketError));
+      log.error(JSON.stringify(updatedBucketError));
     }
   }
 }
@@ -154,15 +152,15 @@ export async function fetchUploadAnswer<T extends UploadRpcName>(
     })
     .maybeSingle();
   if (uploadError) {
-    logger.error({
+    log.error({
       question_id: questionid,
       application_id: applicationid,
     });
-    logger.error(JSON.stringify(uploadError));
+    log.error(JSON.stringify(uploadError));
     return null;
   }
   if (!uploadData) {
-    logger.info("No existing upload data found for this question.");
+    log.info("No existing upload data found for this question.");
     return null;
   } else {
     return uploadData;

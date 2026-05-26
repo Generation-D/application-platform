@@ -1,5 +1,6 @@
 "use server";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/answers/longText");
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -21,7 +22,7 @@ export async function saveLongTextAnswer(
         answertext: answertext,
       });
     if (insertAnswerError) {
-      logger.error(JSON.stringify(insertAnswerError));
+      log.error(JSON.stringify(insertAnswerError));
     }
   } else if (reqtype == "updated") {
     const { error: updateAnswerError } = await supabase
@@ -31,7 +32,7 @@ export async function saveLongTextAnswer(
       })
       .eq("answerid", answerid);
     if (updateAnswerError) {
-      logger.error(JSON.stringify(updateAnswerError));
+      log.error(JSON.stringify(updateAnswerError));
     }
   }
   return answerid;
@@ -62,7 +63,7 @@ export async function fetchLongTextAnswer(
     if (longTextError.code == "PGRST116") {
       return initialstate;
     }
-    logger.error(JSON.stringify(longTextError));
+    log.error(JSON.stringify(longTextError));
   }
   return longTextData || initialstate;
 }

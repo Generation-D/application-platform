@@ -6,7 +6,8 @@ import {
   fetchLongTextAnswer,
   saveLongTextAnswer,
 } from "@/actions/answers/longText";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/longtext_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -59,7 +60,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

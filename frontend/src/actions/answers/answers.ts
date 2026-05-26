@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/answers/answers");
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -32,8 +33,8 @@ export interface Answer {
 export async function getCurrentUser(supabase: SupabaseClient) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError) {
-    logger.error(JSON.stringify(userError));
-    logger.info("Redirecting to /login");
+    log.error(JSON.stringify(userError));
+    log.info("Redirecting to /login");
     redirect("/login");
   }
   return userData.user;
@@ -49,7 +50,7 @@ export async function getApplicationIdOfCurrentUser(
     .eq("userid", user.id)
     .single();
   if (applicationError) {
-    logger.error(JSON.stringify(applicationError));
+    log.error(JSON.stringify(applicationError));
   }
   return applicationData?.applicationid;
 }
@@ -67,7 +68,7 @@ export async function fetchAnswerId(
     .eq("applicationid", applicationid);
 
   if (answerError) {
-    logger.error(JSON.stringify(answerError));
+    log.error(JSON.stringify(answerError));
   }
   if (answerData!.length == 0) {
     return "";
@@ -94,10 +95,10 @@ export async function fetchAllAnswersOfApplication(
 
   if (answerError) {
     if (answerError.code == "PGRST116") {
-      logger.error(JSON.stringify(answerError));
+      log.error(JSON.stringify(answerError));
       throw answerError;
     }
-    logger.error(JSON.stringify(answerError));
+    log.error(JSON.stringify(answerError));
   }
   const answerIds = answerData!.map((answer) => answer.answerid);
   const { data: answerConditionalData, error: answerConditionalError } =
@@ -108,10 +109,10 @@ export async function fetchAllAnswersOfApplication(
 
   if (answerConditionalError) {
     if (answerConditionalError.code == "PGRST116") {
-      logger.debug(JSON.stringify(answerConditionalError));
+      log.debug(JSON.stringify(answerConditionalError));
       return [];
     }
-    logger.debug(JSON.stringify(answerConditionalError));
+    log.debug(JSON.stringify(answerConditionalError));
   }
 
   return (
@@ -145,7 +146,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
       .select()
       .single();
     if (insertAnswerError) {
-      logger.error(JSON.stringify(insertAnswerError));
+      log.error(JSON.stringify(insertAnswerError));
     }
     answerid = insertAnswerData?.answerid;
     reqtype = "created";
@@ -160,7 +161,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
       .select()
       .single();
     if (updateAnswerError) {
-      logger.error(JSON.stringify(updateAnswerError));
+      log.error(JSON.stringify(updateAnswerError));
     }
     answerid = updateAnswerData?.answerid;
     reqtype = "updated";
@@ -191,7 +192,7 @@ export async function deleteAnswer(questionid: string) {
       .eq("questionid", questionid)
       .eq("applicationid", applicationid);
     if (deleteAnswerError) {
-      logger.error(JSON.stringify(deleteAnswerError));
+      log.error(JSON.stringify(deleteAnswerError));
     }
   }
 }

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("app/auth/admin/callback");
 import { getURL } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
     try {
       await supabase.auth.exchangeCodeForSession(code);
     } catch (error) {
-      logger.error(JSON.stringify(error));
+      log.error(JSON.stringify(error));
       return NextResponse.redirect(`${getURL()}`);
     }
     const {
@@ -32,9 +33,9 @@ export async function GET(req: NextRequest) {
 
     if (roleError) {
       if (roleError.code == "PGRST116") {
-        logger.debug("User has no Role yet");
+        log.debug("User has no Role yet");
       } else {
-        logger.error(JSON.stringify(roleError));
+        log.error(JSON.stringify(roleError));
       }
     }
     if (!roleData) {
@@ -43,9 +44,9 @@ export async function GET(req: NextRequest) {
         .from("user_profiles_table")
         .insert({ userid: user!.id, userrole: 2, isactive: true });
       if (userProfileError) {
-        logger.error(JSON.stringify(userProfileError));
+        log.error(JSON.stringify(userProfileError));
       } else {
-        logger.debug("Created Reviewer Role");
+        log.debug("Created Reviewer Role");
       }
       subdomain = "review";
     } else if (!roleData.isactive) {
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
       subdomain = "admin";
     }
   }
-  logger.debug(`Auth/Admin/Callback Redirect To: ${getURL()}${subdomain}`);
+  log.debug(`Auth/Admin/Callback Redirect To: ${getURL()}${subdomain}`);
 
   return NextResponse.redirect(`${getURL()}${subdomain}`);
 }

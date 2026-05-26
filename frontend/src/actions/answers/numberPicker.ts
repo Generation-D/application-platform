@@ -1,5 +1,6 @@
 "use server";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/answers/numberPicker");
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -21,7 +22,7 @@ export async function saveNumberPickerAnswer(
           pickednumber: Number(pickednumber),
         });
       if (insertAnswerError) {
-        logger.error(JSON.stringify(insertAnswerError));
+        log.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "updated") {
       const { error: updateAnswerError } = await supabase
@@ -31,7 +32,7 @@ export async function saveNumberPickerAnswer(
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        logger.error(JSON.stringify(updateAnswerError));
+        log.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -62,7 +63,7 @@ export async function fetchNumberPickerAnswer(
     if (numberPickerError.code == "PGRST116") {
       return initialstate;
     }
-    logger.error(JSON.stringify(numberPickerError));
+    log.error(JSON.stringify(numberPickerError));
   }
   return numberPickerData || initialstate;
 }

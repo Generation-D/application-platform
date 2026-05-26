@@ -5,7 +5,8 @@ import {
   fetchCheckBoxAnswer,
   saveCheckBoxAnswer,
 } from "@/actions/answers/checkBox";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/checkbox_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -56,7 +57,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

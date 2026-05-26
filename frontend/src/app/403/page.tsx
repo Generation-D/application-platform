@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("app/403");
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 
 const Custom403: React.FC = () => {
@@ -11,7 +12,7 @@ const Custom403: React.FC = () => {
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signOut();
       if (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       }
     };
     signOut();

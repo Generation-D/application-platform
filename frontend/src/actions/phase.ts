@@ -7,7 +7,8 @@ import {
   QuestionType,
   QuestionTypeTable,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/phase");
 import { PhaseData, SectionData } from "@/store/slices/phaseSlice";
 import {
   createCurrentTimestamp,
@@ -49,7 +50,7 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
       ];
 
     if (!tableName) {
-      logger.error(
+      log.error(
         `Table for question type "${questionType}" is missing. Skipping...`,
       );
       throw Error(
@@ -69,12 +70,12 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
       );
 
     if (questionTypeError) {
-      logger.error(JSON.stringify(questionTypeError));
+      log.error(JSON.stringify(questionTypeError));
       result[questionType] = [{}];
     } else if (questionTypeData) {
       result[questionType] = questionTypeData;
     } else {
-      logger.debug(`No data found for question type: ${questionType}`);
+      log.debug(`No data found for question type: ${questionType}`);
       result[questionType] = [{}];
     }
   }
@@ -96,7 +97,7 @@ export async function fetchAdditionalParams(
   } else if (questiontype == QuestionType.Conditional) {
     table_name = "conditional_question_choice_table";
   } else {
-    logger.debug(
+    log.debug(
       `Can't call fetchAdditionalParams() for QuestionType ${questiontype}`,
     );
     return {};
@@ -107,7 +108,7 @@ export async function fetchAdditionalParams(
     .select("*");
 
   if (error) {
-    logger.error(JSON.stringify(error));
+    log.error(JSON.stringify(error));
     return {};
   }
 
@@ -196,12 +197,12 @@ export async function fetch_question_table(
     .eq("phaseid", phaseId);
 
   if (questionError) {
-    logger.error(JSON.stringify(questionError));
+    log.error(JSON.stringify(questionError));
     redirect("/404", RedirectType.replace);
   }
 
   if (!questionData) {
-    logger.error(`No questions defined for ${phaseId}`);
+    log.error(`No questions defined for ${phaseId}`);
     redirect("/404", RedirectType.replace);
   }
   const questionTypesData = await fetch_question_type_table(
@@ -251,7 +252,7 @@ export async function fetch_conditional_questionid_mapping() {
     .from("conditional_question_choice_table")
     .select("*");
   if (conditionalError) {
-    logger.error(JSON.stringify(conditionalError));
+    log.error(JSON.stringify(conditionalError));
     return {} as Record<string, string[]>;
   }
   return conditionalData?.reduce(
@@ -277,12 +278,12 @@ export async function fetch_phase_by_name(
     .single();
   // Redirection if error
   if (phaseError) {
-    logger.error(JSON.stringify(phaseError));
+    log.error(JSON.stringify(phaseError));
     redirect("/", RedirectType.replace);
   }
   // Redirection if no phaseName
   if (!phaseData) {
-    logger.debug("No PhaseData -> Redirect to Overview");
+    log.debug("No PhaseData -> Redirect to Overview");
     redirect("/", RedirectType.replace);
   }
   phaseData.startdate = setToPrefferedTimeZone(phaseData.startdate);
@@ -297,10 +298,10 @@ export async function fetch_all_phases(): Promise<PhaseData[]> {
     .from("phase_table")
     .select("*");
   if (phasesError) {
-    logger.error(JSON.stringify(phasesError, null, 2));
+    log.error(JSON.stringify(phasesError, null, 2));
   }
   if (!phasesData) {
-    logger.warn("No Phases found");
+    log.warn("No Phases found");
   }
 
   return (
@@ -356,7 +357,7 @@ export async function fetch_answer_table(
     .eq("applicationid", applicationid);
 
   if (answerError) {
-    logger.error(JSON.stringify(answerError));
+    log.error(JSON.stringify(answerError));
   }
 
   return answerData ? answerData.length : 0;
@@ -371,12 +372,12 @@ export async function fetch_first_phase_over(): Promise<boolean> {
     .single();
 
   if (phaseError) {
-    logger.error(JSON.stringify(phaseError, null, 2));
+    log.error(JSON.stringify(phaseError, null, 2));
     return true;
   }
 
   if (!phaseData) {
-    logger.debug("No PhaseData found");
+    log.debug("No PhaseData found");
     return true;
   }
   const currentDate = new Date(createCurrentTimestamp());
@@ -393,10 +394,10 @@ export async function fetch_sections_by_phase(
     .select("*")
     .eq("phaseid", phaseId);
   if (sectionsError) {
-    logger.error(JSON.stringify(sectionsError));
+    log.error(JSON.stringify(sectionsError));
   }
   if (!sectionsData) {
-    logger.debug("No sectionsData found");
+    log.debug("No sectionsData found");
   }
   return sectionsData as SectionData[];
 }
@@ -429,7 +430,7 @@ export async function fetch_phases_status(userId?: string): Promise<PhaseOutcome
     .select("outcome_id, outcome, review_date, phase_id")
     .eq("user_id", userId);
   if (error) {
-    logger.error(JSON.stringify(error));
+    log.error(JSON.stringify(error));
   }
   const transformedData = data?.map((item) => {
     const matchingPhase = all_phases.find(

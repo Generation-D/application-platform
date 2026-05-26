@@ -6,7 +6,8 @@ import {
   fetchMultipleChoiceAnswer,
   saveMultipleChoiceAnswer,
 } from "@/actions/answers/multipleChoice";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/multiplechoice_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -67,7 +68,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }

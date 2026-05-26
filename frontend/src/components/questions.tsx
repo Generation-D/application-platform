@@ -6,7 +6,8 @@ import { ExtendedAnswerType } from "@/actions/answers/answers";
 import getQuestionComponent, {
   QuestionType,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/question");
 import { INIT_PLACEHOLDER, UpdateAnswer } from "@/store/slices/answerSlice";
 import { PhaseData, setPhase } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
@@ -99,7 +100,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             phaseQuestion.questiontype,
           );
           if (!QuestionComponent) {
-            logger.error(
+            log.error(
               `Unknown question type: ${phaseQuestion.questiontype}`,
             );
             return null;

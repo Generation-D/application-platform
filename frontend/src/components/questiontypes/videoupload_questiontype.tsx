@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/videoupload_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -109,7 +110,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
@@ -179,7 +180,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       await saveVideoUploadAnswer(questionid, formData, maxfilesizeinmb);
       // Handle success (e.g., showing a success message, resetting states)
     } catch (error) {
-      logger.error(JSON.stringify(error));
+      log.error(JSON.stringify(error));
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

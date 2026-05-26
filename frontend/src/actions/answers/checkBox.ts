@@ -1,6 +1,7 @@
 "use server";
 
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("actions/answers/checkBox");
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -19,7 +20,7 @@ export async function saveCheckBoxAnswer(checked: boolean, questionid: string) {
           checked: checked,
         });
       if (insertAnswerError) {
-        logger.error(JSON.stringify(insertAnswerError));
+        log.error(JSON.stringify(insertAnswerError));
       }
     } else if (reqtype == "updated") {
       const { error: updateAnswerError } = await supabase
@@ -29,7 +30,7 @@ export async function saveCheckBoxAnswer(checked: boolean, questionid: string) {
         })
         .eq("answerid", answerid);
       if (updateAnswerError) {
-        logger.error(JSON.stringify(updateAnswerError));
+        log.error(JSON.stringify(updateAnswerError));
       }
     }
   }
@@ -63,7 +64,7 @@ export async function fetchCheckBoxAnswer(
     if (checkBoxError.code == "PGRST116") {
       return initialstate;
     }
-    logger.error(JSON.stringify(checkBoxError));
+    log.error(JSON.stringify(checkBoxError));
   }
   return checkBoxData || initialstate;
 }

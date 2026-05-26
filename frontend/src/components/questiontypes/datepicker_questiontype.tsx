@@ -5,7 +5,8 @@ import {
   fetchDatePickerAnswer,
   saveDatePickerAnswer,
 } from "@/actions/answers/datePicker";
-import { logger } from "@/logger/logger";
+import { createLogger } from "@/logger/logger"; 
+const log = createLogger("components/questiontypes/datepicker_questiontype");
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -60,7 +61,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
         );
         updateAnswerState(savedAnswer.pickeddate, savedAnswer.answerid);
       } catch (error) {
-        logger.error(JSON.stringify(error));
+        log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
       }
