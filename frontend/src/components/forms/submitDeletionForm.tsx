@@ -31,23 +31,24 @@ export default function SubmitDeletionForm({
   const { pending } = useFormStatus();
   const router = useRouter();
 
-  const countdownMessage = countdown > 0 
-  ? `Du wirst in ${countdown}s automatisch auf unsere Loginseite weitergeleitet!`
-  : "";
+  const countdownMessage =
+    countdown > 0
+      ? `Du wirst in ${countdown}s automatisch auf unsere Loginseite weitergeleitet!`
+      : "";
 
-useEffect(() => {
-  let timer: NodeJS.Timeout;
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
 
-  if (countdown > 0) {
-    timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
-  } else {
-    const supabase = getSupabaseBrowserClient();
-    supabase.auth.signOut();
-    router.push("/login");
-  }
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+    } else {
+      const supabase = getSupabaseBrowserClient();
+      supabase.auth.signOut();
+      router.push("/login");
+    }
 
-  return () => clearTimeout(timer);
-}, [countdown, router]);
+    return () => clearTimeout(timer);
+  }, [countdown, router]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

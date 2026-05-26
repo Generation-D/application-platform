@@ -6,14 +6,17 @@ import {
   fetchMultipleChoiceAnswer,
   saveMultipleChoiceAnswer,
 } from "@/actions/answers/multipleChoice";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/multiplechoice_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { Choice, ChoiceProps } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger(
+  "components/questiontypes/multiplechoice_questiontype",
+);
 
 export interface MultipleChoiceQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -47,7 +50,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -56,7 +59,6 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
       }),
     );
   };
-
 
   useEffect(() => {
     async function loadAnswer() {
@@ -75,7 +77,6 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
 
   const handleSingleChange = async (choice: ChoiceProps) => {
     if (!iseditable) {

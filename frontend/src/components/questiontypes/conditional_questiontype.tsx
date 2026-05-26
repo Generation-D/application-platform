@@ -10,8 +10,7 @@ import {
   fetchConditionalAnswer,
   saveConditionalAnswer,
 } from "@/actions/answers/conditional";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/conditional_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { numberToLetter } from "@/utils/helpers";
@@ -24,6 +23,8 @@ import { AwaitingChild } from "../layout/awaiting";
 import Popup from "../layout/popup";
 import { Question } from "../questions";
 import { SubmitButton } from "../submitButton";
+
+const log = createLogger("components/questiontypes/conditional_questiontype");
 
 export interface conditionalChoicesProps {
   choiceid: string;
@@ -69,7 +70,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     {} as { [key: string]: Question[] },
   );
 
- const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -96,8 +97,6 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice, phaseAnswers]);
-
- 
 
   const handleChange = (choice: conditionalChoicesProps) => {
     if (!iseditable) {

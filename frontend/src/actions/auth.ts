@@ -12,7 +12,7 @@ import {
 } from "@/supabase-utils/cookiesUtilClient";
 import { createLogger } from "@/logger/logger";
 
-const log = createLogger("actions/auth")
+const log = createLogger("actions/auth");
 
 export async function signUpUser(prevState: any, formData: FormData) {
   const schema = z.object({
@@ -393,11 +393,13 @@ export async function sendResetPasswordLinkFromSettings(
 
 export async function logoutAction() {
   const supabase = await getSupabaseCookiesUtilClient();
-  
-  const { data: { session } } = await supabase.auth.getSession();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (session) {
     await supabase.auth.signOut();
   }
 
-  redirect('/login');
+  redirect("/login");
 }

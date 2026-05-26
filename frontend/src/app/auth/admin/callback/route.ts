@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("app/auth/admin/callback");
+import { createLogger } from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
 } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("app/auth/admin/callback");
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

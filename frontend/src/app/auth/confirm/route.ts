@@ -1,10 +1,11 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("app/auth/confirm");
+import { createLogger } from "@/logger/logger";
 import { getURL } from "@/utils/helpers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("app/auth/confirm");
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

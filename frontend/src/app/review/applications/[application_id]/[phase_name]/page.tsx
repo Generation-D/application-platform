@@ -77,7 +77,7 @@ export default async function Application({
     />
   );
 
-  const backText = "<- Bewerbungsübersicht"
+  const backText = "<- Bewerbungsübersicht";
 
   return (
     <span className="w-full">

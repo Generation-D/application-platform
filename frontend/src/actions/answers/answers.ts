@@ -5,8 +5,7 @@ import { redirect } from "next/navigation";
 
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/answers");
+import { createLogger } from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -15,6 +14,8 @@ import {
   deleteVideoUploadAnswer,
   deletePdfUploadAnswer,
 } from "./deleteUpload";
+
+const log = createLogger("actions/answers/answers");
 
 export interface saveAnswerType {
   supabase: SupabaseClient;

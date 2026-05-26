@@ -3,11 +3,12 @@ import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import ApplicationOverview from "@/components/applicationOverview";
 import Apl_Header from "@/components/layout/header";
 import { Question } from "@/components/questions";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("app/page");
+import { createLogger } from "@/logger/logger";
 import { cached_fetch_phase_questions } from "@/utils/cached";
 import getOverviewPageText from "@/utils/getMarkdownText";
 import "github-markdown-css/github-markdown-light.css";
+
+const log = createLogger("app/page");
 
 export default async function Home() {
   log.debug("Render Overview Page");

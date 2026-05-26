@@ -5,14 +5,15 @@ import {
   fetchShortTextAnswer,
   saveShortTextAnswer,
 } from "@/actions/answers/shortText";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/shorttext_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkRegex } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/shorttext_questiontype");
 
 export interface ShortTextQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -73,8 +74,6 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
 
     loadAnswer();
   }, [questionid, answerid, selectedSection, selectedCondChoice]);
-
-  
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

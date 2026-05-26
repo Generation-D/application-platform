@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("app/403");
+import { createLogger } from "@/logger/logger";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+
+const log = createLogger("app/403");
 
 const Custom403: React.FC = () => {
   useEffect(() => {

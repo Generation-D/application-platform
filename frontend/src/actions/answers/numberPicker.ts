@@ -1,9 +1,10 @@
 "use server";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/numberPicker");
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("actions/answers/numberPicker");
 
 export async function saveNumberPickerAnswer(
   pickednumber: string,

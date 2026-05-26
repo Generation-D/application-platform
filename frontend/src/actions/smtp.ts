@@ -2,7 +2,8 @@
 
 import nodemailer from "nodemailer";
 
-import { createLogger } from "@/logger/logger"; 
+import { createLogger } from "@/logger/logger";
+
 const log = createLogger("actions/smtp");
 
 export async function sendEmail(to: string, subject: string, html: string) {

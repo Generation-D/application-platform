@@ -17,9 +17,13 @@ export default async function Application({
 
   const supabase = await getSupabaseCookiesUtilClient();
 
-  const { data, error } = await supabase.from("application_table").select("userid").eq("applicationid", application_id).single()
+  const { data, error } = await supabase
+    .from("application_table")
+    .select("userid")
+    .eq("applicationid", application_id)
+    .single();
   if (error) {
-    return <>{error.message}</>
+    return <>{error.message}</>;
   }
 
   const phasesData = await fetch_all_phases();
@@ -37,17 +41,20 @@ export default async function Application({
     <span className="w-full">
       <div className="flex flex-col items-start justify-between space-y-4">
         <Apl_Header />
-        <OverviewButton slug="review/applications" text="<- Zu allen Bewerbungen" />
-        <div className="w-full">
-        <h1>Bewerbung</h1>
-        <div>ID: {application_id}</div>
-        <ViewerApplicationOverview
-          phasesData={phasesData}
-          phasesQuestions={phasesQuestions}
-          phaseAnswers={phaseAnswers}
-          phasesOutcome={phasesOutcome}
-          applicationid={application_id}
+        <OverviewButton
+          slug="review/applications"
+          text="<- Zu allen Bewerbungen"
         />
+        <div className="w-full">
+          <h1>Bewerbung</h1>
+          <div>ID: {application_id}</div>
+          <ViewerApplicationOverview
+            phasesData={phasesData}
+            phasesQuestions={phasesQuestions}
+            phaseAnswers={phaseAnswers}
+            phasesOutcome={phasesOutcome}
+            applicationid={application_id}
+          />
         </div>
       </div>
     </span>

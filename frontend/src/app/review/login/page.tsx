@@ -4,20 +4,19 @@ import Image from "next/image";
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import Link from "next/link";
 
-
-const supabase = getSupabaseBrowserClient()
+const supabase = getSupabaseBrowserClient();
 
 export default function Home() {
   async function signInWithSlack() {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'slack_oidc',
+      provider: "slack_oidc",
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
       },
-    })
-    
+    });
+
     if (error) {
-      console.error('Login failed:', error.message)
+      console.error("Login failed:", error.message);
     }
   }
 
@@ -34,25 +33,26 @@ export default function Home() {
         Generation-D Internal Login
       </h1>
       {/* <form action={"/auth/slack"} method="GET"> */}
-        {/* <form> */}
-        <button
-          // type="submit"
-          onClick={signInWithSlack}
-          className="apl-button-fixed-big flex items-center"
-        >
-          <Image
-            src="/logos/slack.png"
-            width={30}
-            height={30}
-            alt="Slack Image Logo"
-            className="max-w-50 max-h-50"
-            
-          />
-          <strong className="ml-2">Login mit Slack</strong>
-        </button>
+      {/* <form> */}
+      <button
+        // type="submit"
+        onClick={signInWithSlack}
+        className="apl-button-fixed-big flex items-center"
+      >
+        <Image
+          src="/logos/slack.png"
+          width={30}
+          height={30}
+          alt="Slack Image Logo"
+          className="max-w-50 max-h-50"
+        />
+        <strong className="ml-2">Login mit Slack</strong>
+      </button>
 
-        <div className="text-center text-sm text-gray-500 mt-4 space-y-1">
-        <p>Hinweis: Dieser Bereich ist ausschließlich für den internen Login.</p>
+      <div className="text-center text-sm text-gray-500 mt-4 space-y-1">
+        <p>
+          Hinweis: Dieser Bereich ist ausschließlich für den internen Login.
+        </p>
         <p>
           <Link href="/login" className="text-secondary underline">
             Hier geht es zum regulären Login

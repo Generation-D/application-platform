@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/videoupload_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -14,8 +13,10 @@ import { SubmitButton } from "../submitButton";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
 
+const log = createLogger("components/questiontypes/videoupload_questiontype");
+
 export interface VideoAnswerResponse {
-  userid: string
+  userid: string;
   answerid: string;
   videoname: string;
 }
@@ -75,7 +76,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["video/mp4"];
 
-   const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -117,8 +118,6 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice, applicationid]);
-
- 
 
   function set_video_for_upload(file: File) {
     if (!iseditable) {
@@ -225,8 +224,11 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
-                  }`}
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >

@@ -5,14 +5,17 @@ import {
   fetchDateTimePickerAnswer,
   saveDateTimePickerAnswer,
 } from "@/actions/answers/dateTimePicker";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/datetimepicker_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setToPrefferedTimeZone } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger(
+  "components/questiontypes/datetimepicker_questiontype",
+);
 
 export interface DatetimePickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -42,7 +45,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,

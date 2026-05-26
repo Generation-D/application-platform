@@ -1,10 +1,11 @@
 "use server";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/dropdown");
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("actions/answers/dropdown");
 
 export async function saveDropdownAnswer(
   answertext: string,

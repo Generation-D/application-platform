@@ -1,10 +1,11 @@
 "use server";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/multipleChoice");
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("actions/answers/multipleChoice");
 
 export async function saveMultipleChoiceAnswer(
   answertext: string,

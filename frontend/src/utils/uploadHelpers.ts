@@ -1,6 +1,7 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
-import { createLogger } from "@/logger/logger"; 
+import { createLogger } from "@/logger/logger";
+
 const log = createLogger("utils/uploadHelpers");
 
 export type UploadTableName =
@@ -50,30 +51,33 @@ export async function saveUploadAnswer(
   const { answerid, reqtype } = await saveAnswerClient(questionid);
   const supabase = getSupabaseBrowserClient();
   if (reqtype == "created") {
-    let insertAnswerError
-    if (options.fileName === "imagename" && options.table === 'image_upload_answer_table') {
+    let insertAnswerError;
+    if (
+      options.fileName === "imagename" &&
+      options.table === "image_upload_answer_table"
+    ) {
       const insertObj = { answerid, imagename: uploadFile.name };
-      const { error } = await supabase
-      .from(options.table)
-      .insert(insertObj);
-      insertAnswerError = error
-    } else if (options.fileName === "pdfname" && options.table === 'pdf_upload_answer_table') {
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
+    } else if (
+      options.fileName === "pdfname" &&
+      options.table === "pdf_upload_answer_table"
+    ) {
       const insertObj = { answerid, pdfname: uploadFile.name };
-      const { error } = await supabase
-      .from(options.table)
-      .insert(insertObj);
-      insertAnswerError = error
-    } else if (options.fileName === "videoname" && options.table === 'video_upload_answer_table') {
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
+    } else if (
+      options.fileName === "videoname" &&
+      options.table === "video_upload_answer_table"
+    ) {
       const insertObj = { answerid, videoname: uploadFile.name };
-      const { error } = await supabase
-      .from(options.table)
-      .insert(insertObj);
-      insertAnswerError = error
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
     } else {
       log.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
-    
+
     if (insertAnswerError) {
       log.error(JSON.stringify(insertAnswerError));
     }

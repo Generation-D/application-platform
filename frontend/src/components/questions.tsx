@@ -6,13 +6,14 @@ import { ExtendedAnswerType } from "@/actions/answers/answers";
 import getQuestionComponent, {
   QuestionType,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/question");
+import { createLogger } from "@/logger/logger";
 import { INIT_PLACEHOLDER, UpdateAnswer } from "@/store/slices/answerSlice";
 import { PhaseData, setPhase } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
 
 import { InformationBox } from "./informationBox";
+
+const log = createLogger("components/question");
 
 export interface DefaultQuestion {
   questionid: string;
@@ -67,7 +68,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     }),
   );
 
-   const updateAnswerState = (
+  const updateAnswerState = (
     questionid: string,
     answerid?: string,
     answervalue?: string | null,
@@ -100,9 +101,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             phaseQuestion.questiontype,
           );
           if (!QuestionComponent) {
-            log.error(
-              `Unknown question type: ${phaseQuestion.questiontype}`,
-            );
+            log.error(`Unknown question type: ${phaseQuestion.questiontype}`);
             return null;
           }
           return (

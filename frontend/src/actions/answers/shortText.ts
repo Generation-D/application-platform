@@ -1,10 +1,11 @@
 "use server";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/shortText");
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("actions/answers/shortText");
 
 export async function saveShortTextAnswer(
   answertext: string,

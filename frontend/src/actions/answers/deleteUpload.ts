@@ -3,10 +3,11 @@
 import { ImageAnswerResponse } from "@/components/questiontypes/imageupload_questiontype";
 import { PdfAnswerResponse } from "@/components/questiontypes/pdfupload_questiontype";
 import { VideoAnswerResponse } from "@/components/questiontypes/videoupload_questiontype";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("actions/answers/deleteUploads");
+import { createLogger } from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import { getCurrentUser, deleteAnswer } from "./answers";
+
+const log = createLogger("actions/answers/deleteUploads");
 
 type UploadRpcName =
   | "fetch_image_upload_answer_table"

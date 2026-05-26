@@ -15,5 +15,5 @@ const logger = pino({
 });
 
 export const createLogger = (moduleName: string) => {
-  return logger.child({ module: moduleName })
-} 
+  return logger.child({ module: moduleName });
+};

@@ -5,13 +5,14 @@ import {
   fetchCheckBoxAnswer,
   saveCheckBoxAnswer,
 } from "@/actions/answers/checkBox";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/checkbox_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/checkbox_questiontype");
 
 export interface CheckBoxQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -94,8 +95,9 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
               checked={answer as boolean}
               onChange={handleChange}
               onClick={handleChange}
-              className={`w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2 ${iseditable ? "cursor-pointer" : "cursor-not-allowed"
-                }`}
+              className={`w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2 ${
+                iseditable ? "cursor-pointer" : "cursor-not-allowed"
+              }`}
             />
           </AwaitingChild>
           {mandatory && <span className="text-red-500">*</span>}

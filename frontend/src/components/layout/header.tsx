@@ -18,7 +18,7 @@ const Apl_Header: React.FC = () => {
 
   function handleSubmit(): void {
     dispatch({ type: RESET_STATE });
-    logoutAction()
+    logoutAction();
   }
 
   return (

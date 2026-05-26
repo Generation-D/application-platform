@@ -1,8 +1,9 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
 import { createCurrentTimestamp } from "./helpers";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("utils/getMarkdownText");
+import { createLogger } from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+
+const log = createLogger("utils/getMarkdownText");
 
 export default async function getOverviewPageText() {
   const supabase = await getSupabaseCookiesUtilClient();

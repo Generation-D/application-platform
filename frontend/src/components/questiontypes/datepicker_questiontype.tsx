@@ -5,13 +5,14 @@ import {
   fetchDatePickerAnswer,
   saveDatePickerAnswer,
 } from "@/actions/answers/datePicker";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/datepicker_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/datepicker_questiontype");
 
 export interface DatePickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -41,7 +42,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -68,8 +69,6 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

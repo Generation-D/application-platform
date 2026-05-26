@@ -5,14 +5,15 @@ import {
   fetchDropdownAnswer,
   saveDropdownAnswer,
 } from "@/actions/answers/dropdown";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/dropdown_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { DropdownOption, DropdownOptionProps } from "./utils/dropdown_option";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/dropdown_questiontype");
 
 export interface DropdownQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -46,7 +47,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,

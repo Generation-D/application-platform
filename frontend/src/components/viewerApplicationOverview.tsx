@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
@@ -8,8 +7,17 @@ import { PhaseOutcome } from "@/actions/phase";
 import { UpdateAnswer, INIT_PLACEHOLDER } from "@/store/slices/answerSlice";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
-import { calcPhaseStatus, transformReadableDateTime, transformReadableDate } from "@/utils/helpers";
-import { NoSymbolIcon, CalendarDaysIcon, DocumentCheckIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import {
+  calcPhaseStatus,
+  transformReadableDateTime,
+  transformReadableDate,
+} from "@/utils/helpers";
+import {
+  NoSymbolIcon,
+  CalendarDaysIcon,
+  DocumentCheckIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ProgressBar } from "./progressbar";
@@ -20,8 +28,14 @@ const ViewerApplicationOverview: React.FC<{
   phasesQuestions: Record<string, Question[]>;
   phaseAnswers: ExtendedAnswerType[];
   phasesOutcome: PhaseOutcome[];
-  applicationid: string
-}> = ({ phasesData, phasesQuestions, phaseAnswers, phasesOutcome, applicationid }) => {
+  applicationid: string;
+}> = ({
+  phasesData,
+  phasesQuestions,
+  phaseAnswers,
+  phasesOutcome,
+  applicationid,
+}) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -84,7 +98,6 @@ const ViewerApplicationOverview: React.FC<{
   );
 };
 
-
 const PhaseOverview: React.FC<{
   phaseId: string;
   phaseName: string;
@@ -96,7 +109,7 @@ const PhaseOverview: React.FC<{
   phaseQuestions: Question[];
   phaseOutcome: PhaseOutcome | undefined;
   failedPhase: boolean;
-  applicationid: string
+  applicationid: string;
 }> = ({
   phaseId,
   phaseName,
@@ -108,7 +121,7 @@ const PhaseOverview: React.FC<{
   phaseQuestions,
   phaseOutcome,
   failedPhase,
-  applicationid
+  applicationid,
 }) => {
   const router = useRouter();
   const handleRedirect = () => {
@@ -186,5 +199,4 @@ const PhaseOverview: React.FC<{
   );
 };
 
-
-export default ViewerApplicationOverview
+export default ViewerApplicationOverview;

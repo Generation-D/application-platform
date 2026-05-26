@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/pdfupload_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -13,6 +12,8 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+
+const log = createLogger("components/questiontypes/pdfupload_questiontype");
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
@@ -84,7 +85,6 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }),
     );
   };
-
 
   useEffect(() => {
     async function loadAnswer() {
@@ -224,8 +224,11 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
-                  }`}
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -268,8 +271,9 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             </div>
           </div>
           <div
-            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${!(tempAnswer || answer) && "hidden"
-              }`}
+            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${
+              !(tempAnswer || answer) && "hidden"
+            }`}
           >
             {iseditable && (
               <button
@@ -286,7 +290,13 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
               height="600px max-w-xs max-h-96 self-center"
               style={{ border: "none" }}
             />
-            <a className="self-end mb-1 cursor-pointer" href={tempAnswer || answer || undefined} target="_blank">Öffnen</a>
+            <a
+              className="self-end mb-1 cursor-pointer"
+              href={tempAnswer || answer || undefined}
+              target="_blank"
+            >
+              Öffnen
+            </a>
             {!wasUploaded ? (
               <>
                 <div className="italic">

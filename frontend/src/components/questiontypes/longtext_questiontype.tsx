@@ -6,13 +6,14 @@ import {
   fetchLongTextAnswer,
   saveLongTextAnswer,
 } from "@/actions/answers/longText";
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/longtext_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/longtext_questiontype");
 
 export interface LongTextQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -40,7 +41,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-    const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,

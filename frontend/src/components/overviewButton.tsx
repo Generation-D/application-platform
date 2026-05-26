@@ -16,7 +16,11 @@ const OverviewButton: React.FC<{ slug?: string; text?: string }> = ({
       router.push(`/`);
     }
   };
-  return <button onClick={handleRedirect} className="cursor-pointer">{text}</button>;
+  return (
+    <button onClick={handleRedirect} className="cursor-pointer">
+      {text}
+    </button>
+  );
 };
 
 export default OverviewButton;

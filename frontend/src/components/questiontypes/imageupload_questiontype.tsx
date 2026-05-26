@@ -4,8 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import { createLogger } from "@/logger/logger"; 
-const log = createLogger("components/questiontypes/imageupload_questiontype");
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -15,6 +14,8 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
+
+const log = createLogger("components/questiontypes/imageupload_questiontype");
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -86,7 +87,6 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     );
   };
 
-
   const validImgTypes = ["image/png", "image/jpeg"];
   useEffect(() => {
     async function loadAnswer() {
@@ -105,7 +105,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             `image-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
           );
-          log.debug(imageUploadBucketData)
+          log.debug(imageUploadBucketData);
           const url = URL.createObjectURL(imageUploadBucketData!);
           updateAnswerState(url || "");
           setWasUploaded(true);
@@ -114,7 +114,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
         }
         setTempAnswer("");
       } catch (error) {
-        log.info(error)
+        log.info(error);
         log.error(JSON.stringify(error));
       } finally {
         setIsLoading(false);
@@ -122,7 +122,6 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
 
   function set_image_for_upload(file: File) {
     if (!iseditable) {
@@ -226,8 +225,11 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${iseditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"
-                  }`}
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -270,8 +272,9 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             </div>
           </div>
           <div
-            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${!(tempAnswer || answer) && "hidden"
-              }`}
+            className={`mt-4 flex flex-col gap-y-2 max-w-xs max-h-96 ${
+              !(tempAnswer || answer) && "hidden"
+            }`}
           >
             {iseditable && (
               <button

@@ -10,13 +10,17 @@ export async function proxy(request: NextRequest) {
   const { supabase, response } = getSupabaseReqResClient({ request: request });
 
   const {
-    data: { user }
+    data: { user },
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
   if (!user) {
-    if (pathname != "/login" && pathname != "/review/login" && !pathname.startsWith("/auth/callback")) {
+    if (
+      pathname != "/login" &&
+      pathname != "/review/login" &&
+      !pathname.startsWith("/auth/callback")
+    ) {
       console.log("Not logged in! Redirect to /login");
 
       if (pathname.startsWith("/review")) {
@@ -37,18 +41,19 @@ export async function proxy(request: NextRequest) {
     redirectUrl = await isAuthorized(supabase, UserRole.Admin);
   }
 
-  const { data: userRoleData } = await supabase.from("user_profiles_table")
+  const { data: userRoleData } = await supabase
+    .from("user_profiles_table")
     .select("userrole")
     .eq("userid", user!.id)
     .single();
 
   if (pathname == "/" && userRoleData?.userrole == 2) {
-    redirectUrl = "/review"
-  } 
+    redirectUrl = "/review";
+  }
 
   if (pathname == "/" && userRoleData?.userrole == 3) {
-    redirectUrl = "/admin"
-  } 
+    redirectUrl = "/admin";
+  }
 
   if (redirectUrl) {
     console.log(
@@ -65,7 +70,7 @@ export async function proxy(request: NextRequest) {
       .single();
     if (roleError) {
       console.error(roleError);
-      return NextResponse.redirect(new URL("/login", request.url))
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     if (roleData && !roleData.isactive) {
       console.log(`The User ${user.email} is not active. Redirect to /403`);
@@ -81,5 +86,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/review/:path*", "/admin/:path*", "/settings", "/((?!api|_next/static|_next/image|.*\\.(?:png|ico|svg|pdf)$).*)"],
+  matcher: [
+    "/",
+    "/login",
+    "/review/:path*",
+    "/admin/:path*",
+    "/settings",
+    "/((?!api|_next/static|_next/image|.*\\.(?:png|ico|svg|pdf)$).*)",
+  ],
 };
