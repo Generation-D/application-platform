@@ -28,7 +28,7 @@ export default function AuthContainer({ signUpPossible }: AuthContainerProps) {
             className={`py-2 px-4 text-center rounded-lg transition-colors ${
               isSignIn
                 ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200 cursor-pointer"
             }`}
           >
             Anmelden
@@ -41,7 +41,7 @@ export default function AuthContainer({ signUpPossible }: AuthContainerProps) {
                 ? "bg-primary text-white"
                 : !signUpPossible
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 cursor-pointer"
             }`}
             title={
               !signUpPossible

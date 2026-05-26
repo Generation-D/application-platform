@@ -95,7 +95,7 @@ export default function SignInForm() {
           <button
             type="button"
             onClick={togglePopup}
-            className="px-1 text-secondary"
+            className="px-1 text-secondary cursor-pointer"
           >
             Passwort vergessen?
           </button>

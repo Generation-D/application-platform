@@ -1,5 +1,5 @@
 import { getSupabaseReqResClient } from "@/supabase-utils/reqResClient";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { isAuthorized } from "./actions/middleware";
 import { UserRole } from "./utils/userRole";
@@ -16,10 +16,16 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (!user) {
-    if (pathname != "/login") {
+    if (pathname != "/login" && pathname != "/review/login" && !pathname.startsWith("/auth/callback")) {
       console.log("Not logged in! Redirect to /login");
+
+      if (pathname.startsWith("/review")) {
+        return NextResponse.redirect(new URL("/review/login", request.url));
+      }
+
       return NextResponse.redirect(new URL("/login", request.url));
     }
+
     return response.value;
   }
 

@@ -41,13 +41,31 @@ returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
+declare
+  auth_provider text;
 begin
-  insert into public.user_profiles_table (userid, userrole, isactive)
-  values (
-    new.id, 
-    1,
-    TRUE
-  );
+  auth_provider := new.raw_app_meta_data->>'provider';
+
+  if auth_provider = 'slack_oidc' then
+
+    insert into public.user_profiles_table (userid, userrole, isactive)
+    values (
+      new.id, 
+      2,
+      TRUE
+    );
+
+  else
+    
+    insert into public.user_profiles_table (userid, userrole, isactive)
+    values (
+      new.id, 
+      1,
+      TRUE
+    );
+
+  end if;
+
   return new;
 end;
 $$;

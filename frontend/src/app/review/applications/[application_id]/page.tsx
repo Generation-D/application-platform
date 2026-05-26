@@ -37,7 +37,7 @@ export default async function Application({
   return (
     <>
       <InternalHeader />
-      <OverviewButton slug="admin/applications" />
+      <OverviewButton slug="review/applications" text="Zu allen Bewerbungen" />
       <h1>Bewerbung</h1>
       <div>ID: {application_id}</div>
       <ViewerApplicationOverview
