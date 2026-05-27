@@ -290,13 +290,15 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
               height="600px max-w-xs max-h-96 self-center"
               style={{ border: "none" }}
             />
-            <a
-              className="self-end mb-1 cursor-pointer"
-              href={tempAnswer || answer || undefined}
-              target="_blank"
-            >
-              Öffnen
-            </a>
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={tempAnswer || answer || undefined}
+                target="_blank"
+              >
+                Öffnen
+              </a>
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">

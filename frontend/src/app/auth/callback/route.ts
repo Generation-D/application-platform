@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = new URL(req.url);
+  const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
 
   if (code) {
@@ -12,9 +12,11 @@ export async function GET(req: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}`);
+      return NextResponse.redirect(process.env.NEXT_PUBLIC_SITE_URL!);
     }
   }
 
-  return NextResponse.redirect(`${origin}/review/login?error=auth-failed`);
+  return NextResponse.redirect(
+    `${process.env.NEXT_PUBLIC_SITE_URL!}/login?error=auth-failed`,
+  );
 }

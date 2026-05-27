@@ -62,7 +62,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
       email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
       password: signUpFormData.data.password,
       options: {
-        emailRedirectTo: `${getURL()}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
         captchaToken: signUpFormData.data.captchaToken,
       },
     });

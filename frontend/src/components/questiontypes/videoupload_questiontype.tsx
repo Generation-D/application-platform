@@ -278,7 +278,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -296,6 +296,15 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
                 Dein Browser supported diese Darstellung leider nicht
               </video>
             )}
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={answer}
+                target="_blank"
+              >
+                Öffnen
+              </a>
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">

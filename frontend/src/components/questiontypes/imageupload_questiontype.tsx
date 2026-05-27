@@ -279,7 +279,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -294,6 +294,15 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                 width={100}
                 height={100}
               />
+            ) : null}
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={answer}
+                target="_blank"
+              >
+                Öffnen
+              </a>
             ) : null}
             {!wasUploaded ? (
               <>
