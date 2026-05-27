@@ -41,7 +41,9 @@ export default function SubmitDeletionForm({
 
     if (countdown > 0) {
       timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
-    } else {
+    }
+
+    if (countdown === 0) {
       const supabase = getSupabaseBrowserClient();
       supabase.auth.signOut();
       router.push("/login");
