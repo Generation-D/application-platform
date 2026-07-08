@@ -62,3 +62,10 @@ jobs:
       - name: run e2e tests
         working-directory: ./e2e
         run: npm run test:e2e
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure() # Crucial! This ensures it only runs if the tests fail.
+        with:
+          name: cypress-screenshots
+          path: e2e/cypress/screenshots
