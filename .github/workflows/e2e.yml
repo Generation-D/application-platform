@@ -15,7 +15,7 @@ jobs:
           node-version: '24'
       - name: disable supabase smtp
         run: |
-          sed -i '/\[auth.smtp\]/,/enabled =/s/enabled = true/enabled = false/' supabase/config.toml
+          sed -i '/\[auth.email.smtp\]/{n;s/true/false/;}' supabase/config.toml 
       - name: Create env variables
         run: |
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./.env 
