@@ -13,6 +13,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+      - name: disable supabase smtp
+        run: |
+          sed -i '/\[auth.smtp\]/,/enabled =/s/enabled = true/enabled = false/' supabase/config.toml
       - name: Create env variables
         run: |
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./.env 
@@ -20,8 +23,6 @@ jobs:
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./.env
           echo "DOMAIN=http://localhost" >> ./.env
-          echo "SMTP_PASSWORD=not_a_real_password_just_for_testing" >> ./.env
-          echo "SMTP_ENABLED=false" >> ./.env
       - run: |
           supabase start
 

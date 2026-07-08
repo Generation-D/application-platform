@@ -182,7 +182,7 @@ content_path = "./supabase/templates/recovery.html"
 
 # Use a production-ready SMTP server
 [auth.email.smtp]
-enabled = "env(SMTP_ENABLED, true)"
+enabled = true
 host = "mail.your-server.de"
 port = 587
 user = "no-reply@generation-d.org"
