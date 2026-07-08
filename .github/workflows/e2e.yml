@@ -21,6 +21,7 @@ jobs:
           echo "TURNSTILE_SECRET_KEY=123" >> ./.env
           echo "DOMAIN=http://localhost" >> ./.env
           echo "SMTP_PASSWORD=not_a_real_password_just_for_testing" >> ./.env
+          echo "SMTP_ENABLED=false" >> ./.env
       - run: |
           supabase start
 
