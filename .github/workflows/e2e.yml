@@ -20,6 +20,7 @@ jobs:
           echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA" >> ./.env
           echo "TURNSTILE_SECRET_KEY=123" >> ./.env
           echo "DOMAIN=http://localhost" >> ./.env
+          echo "SMTP_PASSWORD=not_a_real_password_just_for_testing" >> ./.env
       - run: |
           supabase start
 
