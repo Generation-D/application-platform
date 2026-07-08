@@ -5,18 +5,18 @@ import {
   fetchCheckBoxAnswer,
   saveCheckBoxAnswer,
 } from "@/actions/answers/checkBox";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
+const log = createLogger("components/questiontypes/checkbox_questiontype");
+
 export interface CheckBoxQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
 }
-
-const log = new Logger("CheckBoxQuestionType");
 
 const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   phasename,
@@ -29,6 +29,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -36,22 +37,6 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     (state) => state.answerReducer[questionid]?.answervalue || false,
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchCheckBoxAnswer(questionid);
-        updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answer: boolean, answerid?: string) => {
     dispatch(
@@ -62,6 +47,25 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchCheckBoxAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.checked, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
 
   const handleChange = () => {
     if (!iseditable) {
@@ -91,7 +95,9 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
               checked={answer as boolean}
               onChange={handleChange}
               onClick={handleChange}
-              className="w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2"
+              className={`w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2 ${
+                iseditable ? "cursor-pointer" : "cursor-not-allowed"
+              }`}
             />
           </AwaitingChild>
           {mandatory && <span className="text-red-500">*</span>}

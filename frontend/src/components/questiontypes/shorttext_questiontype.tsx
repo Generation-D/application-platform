@@ -5,7 +5,7 @@ import {
   fetchShortTextAnswer,
   saveShortTextAnswer,
 } from "@/actions/answers/shortText";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { checkRegex } from "@/utils/helpers";
@@ -13,14 +13,14 @@ import { checkRegex } from "@/utils/helpers";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
+const log = createLogger("components/questiontypes/shorttext_questiontype");
+
 export interface ShortTextQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   maxtextlength: number;
   formattingregex: string | null;
   formattingdescription: string | null;
 }
-
-const log = new Logger("ShortTextQuestionType");
 
 const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   phasename,
@@ -37,6 +37,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -44,22 +45,6 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
     (state) => (state.answerReducer[questionid]?.answervalue as string) || "",
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchShortTextAnswer(questionid);
-        updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadAnswer();
-  }, [questionid, answerid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -70,6 +55,25 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchShortTextAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadAnswer();
+  }, [questionid, answerid, selectedSection, selectedCondChoice]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {
@@ -97,6 +101,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

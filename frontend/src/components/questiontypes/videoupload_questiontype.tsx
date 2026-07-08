@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -13,9 +13,10 @@ import { SubmitButton } from "../submitButton";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
 
-const log = new Logger("VideoUploadQuestionType");
+const log = createLogger("components/questiontypes/videoupload_questiontype");
 
 export interface VideoAnswerResponse {
+  userid: string;
   answerid: string;
   videoname: string;
 }
@@ -27,19 +28,23 @@ export interface VideoUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 export async function saveVideoUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "video_upload_answer_table",
     fileName: "videoname",
     bucketPrefix: "video",
     validTypes: ["video/mp4"],
-    maxfilesizeinmb: 100, // or pass as prop if needed
+    maxfilesizeinmb,
     storageSaveName,
   });
 }
 
-export async function fetchVideoUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<VideoAnswerResponse>(questionid, {
+export async function fetchVideoUploadAnswer(
+  questionid: string,
+  appliactionid: string,
+) {
+  return fetchUploadAnswer(questionid, appliactionid, {
     rpcName: "fetch_video_upload_answer_table",
     fileName: "videoname",
   });
@@ -57,6 +62,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -70,6 +76,16 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["video/mp4"];
 
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
@@ -78,7 +94,10 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
         setTempAnswer("");
       }
       try {
-        const savedAnswer = await fetchVideoUploadAnswer(questionid);
+        const savedAnswer = await fetchVideoUploadAnswer(
+          questionid,
+          applicationid,
+        );
         if (savedAnswer && savedAnswer?.videoname != "") {
           const VideoUploadBucketData = await downloadFile(
             `video-${questionid}`,
@@ -98,17 +117,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  }, [questionid, selectedSection, selectedCondChoice, applicationid]);
 
   function set_video_for_upload(file: File) {
     if (!iseditable) {
@@ -147,7 +156,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deleteVideoUploadAnswer(questionid);
+    deleteVideoUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     setUploadedFile(null);
     updateAnswerState("");
@@ -167,7 +176,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await saveVideoUploadAnswer(questionid, formData);
+      await saveVideoUploadAnswer(questionid, formData, maxfilesizeinmb);
       // Handle success (e.g., showing a success message, resetting states)
     } catch (error) {
       log.error(JSON.stringify(error));
@@ -199,6 +208,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}
@@ -214,7 +224,11 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -264,7 +278,7 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -282,6 +296,15 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
                 Dein Browser supported diese Darstellung leider nicht
               </video>
             )}
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={answer}
+                target="_blank"
+              >
+                Öffnen
+              </a>
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">

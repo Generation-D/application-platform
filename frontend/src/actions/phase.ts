@@ -7,7 +7,7 @@ import {
   QuestionType,
   QuestionTypeTable,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import Logger from "@/logger/logger";
+const log = createLogger("actions/phase");
 import { PhaseData, SectionData } from "@/store/slices/phaseSlice";
 import {
   createCurrentTimestamp,
@@ -20,12 +20,12 @@ import {
 } from "./answers/answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
+import { createLogger } from "@/logger/logger";
+
 type IdType = {
   questionid: string;
   [key: string]: any;
 };
-
-const log = new Logger("actions/phase");
 
 export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   const result: Record<QuestionType, any> = {
@@ -418,14 +418,20 @@ export type PhaseOutcome = {
   };
 };
 
-export async function fetch_phases_status(): Promise<PhaseOutcome[]> {
+export async function fetch_phases_status(
+  userId?: string,
+): Promise<PhaseOutcome[]> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const user = await getCurrentUser(supabase);
+  if (!userId) {
+    const user = await getCurrentUser(supabase);
+    userId = user.id;
+  }
+
   const all_phases = await fetch_all_phases();
   const { data, error } = await supabase
     .from("phase_outcome_table")
     .select("outcome_id, outcome, review_date, phase_id")
-    .eq("user_id", user.id);
+    .eq("user_id", userId);
   if (error) {
     log.error(JSON.stringify(error));
   }

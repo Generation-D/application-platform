@@ -1,6 +1,6 @@
 "use server";
 import { ApplicantsStateType } from "@/components/applicantslist";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
@@ -8,7 +8,7 @@ import {
 import { createCurrentTimestamp } from "@/utils/helpers";
 import { UserRole } from "@/utils/userRole";
 
-const log = new Logger("actions/admin");
+const log = createLogger("actions/admin");
 
 export interface userData {
   id: string;

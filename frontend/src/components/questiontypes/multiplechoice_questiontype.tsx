@@ -6,7 +6,7 @@ import {
   fetchMultipleChoiceAnswer,
   saveMultipleChoiceAnswer,
 } from "@/actions/answers/multipleChoice";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -14,16 +14,17 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { Choice, ChoiceProps } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface MultipleChoiceQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+const log = createLogger(
+  "components/questiontypes/multiplechoice_questiontype",
+);
+
+export interface MultipleChoiceQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   choices: ChoiceProps[];
   minanswers: number;
   maxanswers: number;
   userinput: boolean;
 }
-
-const log = new Logger("MultipleChoiceQuestionType");
 
 const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   phasename,
@@ -40,6 +41,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -47,21 +49,6 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     (state) => (state.answerReducer[questionid]?.answervalue as string) || "",
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchMultipleChoiceAnswer(questionid);
-        updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -72,6 +59,24 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchMultipleChoiceAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
 
   const handleSingleChange = async (choice: ChoiceProps) => {
     if (!iseditable) {
@@ -123,6 +128,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   };
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

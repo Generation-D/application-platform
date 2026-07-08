@@ -1,26 +1,35 @@
 import { getSupabaseReqResClient } from "@/supabase-utils/reqResClient";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { isAuthorized } from "./actions/middleware";
 import { UserRole } from "./utils/userRole";
 
 // Can't use own Logger in middleware, because of https://nextjs.org/docs/messages/node-module-in-edge-runtime
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { supabase, response } = getSupabaseReqResClient({ request: request });
 
   const {
     data: { user },
-    error: getUserError,
   } = await supabase.auth.getUser();
-  await supabase.auth.getSession();
 
   const pathname = request.nextUrl.pathname;
+
   if (!user) {
-    if (pathname != "/login") {
+    if (
+      pathname != "/login" &&
+      pathname != "/review/login" &&
+      !pathname.startsWith("/auth/callback")
+    ) {
       console.log("Not logged in! Redirect to /login");
+
+      if (pathname.startsWith("/review")) {
+        return NextResponse.redirect(new URL("/review/login", request.url));
+      }
+
       return NextResponse.redirect(new URL("/login", request.url));
     }
+
     return response.value;
   }
 
@@ -30,6 +39,20 @@ export async function middleware(request: NextRequest) {
     redirectUrl = await isAuthorized(supabase, UserRole.Reviewer);
   } else if (pathname.startsWith("/admin")) {
     redirectUrl = await isAuthorized(supabase, UserRole.Admin);
+  }
+
+  const { data: userRoleData } = await supabase
+    .from("user_profiles_table")
+    .select("userrole")
+    .eq("userid", user!.id)
+    .single();
+
+  if (pathname == "/" && userRoleData?.userrole == 2) {
+    redirectUrl = "/review";
+  }
+
+  if (pathname == "/" && userRoleData?.userrole == 3) {
+    redirectUrl = "/admin";
   }
 
   if (redirectUrl) {
@@ -47,6 +70,7 @@ export async function middleware(request: NextRequest) {
       .single();
     if (roleError) {
       console.error(roleError);
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     if (roleData && !roleData.isactive) {
       console.log(`The User ${user.email} is not active. Redirect to /403`);
@@ -62,5 +86,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/review", "/admin", "/settings"],
+  matcher: [
+    "/",
+    "/login",
+    "/review/:path*",
+    "/admin/:path*",
+    "/settings",
+    "/((?!api|_next/static|_next/image|.*\\.(?:png|ico|svg|pdf)$).*)",
+  ],
 };

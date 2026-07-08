@@ -1,11 +1,11 @@
 "use server";
 
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("actions/answers/checkBox");
+const log = createLogger("actions/answers/checkBox");
 
 export async function saveCheckBoxAnswer(checked: boolean, questionid: string) {
   if (!checked) {
@@ -49,6 +49,7 @@ const initialstate: LongTextAnswerResponse = {
 
 export async function fetchCheckBoxAnswer(
   questionid: string,
+  applicationid: string,
 ): Promise<LongTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
   const {
@@ -57,7 +58,7 @@ export async function fetchCheckBoxAnswer(
   const { data: checkBoxData, error: checkBoxError } = await supabase
     .rpc("fetch_checkbox_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid,
     })
     .single<LongTextAnswerResponse>();
   if (checkBoxError) {

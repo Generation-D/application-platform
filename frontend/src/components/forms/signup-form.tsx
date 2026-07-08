@@ -9,7 +9,6 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
-import { getPublicEnv } from "@/utils/env";
 
 interface messageType {
   message: string;
@@ -25,7 +24,7 @@ export default function SignUpForm() {
   const [state, formAction] = useActionState(signUpUser, initialState);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>();
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -106,9 +105,12 @@ export default function SignUpForm() {
             id="confirm-legal"
             name="confirm-legal"
             required
-            className="w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2"
+            className="w-5 h-4 text-secondary bg-gray-100 border-gray-300 rounded focus:ring-secondary focus:ring-2 cursor-pointer"
           />
-          <label htmlFor="confirm-legal" className="text-sm text-gray-700">
+          <label
+            htmlFor="confirm-legal"
+            className="text-sm text-gray-700 cursor-pointer"
+          >
             <span className="text-red-500">*</span>Ich habe die{" "}
             <Link
               className="underline"
@@ -130,10 +132,7 @@ export default function SignUpForm() {
 
         <div className="flex justify-center mx-auto">
           <Turnstile
-            siteKey={
-              getPublicEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY") ||
-              "1x00000000000000000000AA"
-            }
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
             onSuccess={(token) => {
               setCaptchaToken(token);
             }}

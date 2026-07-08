@@ -6,19 +6,19 @@ import {
   fetchLongTextAnswer,
   saveLongTextAnswer,
 } from "@/actions/answers/longText";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
+const log = createLogger("components/questiontypes/longtext_questiontype");
+
 export interface LongTextQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   maxtextlength: number;
 }
-
-const log = new Logger("LongTextQuestionType");
 
 const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   phasename,
@@ -32,6 +32,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -39,21 +40,6 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
     (state) => (state.answerReducer[questionid]?.answervalue as string) || "",
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchLongTextAnswer(questionid);
-        updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -65,6 +51,24 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
     );
   };
 
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchLongTextAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.answertext, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
+
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!iseditable) {
       return;
@@ -74,6 +78,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

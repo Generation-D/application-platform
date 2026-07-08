@@ -70,9 +70,11 @@ export const ProgressBar = ({
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    calculateProgress();
-    setIsLoading(false);
+    (async () => {
+      setIsLoading(true);
+      calculateProgress();
+      setIsLoading(false);
+    })();
   }, [mandatoryQuestionIds, progressbarId, phaseQuestions, answeredQuestions]);
 
   const stringDate = transformReadableDate(endDate);
@@ -80,10 +82,10 @@ export const ProgressBar = ({
 
   return (
     <AwaitingChild isLoading={isLoading}>
-      <div className="w-full bg-gray-300 rounded-2xl border">
+      <div className="w-full bg-gray-200 rounded-2xl border border-gray-300 overflow-hidden">
         <div
           style={{ width: `${progressPercentage}%` }}
-          className={`h-4 rounded-2xl border ${
+          className={`h-4 rounded-2xl transition-all duration-500 ${
             numAnswered !== numMandatory ? "bg-secondary" : "bg-green-600"
           }`}
         />

@@ -4,7 +4,10 @@ import React from "react";
 
 import { useRouter } from "next/navigation";
 
-const OverviewButton: React.FC<{ slug?: string }> = ({ slug }) => {
+const OverviewButton: React.FC<{ slug?: string; text?: string }> = ({
+  slug,
+  text = "<- Zur Startseite",
+}) => {
   const router = useRouter();
   const handleRedirect = () => {
     if (slug !== undefined) {
@@ -13,7 +16,11 @@ const OverviewButton: React.FC<{ slug?: string }> = ({ slug }) => {
       router.push(`/`);
     }
   };
-  return <button onClick={handleRedirect}>{`<- Zur Startseite`}</button>;
+  return (
+    <button onClick={handleRedirect} className="cursor-pointer">
+      {text}
+    </button>
+  );
 };
 
 export default OverviewButton;

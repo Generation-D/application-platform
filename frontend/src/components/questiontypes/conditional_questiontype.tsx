@@ -10,7 +10,7 @@ import {
   fetchConditionalAnswer,
   saveConditionalAnswer,
 } from "@/actions/answers/conditional";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { numberToLetter } from "@/utils/helpers";
@@ -24,6 +24,8 @@ import Popup from "../layout/popup";
 import { Question } from "../questions";
 import { SubmitButton } from "../submitButton";
 
+const log = createLogger("components/questiontypes/conditional_questiontype");
+
 export interface conditionalChoicesProps {
   choiceid: string;
   choicevalue: string;
@@ -35,8 +37,6 @@ export interface ConditionalQuestionTypeProps extends DefaultQuestionTypeProps {
   choices: conditionalChoicesProps[];
   phaseAnswers: ExtendedAnswerType[];
 }
-
-const log = new Logger("ConditionalQuestionType");
 
 const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   phasename,
@@ -51,6 +51,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   choices,
   phaseAnswers,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -68,20 +69,6 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     },
     {} as { [key: string]: Question[] },
   );
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchConditionalAnswer(questionid);
-        updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, phaseAnswers]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -92,6 +79,24 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchConditionalAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.selectedchoice, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice, phaseAnswers]);
 
   const handleChange = (choice: conditionalChoicesProps) => {
     if (!iseditable) {
@@ -155,7 +160,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   const togglePopup = async () => {
     setPopupOpen(!isPopupOpen);
     setIsLoading(true);
-    await deleteAnswersOfQuestions(dependingQuestions[answer]);
+    await deleteAnswersOfQuestions(dependingQuestions[answer], applicationid);
     resetDependingAnswers();
     await saveConditionalAnswer(choiceHelper, questionid);
     updateAnswerState(choiceHelper);
@@ -164,6 +169,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}
@@ -227,6 +233,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
                       />
                     )}
                     <QuestionComponent
+                      applicationid={applicationid}
                       key={condQuestion.questionid}
                       phasename={phasename}
                       questionid={condQuestion.questionid}

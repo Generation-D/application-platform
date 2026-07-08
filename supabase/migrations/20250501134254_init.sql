@@ -2350,7 +2350,7 @@ create policy "admin_cmd_answer_table"
 on "public"."answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2416,7 +2416,7 @@ create policy "admin_cmd_application_table"
 on "public"."application_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2450,7 +2450,7 @@ create policy "select_reviewer_application_table"
 on "public"."application_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2512,8 +2512,8 @@ create policy "select_policy"
 on "public"."checkbox_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "delete_conditional_answer"
@@ -2564,7 +2564,7 @@ create policy "conditional_question_choice_table"
 on "public"."conditional_question_choice_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2574,15 +2574,15 @@ create policy "select_policy"
 on "public"."conditional_question_choice_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_conditional_question_choice_table"
 on "public"."conditional_question_choice_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2592,7 +2592,7 @@ create policy "admin_cmd_date_picker_answer_table"
 on "public"."date_picker_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2662,7 +2662,7 @@ create policy "admin_cmd_date_picker_question_table"
 on "public"."date_picker_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2672,15 +2672,15 @@ create policy "select_policy"
 on "public"."date_picker_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_date_picker_question_table"
 on "public"."date_picker_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2690,7 +2690,7 @@ create policy "admin_cmd_datetime_picker_answer_table"
 on "public"."datetime_picker_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2760,7 +2760,7 @@ create policy "admin_cmd_datetime_picker_question_table"
 on "public"."datetime_picker_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2770,15 +2770,15 @@ create policy "select_policy"
 on "public"."datetime_picker_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_datetime_picker_question_table"
 on "public"."datetime_picker_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2788,7 +2788,7 @@ create policy "admin_cmd_dropdown_answer_table"
 on "public"."dropdown_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2858,7 +2858,7 @@ create policy "admin_cmd_dropdown_question_option_table"
 on "public"."dropdown_question_option_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2868,15 +2868,15 @@ create policy "select_policy"
 on "public"."dropdown_question_option_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_dropdown_question_option_table"
 on "public"."dropdown_question_option_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2886,7 +2886,7 @@ create policy "admin_cmd_dropdown_question_table"
 on "public"."dropdown_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2896,15 +2896,15 @@ create policy "select_policy"
 on "public"."dropdown_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_dropdown_question_table"
 on "public"."dropdown_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -2914,7 +2914,7 @@ create policy "admin_cmd_image_upload_answer_table"
 on "public"."image_upload_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2984,7 +2984,7 @@ create policy "admin_cmd_image_upload_question_table"
 on "public"."image_upload_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -2994,15 +2994,15 @@ create policy "select_policy"
 on "public"."image_upload_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_image_upload_question_table"
 on "public"."image_upload_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3012,7 +3012,7 @@ create policy "admin_cmd_long_text_answer_table"
 on "public"."long_text_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3082,7 +3082,7 @@ create policy "admin_cmd_long_text_question_table"
 on "public"."long_text_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3092,15 +3092,15 @@ create policy "select_policy"
 on "public"."long_text_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_long_text_question_table"
 on "public"."long_text_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3110,7 +3110,7 @@ create policy "admin_cmd_multiple_choice_answer_table"
 on "public"."multiple_choice_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3180,7 +3180,7 @@ create policy "admin_cmd_multiple_choice_question_choice_table"
 on "public"."multiple_choice_question_choice_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3190,15 +3190,15 @@ create policy "select_policy"
 on "public"."multiple_choice_question_choice_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_multiple_choice_question_choice_table"
 on "public"."multiple_choice_question_choice_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3208,7 +3208,7 @@ create policy "admin_cmd_multiple_choice_question_table"
 on "public"."multiple_choice_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3218,15 +3218,15 @@ create policy "select_policy"
 on "public"."multiple_choice_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_multiple_choice_question_table"
 on "public"."multiple_choice_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3236,7 +3236,7 @@ create policy "admin_cmd_number_picker_answer_table"
 on "public"."number_picker_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3306,7 +3306,7 @@ create policy "admin_cmd_number_picker_question_table"
 on "public"."number_picker_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3316,15 +3316,15 @@ create policy "select_policy"
 on "public"."number_picker_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_number_picker_question_table"
 on "public"."number_picker_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3334,7 +3334,7 @@ create policy "admin_cmd_pdf_upload_answer_table"
 on "public"."pdf_upload_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3404,7 +3404,7 @@ create policy "admin_cmd_pdf_upload_question_table"
 on "public"."pdf_upload_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3414,15 +3414,15 @@ create policy "select_policy"
 on "public"."pdf_upload_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_pdf_upload_question_table"
 on "public"."pdf_upload_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3432,15 +3432,15 @@ create policy "select_policy"
 on "public"."phase_outcome_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "admin_cmd_phase_table"
 on "public"."phase_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3458,7 +3458,7 @@ create policy "admin_cmd_question_table"
 on "public"."question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3468,15 +3468,15 @@ create policy "select_policy"
 on "public"."question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_question_table"
 on "public"."question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3486,15 +3486,15 @@ create policy "select_policy"
 on "public"."sections_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "admin_cmd_short_text_answer_table"
 on "public"."short_text_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3564,7 +3564,7 @@ create policy "admin_cmd_short_text_question_table"
 on "public"."short_text_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3574,15 +3574,15 @@ create policy "select_policy"
 on "public"."short_text_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_short_text_question_table"
 on "public"."short_text_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3624,7 +3624,7 @@ create policy "admin_cmd_user_roles_table"
 on "public"."user_roles_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3634,15 +3634,15 @@ create policy "select_policy"
 on "public"."user_roles_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_user_roles_table"
 on "public"."user_roles_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));
@@ -3652,7 +3652,7 @@ create policy "admin_cmd_video_upload_answer_table"
 on "public"."video_upload_answer_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3722,7 +3722,7 @@ create policy "admin_cmd_video_upload_question_table"
 on "public"."video_upload_question_table"
 as permissive
 for all
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 3)))));
@@ -3732,15 +3732,15 @@ create policy "select_policy"
 on "public"."video_upload_question_table"
 as permissive
 for select
-to public
-using ((auth.uid() IS NOT NULL));
+to authenticated
+using (true);
 
 
 create policy "select_reviewer_video_upload_question_table"
 on "public"."video_upload_question_table"
 as permissive
 for select
-to public
+to authenticated
 using ((EXISTS ( SELECT 1
    FROM user_profiles_table
   WHERE ((user_profiles_table.userid = auth.uid()) AND (user_profiles_table.userrole = 2)))));

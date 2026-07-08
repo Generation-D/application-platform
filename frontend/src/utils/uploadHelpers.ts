@@ -1,8 +1,8 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 
-const log = new Logger("UploadHelpers");
+const log = createLogger("utils/uploadHelpers");
 
 export type UploadTableName =
   | "image_upload_answer_table"
@@ -51,23 +51,33 @@ export async function saveUploadAnswer(
   const { answerid, reqtype } = await saveAnswerClient(questionid);
   const supabase = getSupabaseBrowserClient();
   if (reqtype == "created") {
-    let insertObj:
-      | { answerid: string; imagename: string }
-      | { answerid: string; pdfname: string }
-      | { answerid: string; videoname: string };
-    if (options.fileName === "imagename") {
-      insertObj = { answerid, imagename: uploadFile.name };
-    } else if (options.fileName === "pdfname") {
-      insertObj = { answerid, pdfname: uploadFile.name };
-    } else if (options.fileName === "videoname") {
-      insertObj = { answerid, videoname: uploadFile.name };
+    let insertAnswerError;
+    if (
+      options.fileName === "imagename" &&
+      options.table === "image_upload_answer_table"
+    ) {
+      const insertObj = { answerid, imagename: uploadFile.name };
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
+    } else if (
+      options.fileName === "pdfname" &&
+      options.table === "pdf_upload_answer_table"
+    ) {
+      const insertObj = { answerid, pdfname: uploadFile.name };
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
+    } else if (
+      options.fileName === "videoname" &&
+      options.table === "video_upload_answer_table"
+    ) {
+      const insertObj = { answerid, videoname: uploadFile.name };
+      const { error } = await supabase.from(options.table).insert(insertObj);
+      insertAnswerError = error;
     } else {
       log.error(`Invalid fileName option: ${options.fileName}`);
       return;
     }
-    const { error: insertAnswerError } = await supabase
-      .from(options.table)
-      .insert(insertObj);
+
     if (insertAnswerError) {
       log.error(JSON.stringify(insertAnswerError));
     }
@@ -126,26 +136,30 @@ export async function saveUploadAnswer(
   }
 }
 
-export async function fetchUploadAnswer<T extends { [key: string]: any }>(
+export async function fetchUploadAnswer<T extends UploadRpcName>(
   questionid: string,
+  applicationid: string,
   options: {
-    rpcName: UploadRpcName;
+    rpcName: T;
     fileName: UploadFileName;
   },
-): Promise<(T & { userid: string }) | null> {
+) {
   const supabase = getSupabaseBrowserClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    log.error(JSON.stringify(userError));
+  if (!applicationid) {
+    return null;
   }
-  const user_id = userData.user!.id;
+
   const { data: uploadData, error: uploadError } = await supabase
     .rpc(options.rpcName, {
       question_id: questionid,
-      user_id: user_id,
+      application_id: applicationid,
     })
-    .maybeSingle<T>();
+    .maybeSingle();
   if (uploadError) {
+    log.error({
+      question_id: questionid,
+      application_id: applicationid,
+    });
     log.error(JSON.stringify(uploadError));
     return null;
   }
@@ -153,6 +167,6 @@ export async function fetchUploadAnswer<T extends { [key: string]: any }>(
     log.info("No existing upload data found for this question.");
     return null;
   } else {
-    return { ...uploadData, userid: user_id };
+    return uploadData;
   }
 }

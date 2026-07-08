@@ -7,7 +7,6 @@ import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
-import { getPublicEnv } from "@/utils/env";
 
 interface messageType {
   message: string;
@@ -22,7 +21,7 @@ const initialState: messageType = {
 export default function SignInForm() {
   const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [email, setEmail] = useState("");
   const ref = useRef<TurnstileInstance>(null);
 
@@ -96,7 +95,7 @@ export default function SignInForm() {
           <button
             type="button"
             onClick={togglePopup}
-            className="px-1 text-secondary"
+            className="px-1 text-secondary cursor-pointer"
           >
             Passwort vergessen?
           </button>
@@ -106,10 +105,7 @@ export default function SignInForm() {
         <div className="flex justify-center mx-auto">
           <Turnstile
             ref={ref}
-            siteKey={
-              getPublicEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY") ||
-              "1x00000000000000000000AA"
-            }
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
             onSuccess={(token) => setCaptchaToken(token)}
             onExpire={() => {
               ref.current?.reset();

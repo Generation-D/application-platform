@@ -5,7 +5,7 @@ import {
   fetchDateTimePickerAnswer,
   saveDateTimePickerAnswer,
 } from "@/actions/answers/dateTimePicker";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { setToPrefferedTimeZone } from "@/utils/helpers";
@@ -13,14 +13,15 @@ import { setToPrefferedTimeZone } from "@/utils/helpers";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface DatetimePickerQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+const log = createLogger(
+  "components/questiontypes/datetimepicker_questiontype",
+);
+
+export interface DatetimePickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   mindatetime: Date;
   maxdatetime: Date;
 }
-
-const log = new Logger("DatetimePickerQuestionType");
 
 const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   phasename,
@@ -35,6 +36,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -43,11 +45,24 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
       try {
-        const savedAnswer = await fetchDateTimePickerAnswer(questionid);
+        const savedAnswer = await fetchDateTimePickerAnswer(
+          questionid,
+          applicationid,
+        );
         updateAnswerState(
           setToPrefferedTimeZone(savedAnswer.pickeddatetime),
           savedAnswer.answerid,
@@ -60,16 +75,6 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {
@@ -109,6 +114,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

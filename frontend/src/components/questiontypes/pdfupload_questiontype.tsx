@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -13,13 +13,14 @@ import { SubmitButton } from "../submitButton";
 import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
 import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 
-const log = new Logger("PDFUploadQuestionType");
+const log = createLogger("components/questiontypes/pdfupload_questiontype");
 
 export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   maxfilesizeinmb: number;
 }
 
 export interface PdfAnswerResponse {
+  userid: string;
   answerid: string;
   pdfname: string;
 }
@@ -27,19 +28,23 @@ export interface PdfAnswerResponse {
 export async function savePdfUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "pdf_upload_answer_table",
     fileName: "pdfname",
     bucketPrefix: "pdf",
     validTypes: ["application/pdf"],
-    maxfilesizeinmb: 25, // or pass as prop if needed
+    maxfilesizeinmb, // or pass as prop if needed
     storageSaveName,
   });
 }
 
-export async function fetchPdfUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<PdfAnswerResponse>(questionid, {
+export async function fetchPdfUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
+  return fetchUploadAnswer(questionid, applicationid, {
     rpcName: "fetch_pdf_upload_answer_table",
     fileName: "pdfname",
   });
@@ -57,6 +62,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -70,6 +76,16 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["application/pdf"];
 
+  const updateAnswerState = (answervalue: string, answerid?: string) => {
+    dispatch(
+      UpdateAnswer({
+        questionid: questionid,
+        answervalue: answervalue,
+        answerid: answerid || "",
+      }),
+    );
+  };
+
   useEffect(() => {
     async function loadAnswer() {
       setIsLoading(true);
@@ -79,20 +95,20 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }
 
       try {
-        const savedAnswer = await fetchPdfUploadAnswer(questionid);
+        const savedAnswer = await fetchPdfUploadAnswer(
+          questionid,
+          applicationid,
+        );
         if (savedAnswer && savedAnswer?.pdfname != "") {
           const imageUploadBucketData = await downloadFile(
             `pdf-${questionid}`,
             `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,
           );
-          console.log(imageUploadBucketData);
           const url = URL.createObjectURL(imageUploadBucketData!);
-          console.log(url);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {
           updateAnswerState("");
-          console.log("no pdf found");
         }
         setTempAnswer("");
       } catch (error) {
@@ -103,16 +119,6 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     }
     loadAnswer();
   }, [questionid, selectedSection, selectedCondChoice]);
-
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
 
   function set_pdf_for_upload(file: File) {
     if (!iseditable) {
@@ -150,7 +156,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deletePdfUploadAnswer(questionid);
+    deletePdfUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     updateAnswerState("");
     setWasUploaded(false);
@@ -171,7 +177,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await savePdfUploadAnswer(questionid, formData);
+      await savePdfUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
     }
@@ -202,6 +208,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       iseditable={iseditable}
       questionid={questionid}
@@ -217,7 +224,11 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -267,7 +278,7 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600 mb-1"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -279,6 +290,15 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
               height="600px max-w-xs max-h-96 self-center"
               style={{ border: "none" }}
             />
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={tempAnswer || answer || undefined}
+                target="_blank"
+              >
+                Öffnen
+              </a>
+            ) : null}
             {!wasUploaded ? (
               <>
                 <div className="italic">

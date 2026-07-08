@@ -1,10 +1,10 @@
 "use server";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("actions/answers/number");
+const log = createLogger("actions/answers/numberPicker");
 
 export async function saveNumberPickerAnswer(
   pickednumber: string,
@@ -51,15 +51,13 @@ const initialstate: NumberPickerAnswerResponse = {
 
 export async function fetchNumberPickerAnswer(
   questionid: string,
+  applicationid: string,
 ): Promise<NumberPickerAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: numberPickerData, error: numberPickerError } = await supabase
     .rpc("fetch_number_picker_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid,
     })
     .single<NumberPickerAnswerResponse>();
   if (numberPickerError) {

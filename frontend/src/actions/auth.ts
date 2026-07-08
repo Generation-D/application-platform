@@ -5,14 +5,14 @@ import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import Logger from "@/logger/logger";
 import { getURL, isValidPassword } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
 } from "@/supabase-utils/cookiesUtilClient";
+import { createLogger } from "@/logger/logger";
 
-const log = new Logger("actions/auth");
+const log = createLogger("actions/auth");
 
 export async function signUpUser(prevState: any, formData: FormData) {
   const schema = z.object({
@@ -62,7 +62,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
       email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
       password: signUpFormData.data.password,
       options: {
-        emailRedirectTo: `${getURL()}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
         captchaToken: signUpFormData.data.captchaToken,
       },
     });
@@ -84,21 +84,6 @@ export async function signUpUser(prevState: any, formData: FormData) {
       };
     }
     const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
-    const { error: userProfileError } = await supabaseAdmin
-      .from("user_profiles_table")
-      .insert({ userid: userData.user!.id, userrole: 1, isactive: true });
-    if (userProfileError) {
-      if (userProfileError.code == "23505") {
-        log.debug("User already registered. Resent Confirmation Email");
-        return {
-          message:
-            "Der User war zwar bereits registriert, dir wurde jedoch erneut eine Email gesendet, bitte schau in dein Postfach!",
-          status: "SUCCESS",
-        };
-      }
-      log.error(JSON.stringify(userProfileError));
-      return { message: userProfileError.message, status: "ERROR" };
-    }
     const sendData = { userid: userData!.user!.id };
     const { error: applicationError } = await supabaseAdmin
       .from("application_table")
@@ -404,4 +389,17 @@ export async function sendResetPasswordLinkFromSettings(
       status: "ERROR",
     };
   }
+}
+
+export async function logoutAction() {
+  const supabase = await getSupabaseCookiesUtilClient();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session) {
+    await supabase.auth.signOut();
+  }
+
+  redirect("/login");
 }

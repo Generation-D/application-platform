@@ -28,18 +28,22 @@ export default function SubmitDeletionForm({
   const dispatch = useAppDispatch();
   const [state, setState] = useState<messageType>(initialState);
   const [countdown, setCountdown] = useState<number>(-1);
-  const [countdownMessage, setCountdownMessage] = useState<string>("");
   const { pending } = useFormStatus();
   const router = useRouter();
 
+  const countdownMessage =
+    countdown > 0
+      ? `Du wirst in ${countdown}s automatisch auf unsere Loginseite weitergeleitet!`
+      : "";
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
+
     if (countdown > 0) {
-      setCountdownMessage(
-        `Du wirst in ${countdown}s automatisch auf unsere Loginseite weitergeleitet!`,
-      );
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    } else if (countdown === 0) {
+      timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+    }
+
+    if (countdown === 0) {
       const supabase = getSupabaseBrowserClient();
       supabase.auth.signOut();
       router.push("/login");

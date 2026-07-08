@@ -1,11 +1,11 @@
 "use server";
 
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("actions/answers/shortText");
+const log = createLogger("actions/answers/shortText");
 
 export async function saveShortTextAnswer(
   answertext: string,
@@ -52,15 +52,13 @@ const initialstate: ShortTextAnswerResponse = {
 
 export async function fetchShortTextAnswer(
   questionid: string,
+  applicationid: string,
 ): Promise<ShortTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: shortTextData, error: shortTextError } = await supabase
     .rpc("fetch_short_text_answer_table", {
       question_id: questionid,
-      user_id: user?.id ?? "",
+      application_id: applicationid,
     })
     .single<ShortTextAnswerResponse>();
   if (shortTextError) {

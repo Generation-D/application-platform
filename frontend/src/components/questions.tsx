@@ -6,12 +6,14 @@ import { ExtendedAnswerType } from "@/actions/answers/answers";
 import getQuestionComponent, {
   QuestionType,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { INIT_PLACEHOLDER, UpdateAnswer } from "@/store/slices/answerSlice";
 import { PhaseData, setPhase } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
 
 import { InformationBox } from "./informationBox";
+
+const log = createLogger("components/question");
 
 export interface DefaultQuestion {
   questionid: string;
@@ -30,8 +32,6 @@ export interface DefaultQuestion {
   depends_on: string | null;
 }
 
-const log = new Logger("components/questions");
-
 export interface Question extends DefaultQuestion {
   params: any;
 }
@@ -43,6 +43,7 @@ interface QuestionnaireProps {
   iseditable: boolean;
   selectedSection: string | null;
   selectedCondChoice: string | null;
+  applicationid: string;
 }
 
 const Questionnaire: React.FC<QuestionnaireProps> = ({
@@ -52,6 +53,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   iseditable,
   selectedSection,
   selectedCondChoice,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
   // need a copy, so I can modify it beneath
@@ -65,15 +67,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       phasequestions: phaseQuestions,
     }),
   );
-  useEffect(() => {
-    phaseAnswers.forEach((answer) => {
-      updateAnswerState(
-        answer.questionid,
-        answer.answerid,
-        answer?.answervalue,
-      );
-    });
-  }, [phaseAnswers]);
 
   const updateAnswerState = (
     questionid: string,
@@ -88,6 +81,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    phaseAnswers.forEach((answer) => {
+      updateAnswerState(
+        answer.questionid,
+        answer.answerid,
+        answer?.answervalue,
+      );
+    });
+  }, [phaseAnswers]);
 
   return (
     <div className="mt-5 mb-7 border-b border-r rounded-xl shadow shadow-secondary p-5">
@@ -110,6 +113,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 />
               )}
               <QuestionComponent
+                applicationid={applicationid}
                 key={phaseQuestion.questionid}
                 phasename={phaseData.phasename}
                 questionid={phaseQuestion.questionid}

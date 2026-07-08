@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import { PhaseData, SectionData } from "@/store/slices/phaseSlice";
@@ -18,95 +18,63 @@ export function SectionView({
   phaseAnswers,
   phaseSections,
   iseditable,
+  applicationid,
 }: {
   phaseData: PhaseData;
   mapQuestions: SectionQuestionsMap;
   phaseAnswers: ExtendedAnswerType[];
   phaseSections: SectionData[];
   iseditable: boolean;
+  applicationid: string;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const sortedSections = phaseSections.sort(
-    (a, b) => a.sectionorder - b.sectionorder,
-  );
+  // 1. Memoize sorting so it doesn't trigger recalculations on every parent render
+  const sortedSections = useMemo(() => {
+    return [...phaseSections].sort((a, b) => a.sectionorder - b.sectionorder);
+  }, [phaseSections]);
 
-  // Helper function to safely get the URL parameter
-  const getUrlIndex = (): string | null => {
-    return searchParams.get("sec");
+  // 2. Derive state directly from URL (No useState or useEffect needed for selection)
+  const urlSecParam = searchParams.get("sec");
+  const urlIndex = parseInt(urlSecParam ?? "1", 10) - 1;
+
+  // Ensure the index is within bounds, otherwise default to first section
+  const activeIndex =
+    urlIndex >= 0 && urlIndex < sortedSections.length ? urlIndex : 0;
+  const selectedSection = sortedSections[activeIndex]?.sectionid ?? "";
+
+  // 3. Navigation helper using Next.js Router
+  const navigateToSection = (index: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sec", (index + 1).toString());
+    router.push(`${pathname}?${params.toString()}`);
   };
 
-  // Initial state setup with URL parameter
-  const [selectedSection, setSelectedSection] = useState<string>(() => {
-    const urlIndex = parseInt(getUrlIndex() ?? "0", 10) - 1;
-    const validIndex = urlIndex >= 0 && urlIndex < sortedSections.length;
-    return validIndex
-      ? sortedSections[urlIndex].sectionid
-      : (sortedSections[0]?.sectionid ?? "");
-  });
-
-  // Update URL when the section changes
   const setSelectedSectionWithUrl = (sectionId: string) => {
-    const index = sortedSections.findIndex(
-      (section) => section.sectionid === sectionId,
-    );
-    if (index !== -1) {
-      setSelectedSection(sectionId);
-      const newUrl = `${window.location.pathname}?sec=${index + 1}`;
-      history.pushState(null, "", newUrl);
-    }
+    const index = sortedSections.findIndex((s) => s.sectionid === sectionId);
+    if (index !== -1) navigateToSection(index);
   };
 
-  // Handle URL changes
-  useEffect(() => {
-    const handleRouteChange = () => {
-      const urlIndex = parseInt(getUrlIndex() ?? "0", 10) - 1;
-      if (urlIndex >= 0 && urlIndex < sortedSections.length) {
-        setSelectedSectionWithUrl(sortedSections[urlIndex].sectionid);
-      }
-    };
-
-    window.addEventListener("popstate", handleRouteChange);
-
-    return () => {
-      window.removeEventListener("popstate", handleRouteChange);
-    };
-  }, [sortedSections]);
-
+  // 4. Clean helper logic for the UI
   const moveToNextSection = () => {
-    const currentIndex = sortedSections.findIndex(
-      (section) => section.sectionid === selectedSection,
-    );
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < sortedSections.length) {
-      setSelectedSectionWithUrl(sortedSections[nextIndex].sectionid);
+    if (activeIndex < sortedSections.length - 1) {
+      navigateToSection(activeIndex + 1);
     }
   };
 
   const moveToPreviousSection = () => {
-    const currentIndex = sortedSections.findIndex(
-      (section) => section.sectionid === selectedSection,
-    );
-    const prevIndex = currentIndex - 1;
-    if (prevIndex >= 0) {
-      setSelectedSectionWithUrl(sortedSections[prevIndex].sectionid);
+    if (activeIndex > 0) {
+      navigateToSection(activeIndex - 1);
     }
   };
 
-  const currentIndex = sortedSections.findIndex(
-    (section) => section.sectionid === selectedSection,
-  );
+  const nextSectionName = sortedSections[activeIndex + 1]?.sectionname || null;
+  const prevSectionName = sortedSections[activeIndex - 1]?.sectionname || null;
 
-  const nextSectionName =
-    currentIndex < sortedSections.length - 1
-      ? sortedSections[currentIndex + 1].sectionname
-      : null;
-
-  const prevSectionName =
-    currentIndex > 0 ? sortedSections[currentIndex - 1].sectionname : null;
-
-  const isNotFirstSection = currentIndex > 0;
-  const isNotLastSection = currentIndex < sortedSections.length - 1;
+  const isNotFirstSection = activeIndex > 0;
+  const isNotLastSection = activeIndex < sortedSections.length - 1;
 
   return (
     <div className="text-sm font-medium text-gray-500 border-gray-200 mt-7 mb-7">
@@ -118,7 +86,7 @@ export function SectionView({
             <button
               type="button"
               key={phaseSection.sectionid}
-              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary ${
+              className={`flex-1 py-2 px-4 border-b-secondary hover:bg-gray-200 hover:text-secondary cursor-pointer ${
                 selectedSection === phaseSection.sectionid
                   ? "text-secondary border-b-2"
                   : "text-gray-500"
@@ -135,6 +103,9 @@ export function SectionView({
       {sortedSections.map((phaseSection) => {
         const isVisible = selectedSection === phaseSection.sectionid;
         phaseSection.sectionname;
+        if (!isVisible) {
+          return null;
+        }
         return (
           <div
             key={phaseSection.sectionid}
@@ -147,6 +118,7 @@ export function SectionView({
               className="w-full"
             />
             <Questionnaire
+              applicationid={applicationid}
               phaseData={phaseData}
               phaseQuestions={mapQuestions[phaseSection.sectionid]}
               phaseAnswers={phaseAnswers}
@@ -159,7 +131,7 @@ export function SectionView({
                 <button
                   type="button"
                   onClick={moveToPreviousSection}
-                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded"
+                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded cursor-pointer"
                 >
                   Zurück zu &quot;{prevSectionName}&quot;
                 </button>
@@ -170,7 +142,7 @@ export function SectionView({
                 <button
                   type="button"
                   onClick={moveToNextSection}
-                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded"
+                  className="py-2 px-4 text-primary bg-secondary hover:bg-secondary rounded cursor-pointer"
                 >
                   Weiter zu &quot;{nextSectionName}&quot;
                 </button>

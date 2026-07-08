@@ -3,13 +3,14 @@ import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import ApplicationOverview from "@/components/applicationOverview";
 import Apl_Header from "@/components/layout/header";
 import { Question } from "@/components/questions";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { cached_fetch_phase_questions } from "@/utils/cached";
 import getOverviewPageText from "@/utils/getMarkdownText";
 import "github-markdown-css/github-markdown-light.css";
 
+const log = createLogger("app/page");
+
 export default async function Home() {
-  const log = new Logger("Overview Page");
   log.debug("Render Overview Page");
   const contentHtml = await getOverviewPageText();
   const phasesData = await fetch_all_phases();
@@ -20,6 +21,7 @@ export default async function Home() {
       phase.phaseid,
     );
   }
+
   const phaseAnswers = await fetchAllAnswersOfApplication();
 
   return (

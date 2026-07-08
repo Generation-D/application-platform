@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 import { downloadFile, storageSaveName } from "@/utils/helpers";
@@ -15,7 +15,7 @@ import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
 
-const log = new Logger("ImageUploadQuestionType");
+const log = createLogger("components/questiontypes/imageupload_questiontype");
 
 export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -23,6 +23,7 @@ export interface ImageUploadQuestionTypeProps extends DefaultQuestionTypeProps {
 }
 
 export interface ImageAnswerResponse {
+  userid: string;
   answerid: string;
   imagename: string;
 }
@@ -30,19 +31,23 @@ export interface ImageAnswerResponse {
 export async function saveImageUploadAnswer(
   questionid: string,
   formData: FormData,
+  maxfilesizeinmb: number,
 ) {
   return saveUploadAnswer(questionid, formData, {
     table: "image_upload_answer_table",
     fileName: "imagename",
     bucketPrefix: "image",
     validTypes: ["image/png", "image/jpeg"],
-    maxfilesizeinmb: 5, // or pass as prop if needed
+    maxfilesizeinmb,
     storageSaveName,
   });
 }
 
-export async function fetchImageUploadAnswer(questionid: string) {
-  return fetchUploadAnswer<ImageAnswerResponse>(questionid, {
+export async function fetchImageUploadAnswer(
+  questionid: string,
+  applicationid: string,
+) {
+  return fetchUploadAnswer(questionid, applicationid, {
     rpcName: "fetch_image_upload_answer_table",
     fileName: "imagename",
   });
@@ -60,6 +65,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -71,37 +77,6 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [wasUploaded, setWasUploaded] = useState(false);
 
-  const validImgTypes = ["image/png", "image/jpeg"];
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      const fileInput = document.getElementById(questionid) as HTMLInputElement;
-      if (fileInput && fileInput.value == "") {
-        setTempAnswer("");
-      }
-      try {
-        const savedAnswer = await fetchImageUploadAnswer(questionid);
-        if (savedAnswer && savedAnswer.imagename != "") {
-          const imageUploadBucketData = await downloadFile(
-            `image-${questionid}`,
-            `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
-          );
-          const url = URL.createObjectURL(imageUploadBucketData!);
-          updateAnswerState(url || "");
-          setWasUploaded(true);
-        } else {
-          updateAnswerState("");
-        }
-        setTempAnswer("");
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
-
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
@@ -111,6 +86,42 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
       }),
     );
   };
+
+  const validImgTypes = ["image/png", "image/jpeg"];
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      const fileInput = document.getElementById(questionid) as HTMLInputElement;
+      if (fileInput && fileInput.value == "") {
+        setTempAnswer("");
+      }
+      try {
+        const savedAnswer = await fetchImageUploadAnswer(
+          questionid,
+          applicationid,
+        );
+        if (savedAnswer && savedAnswer.imagename != "") {
+          const imageUploadBucketData = await downloadFile(
+            `image-${questionid}`,
+            `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
+          );
+          log.debug(imageUploadBucketData);
+          const url = URL.createObjectURL(imageUploadBucketData!);
+          updateAnswerState(url || "");
+          setWasUploaded(true);
+        } else {
+          updateAnswerState("");
+        }
+        setTempAnswer("");
+      } catch (error) {
+        log.info(error);
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
 
   function set_image_for_upload(file: File) {
     if (!iseditable) {
@@ -147,7 +158,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    deleteImageUploadAnswer(questionid);
+    deleteImageUploadAnswer(questionid, applicationid);
     setTempAnswer("");
     setUploadedFile(null);
     updateAnswerState("");
@@ -167,7 +178,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
     formData.append(questionid, uploadedFile!);
     setIsLoading(true);
     try {
-      await saveImageUploadAnswer(questionid, formData);
+      await saveImageUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
     }
@@ -198,6 +209,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}
@@ -213,7 +225,11 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             <div className="flex items-center justify-center w-full">
               <label
                 htmlFor={questionid}
-                className="flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className={`flex flex-col items-center justify-center w-full h-34 border-2 border-secondary border-dashed rounded-lg bg-gray-50 hover:bg-gray-100 ${
+                  iseditable
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed opacity-60"
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
@@ -263,7 +279,7 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
             {iseditable && (
               <button
                 type="button"
-                className="self-end text-red-600"
+                className="self-end text-red-600 mb-1 cursor-pointer"
                 onClick={handleDeleteOnClick}
               >
                 Löschen
@@ -278,6 +294,15 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
                 width={100}
                 height={100}
               />
+            ) : null}
+            {answer ? (
+              <a
+                className="self-end mb-1 cursor-pointer"
+                href={answer}
+                target="_blank"
+              >
+                Öffnen
+              </a>
             ) : null}
             {!wasUploaded ? (
               <>

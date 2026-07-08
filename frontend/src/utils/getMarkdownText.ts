@@ -1,9 +1,9 @@
 import { extractCurrentPhase, fetch_phases_status } from "@/actions/phase";
 import { createCurrentTimestamp } from "./helpers";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
-const log = new Logger("utils/getMarkdownText");
+const log = createLogger("utils/getMarkdownText");
 
 export default async function getOverviewPageText() {
   const supabase = await getSupabaseCookiesUtilClient();
@@ -42,7 +42,7 @@ export default async function getOverviewPageText() {
     .single();
 
   if (error) {
-    log.error("Failed to fetch text:", error.message);
+    log.error(`Failed to fetch text:, ${error.message}`);
   }
 
   if (data?.html_content) return data.html_content;

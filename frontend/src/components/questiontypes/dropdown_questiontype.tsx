@@ -5,13 +5,15 @@ import {
   fetchDropdownAnswer,
   saveDropdownAnswer,
 } from "@/actions/answers/dropdown";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { DropdownOption, DropdownOptionProps } from "./utils/dropdown_option";
 import { AwaitingChild } from "../layout/awaiting";
+
+const log = createLogger("components/questiontypes/dropdown_questiontype");
 
 export interface DropdownQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
@@ -20,8 +22,6 @@ export interface DropdownQuestionTypeProps extends DefaultQuestionTypeProps {
   maxanswers: number;
   userinput: boolean;
 }
-
-const log = new Logger("DropdownQuestionType");
 
 const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   phasename,
@@ -38,6 +38,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -45,21 +46,6 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
     (state) => (state.answerReducer[questionid]?.answervalue as string) || "",
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchDropdownAnswer(questionid);
-        updateAnswerState(savedAnswer.selectedoptions, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, maxanswers, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -70,6 +56,24 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchDropdownAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.selectedoptions, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, maxanswers, selectedSection, selectedCondChoice]);
 
   const handleSingleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!iseditable) {
@@ -105,6 +109,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}

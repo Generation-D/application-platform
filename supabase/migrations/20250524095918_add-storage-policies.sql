@@ -14,6 +14,3 @@ for all
 to authenticated
 using ((auth.uid() = owner))
 with check ((auth.uid() = owner));
-
-
-

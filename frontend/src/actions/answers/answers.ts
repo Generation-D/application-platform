@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
@@ -14,6 +14,8 @@ import {
   deleteVideoUploadAnswer,
   deletePdfUploadAnswer,
 } from "./deleteUpload";
+
+const log = createLogger("actions/answers/answers");
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
@@ -28,8 +30,6 @@ export interface Answer {
   lastupdated: string;
   created: string;
 }
-
-const log = new Logger("actions/answers/answers");
 
 export async function getCurrentUser(supabase: SupabaseClient) {
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -81,16 +81,18 @@ export interface ExtendedAnswerType extends Answer {
   answervalue?: string | null;
 }
 
-export async function fetchAllAnswersOfApplication(): Promise<
-  ExtendedAnswerType[]
-> {
+export async function fetchAllAnswersOfApplication(
+  applicationid?: string,
+): Promise<ExtendedAnswerType[]> {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
-  const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  if (!applicationid) {
+    applicationid = await getApplicationIdOfCurrentUser(supabase, user);
+  }
   const { data: answerData, error: answerError } = await supabase
     .from("answer_table")
     .select("*")
-    .eq("applicationid", applicationid);
+    .eq("applicationid", applicationid!);
 
   if (answerError) {
     if (answerError.code == "PGRST116") {
@@ -196,14 +198,17 @@ export async function deleteAnswer(questionid: string) {
   }
 }
 
-export async function deleteAnswersOfQuestions(questions: Question[]) {
+export async function deleteAnswersOfQuestions(
+  questions: Question[],
+  applicationid: string,
+) {
   for (const question of questions) {
     if (question.questiontype == QuestionType.ImageUpload) {
-      await deleteImageUploadAnswer(question.questionid);
+      await deleteImageUploadAnswer(question.questionid, applicationid);
     } else if (question.questiontype == QuestionType.VideoUpload) {
-      await deleteVideoUploadAnswer(question.questionid);
+      await deleteVideoUploadAnswer(question.questionid, applicationid);
     } else if (question.questiontype == QuestionType.PDFUpload) {
-      await deletePdfUploadAnswer(question.questionid);
+      await deletePdfUploadAnswer(question.questionid, applicationid);
     } else {
       await deleteAnswer(question.questionid);
     }

@@ -3,7 +3,7 @@ describe('login', () => {
     cy.visit('/')
     cy.url().should('contain', 'login')
 
-    cy.get('#email').type('user2@example.com');
+    cy.get('#email').type('user2@test.com');
     cy.get('#password').type('password123');
     cy.get('.apl-button-expanded').click();
 

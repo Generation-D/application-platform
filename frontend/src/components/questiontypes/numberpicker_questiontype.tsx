@@ -5,21 +5,20 @@ import {
   fetchNumberPickerAnswer,
   saveNumberPickerAnswer,
 } from "@/actions/answers/numberPicker";
-import Logger from "@/logger/logger";
+import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 
-export interface NumberPickerQuestionTypeProps
-  extends DefaultQuestionTypeProps {
+const log = createLogger("components/questiontypes/numberpicker_questiontype");
+
+export interface NumberPickerQuestionTypeProps extends DefaultQuestionTypeProps {
   answerid: string | null;
   minnumber: number;
   maxnumber: number;
 }
-
-const log = new Logger("NumberPickerQuestionType");
 
 const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   phasename,
@@ -34,6 +33,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   selectedSection,
   selectedCondChoice,
   questionsuborder,
+  applicationid,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -41,21 +41,6 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
     (state) => (state.answerReducer[questionid]?.answervalue as string) || "",
   );
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadAnswer() {
-      setIsLoading(true);
-      try {
-        const savedAnswer = await fetchNumberPickerAnswer(questionid);
-        updateAnswerState(savedAnswer.pickednumber, savedAnswer.answerid);
-      } catch (error) {
-        log.error(JSON.stringify(error));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
 
   const updateAnswerState = (answervalue: string, answerid?: string) => {
     dispatch(
@@ -66,6 +51,24 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
       }),
     );
   };
+
+  useEffect(() => {
+    async function loadAnswer() {
+      setIsLoading(true);
+      try {
+        const savedAnswer = await fetchNumberPickerAnswer(
+          questionid,
+          applicationid,
+        );
+        updateAnswerState(savedAnswer.pickednumber, savedAnswer.answerid);
+      } catch (error) {
+        log.error(JSON.stringify(error));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAnswer();
+  }, [questionid, selectedSection, selectedCondChoice]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {
@@ -120,6 +123,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
 
   return (
     <QuestionTypes
+      applicationid={applicationid}
       phasename={phasename}
       questionid={questionid}
       mandatory={mandatory}
