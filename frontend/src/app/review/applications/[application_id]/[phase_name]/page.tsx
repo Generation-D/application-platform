@@ -43,7 +43,6 @@ export default async function Application({
   }
   const currentDate = new Date(createCurrentTimestamp());
   const startDate = new Date(phaseData.startdate);
-  const endDate = new Date(phaseData.enddate);
 
   if (currentDate < startDate) {
     return redirect("/", RedirectType.replace);
@@ -77,16 +76,16 @@ export default async function Application({
     />
   );
 
-  const backText = "<- Bewerbungsübersicht";
+  const BackButton = <OverviewButton
+    slug={`review/applications/${application_id}`}
+    text="<- Bewerbungsübersicht"
+  />
 
   return (
     <span className="w-full">
       <div className="flex flex-col items-start justify-between space-y-4">
         <Apl_Header />
-        <OverviewButton
-          slug={`review/applications/${application_id}`}
-          text={backText}
-        />
+        {BackButton}
         <div className="w-full">
           <h2 className="p-4 rounded text-secondary">
             <b>Bewerbung {application_id}</b>
@@ -127,10 +126,7 @@ export default async function Application({
           {progressBarComponent}
           <MissingQuestions phaseQuestions={phase_questions} />
         </div>
-        <OverviewButton
-          slug={`admin/applications/${application_id}`}
-          text={backText}
-        />
+        {BackButton}
       </div>
     </span>
   );
