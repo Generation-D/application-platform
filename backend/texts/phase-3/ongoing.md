@@ -25,3 +25,5 @@ Außerdem benötigen wir zur Einordnung von Euch die Lebensläufe von allen Mitg
 ### Noch Fragen?
 
 Weitere Details zum Ablauf und der Bewertung könnt Ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](https://generation-d.org/wp-content/uploads/2026/02/Ablauf_des_Bewerbungsprozesses_2026.docx.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Sollten danach noch Fragen offen bleiben, meldet Euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).
+
+Solltet Ihr nach 12 Tagen noch keine Einladung zum Interview bekommen haben, dann meldet Euch bitte bei uns.
