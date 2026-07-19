@@ -3753,6 +3753,7 @@ select
   aud,
   role,
   email,
+  team_name, --manually cleaned up team name
   encrypted_password,
   email_confirmed_at,
   invited_at,
