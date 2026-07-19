@@ -3752,8 +3752,8 @@ select
   id,
   aud,
   role,
-  email,
   team_name, --manually cleaned up team name
+  email,
   encrypted_password,
   email_confirmed_at,
   invited_at,
