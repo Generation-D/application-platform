@@ -12,7 +12,6 @@ import {
 } from "@/supabase-utils/cookiesUtilClient";
 import { createLogger } from "@/logger/logger";
 import { messageType } from "@/components/forms/signin-form";
-import { resetPasswordMessageType } from "@/components/forms/forgottenpassword-form";
 import { SignUpFormState } from "@/components/forms/signup-form";
 
 const log = createLogger("actions/auth");
@@ -178,8 +177,13 @@ export async function signInUser(prevState: messageType, formData: FormData) {
   redirect("/");
 }
 
+interface ForgottenPasswordFormState {
+  message: string;
+  status: string;
+}
+
 export async function sendResetPasswordLink(
-  prevState: resetPasswordMessageType,
+  prevState: ForgottenPasswordFormState,
   formData: FormData,
 ) {
   const schema = z.object({

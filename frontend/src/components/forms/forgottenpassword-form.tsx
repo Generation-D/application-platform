@@ -7,12 +7,8 @@ import { sendResetPasswordLink } from "@/actions/auth";
 
 import { SubmitButton } from "../submitButton";
 import { Turnstile } from "@marsidev/react-turnstile";
-export interface resetPasswordMessageType {
-  message: string;
-  status: string;
-}
 
-const initialState: resetPasswordMessageType = {
+const initialState = {
   message: "",
   status: "",
 };

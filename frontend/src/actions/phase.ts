@@ -250,11 +250,10 @@ export async function fetch_question_table(
     if (question.questiontype != QuestionType.Conditional) {
       return question;
     }
-    question.params.choices.map((choice) => {
+    question.params.choices.forEach((choice) => {
       choice["questions"] = dependingQuestions.filter(
         (q: Question) => q.depends_on == choice.choiceid,
       );
-      return choice;
     });
     return question;
   });
