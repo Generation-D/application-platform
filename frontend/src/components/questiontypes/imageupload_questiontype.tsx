@@ -22,7 +22,8 @@ export interface ImageUploadQuestionTypeExtraProps {
   maxfilesizeinmb: number;
 }
 
-export type ImageUploadQuestionTypeProps = ImageUploadQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type ImageUploadQuestionTypeProps = ImageUploadQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 export interface ImageAnswerResponse {
   userid: string;
@@ -79,15 +80,18 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [wasUploaded, setWasUploaded] = useState(false);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   const validImgTypes = ["image/png", "image/jpeg"];
   useEffect(() => {
@@ -123,7 +127,13 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   function set_image_for_upload(file: File) {
     if (!iseditable) {

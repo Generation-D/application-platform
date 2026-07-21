@@ -9,7 +9,6 @@ import { updatePassword } from "@/actions/auth";
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
 
-
 const initialState = {
   message: "",
   status: "",

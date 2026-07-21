@@ -19,19 +19,18 @@ const ApplicationOverview: React.FC<{
 }> = ({ phasesData, phasesQuestions, phaseAnswers, phasesOutcome }) => {
   const dispatch = useAppDispatch();
 
-  const updateAnswerState = useCallback((
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch]);
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
@@ -42,7 +41,6 @@ const ApplicationOverview: React.FC<{
       );
     });
   }, [phaseAnswers, updateAnswerState]);
-
 
   let failedPhase = false;
   return (

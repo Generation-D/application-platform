@@ -29,13 +29,16 @@ type IdType = {
   [key: string]: any;
 };
 
-type OptionsOrChoicesData = Record<string, {
+type OptionsOrChoicesData = Record<
+  string,
+  {
     choiceid?: string;
     choicetext?: string;
     optionid?: string;
     optiontext?: string;
     choicevalue?: string;
-}[]>
+  }[]
+>;
 
 export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   const result = {
@@ -94,9 +97,7 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   return result;
 }
 
-export async function fetchAdditionalParams(
-  questiontype: QuestionType,
-) {
+export async function fetchAdditionalParams(questiontype: QuestionType) {
   let table_name:
     | "multiple_choice_question_choice_table"
     | "dropdown_question_option_table"

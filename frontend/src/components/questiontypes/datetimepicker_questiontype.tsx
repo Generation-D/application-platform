@@ -23,7 +23,8 @@ export interface DatetimePickerQuestionTypeExtraProps {
   maxdatetime: Date;
 }
 
-export type DatetimePickerQuestionTypeProps = DatetimePickerQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type DatetimePickerQuestionTypeProps =
+  DatetimePickerQuestionTypeExtraProps & DefaultQuestionTypeProps;
 
 const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   phasename,
@@ -47,15 +48,18 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -76,7 +80,13 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

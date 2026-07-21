@@ -1,4 +1,3 @@
-
 import CheckBoxQuestionType from "@/components/questiontypes/checkbox_questiontype";
 import ConditionalQuestionType from "@/components/questiontypes/conditional_questiontype";
 import DatePickerQuestionType from "@/components/questiontypes/datepicker_questiontype";
@@ -58,7 +57,15 @@ export enum AnswerTypeTable {
   ConditionalAnswerTable = "conditional_answer_table",
 }
 
-const getQuestionComponent = (applicationid: string, phaseQuestion: Question, phasename: string, iseditable: boolean, selectedSection: string | null | undefined, selectedCondChoice: string | null | undefined, questionsuborder: string | undefined = undefined) => {
+const getQuestionComponent = (
+  applicationid: string,
+  phaseQuestion: Question,
+  phasename: string,
+  iseditable: boolean,
+  selectedSection: string | null | undefined,
+  selectedCondChoice: string | null | undefined,
+  questionsuborder: string | undefined = undefined,
+) => {
   const questionProps = {
     applicationid: applicationid,
     key: phaseQuestion.questionid,
@@ -71,71 +78,68 @@ const getQuestionComponent = (applicationid: string, phaseQuestion: Question, ph
     iseditable: iseditable,
     selectedSection: selectedSection,
     selectedCondChoice: selectedCondChoice,
-    questionsuborder: questionsuborder
-  }
+    questionsuborder: questionsuborder,
+  };
 
   switch (phaseQuestion.questiontype) {
     case QuestionType.ShortText:
-      return <ShortTextQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <ShortTextQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.LongText:
-      return <LongTextQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <LongTextQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.NumberPicker:
-      return <NumberPickerQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <NumberPickerQuestionType
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
+      );
     case QuestionType.DatetimePicker:
-      return <DatetimePickerQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <DatetimePickerQuestionType
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
+      );
     case QuestionType.DatePicker:
-      return <DatePickerQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <DatePickerQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.ImageUpload:
-      return <ImageUploadQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <ImageUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.VideoUpload:
-      return <VideoUploadQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <VideoUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.PDFUpload:
-      return <PDFUploadQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <PDFUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.MultipleChoice:
-      return <MultipleChoiceQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <MultipleChoiceQuestionType
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
+      );
     case QuestionType.Dropdown:
-      return <DropdownQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <DropdownQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.CheckBox:
-      return <CheckBoxQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <CheckBoxQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
     case QuestionType.Conditional:
-      return <ConditionalQuestionType
-        {...questionProps}
-        {...phaseQuestion.params}
-      />
+      return (
+        <ConditionalQuestionType {...questionProps} {...phaseQuestion.params} />
+      );
   }
-}
+};
 
 export default getQuestionComponent;

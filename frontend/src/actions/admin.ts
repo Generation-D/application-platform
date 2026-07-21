@@ -28,7 +28,10 @@ interface ProfileData {
   userrole: number;
 }
 
-function mergeUserDatas(users: User[], userProfiles: ProfileData[]): userData[] {
+function mergeUserDatas(
+  users: User[],
+  userProfiles: ProfileData[],
+): userData[] {
   return users.map((user) => {
     const correspondingItem = userProfiles.find(
       (profile) => profile.userid === user.id,

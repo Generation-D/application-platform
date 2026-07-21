@@ -19,7 +19,8 @@ export interface PDFUploadQuestionTypeExtraProps {
   maxfilesizeinmb: number;
 }
 
-export type PDFUploadQuestionTypeProps = PDFUploadQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type PDFUploadQuestionTypeProps = PDFUploadQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 export interface PdfAnswerResponse {
   userid: string;
@@ -78,15 +79,18 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["application/pdf"];
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -120,7 +124,13 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   function set_pdf_for_upload(file: File) {
     if (!iseditable) {

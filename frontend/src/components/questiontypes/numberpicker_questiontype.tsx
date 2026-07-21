@@ -20,8 +20,8 @@ export interface NumberPickerQuestionTypeExtraProps {
   maxnumber: number;
 }
 
-export type NumberPickerQuestionTypeProps = NumberPickerQuestionTypeExtraProps & DefaultQuestionTypeProps;
-
+export type NumberPickerQuestionTypeProps = NumberPickerQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   phasename,
@@ -45,15 +45,18 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -71,7 +74,13 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

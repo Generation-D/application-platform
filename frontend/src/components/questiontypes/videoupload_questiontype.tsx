@@ -25,7 +25,8 @@ export interface VideoUploadQuestionTypeExtraProps {
   maxfilesizeinmb: number;
 }
 
-export type VideoUploadQuestionTypeProps = VideoUploadQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type VideoUploadQuestionTypeProps = VideoUploadQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 export async function saveVideoUploadAnswer(
   questionid: string,
@@ -78,15 +79,18 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["video/mp4"];
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -119,7 +123,13 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   function set_video_for_upload(file: File) {
     if (!iseditable) {

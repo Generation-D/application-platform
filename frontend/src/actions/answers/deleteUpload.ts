@@ -14,7 +14,9 @@ type UploadRpcName =
   | "fetch_pdf_upload_answer_table"
   | "fetch_video_upload_answer_table";
 
-async function deleteUploadAnswer<T extends ImageAnswerResponse | PdfAnswerResponse | VideoAnswerResponse>(
+async function deleteUploadAnswer<
+  T extends ImageAnswerResponse | PdfAnswerResponse | VideoAnswerResponse,
+>(
   questionid: string,
   applicationid: string,
   rpcName: UploadRpcName,

@@ -20,7 +20,8 @@ export interface LongTextQuestionTypeExtraProps {
   maxtextlength: number;
 }
 
-export type LongTextQuestionTypeProps = LongTextQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type LongTextQuestionTypeProps = LongTextQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   phasename,
@@ -43,15 +44,18 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -69,7 +73,13 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!iseditable) {

@@ -17,7 +17,10 @@ import { SignUpFormState } from "@/components/forms/signup-form";
 
 const log = createLogger("actions/auth");
 
-export async function signUpUser(prevState: SignUpFormState, formData: FormData) {
+export async function signUpUser(
+  prevState: SignUpFormState,
+  formData: FormData,
+) {
   const schema = z.object({
     email: z.string().min(1),
     password: z.string().min(1),
@@ -261,7 +264,10 @@ interface UpdatePasswordFormState {
   status: string;
 }
 
-export async function updatePassword(prevState: UpdatePasswordFormState, formData: FormData) {
+export async function updatePassword(
+  prevState: UpdatePasswordFormState,
+  formData: FormData,
+) {
   const schema = z.object({
     // For Implementation with Old Password Check: https://github.com/orgs/supabase/discussions/4042#discussioncomment-1707356
     //old_password: z.string().min(1),
@@ -343,7 +349,10 @@ export async function signInWithSlack() {
   }
 }
 
-export async function signInWithMagicLink(prevState: unknown, formData: FormData) {
+export async function signInWithMagicLink(
+  prevState: unknown,
+  formData: FormData,
+) {
   const schema = z.object({
     magicLinkEmail: z.string().min(1),
   });

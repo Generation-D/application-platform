@@ -38,7 +38,8 @@ export interface ConditionalQuestionTypeExtraProps {
   phaseAnswers: ExtendedAnswerType[];
 }
 
-export type ConditionalQuestionTypeProps = ConditionalQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type ConditionalQuestionTypeProps = ConditionalQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   phasename,
@@ -72,15 +73,18 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     {} as { [key: string]: Question[] },
   );
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -98,7 +102,14 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, phaseAnswers, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    phaseAnswers,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (choice: conditionalChoicesProps) => {
     if (!iseditable) {
@@ -126,7 +137,8 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     if (answer === choice.choiceid) {
       setChoiceHelper("");
       setMessage(
-        `Es sind ${dependingQuestions[choice.choiceid].length
+        `Es sind ${
+          dependingQuestions[choice.choiceid].length
         } Unterfragen von dieser Auswahl abhängig. Mit dem Abwählen dieser Option werden deine Antworten auf diese Unterfrage(-n) gelöscht. Trotzdem fortfahren?`,
       );
       setPopupOpen(true);
@@ -215,16 +227,17 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
                   iseditable,
                   selectedSection,
                   selectedCondChoice,
-                  sub_order
+                  sub_order,
                 );
                 return (
                   <div
                     key={condQuestion.questionid}
-                    className={`ml-8 ${condQuestion.depends_on == choice.choiceid &&
-                        choice.choiceid == answer
+                    className={`ml-8 ${
+                      condQuestion.depends_on == choice.choiceid &&
+                      choice.choiceid == answer
                         ? "visible"
                         : "hidden"
-                      }`}
+                    }`}
                   >
                     {condQuestion.preinformationbox && (
                       <InformationBox

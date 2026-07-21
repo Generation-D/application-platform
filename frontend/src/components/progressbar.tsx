@@ -75,7 +75,13 @@ export const ProgressBar = ({
       calculateProgress();
       setIsLoading(false);
     })();
-  }, [mandatoryQuestionIds, progressbarId, phaseQuestions, answeredQuestions, calculateProgress]);
+  }, [
+    mandatoryQuestionIds,
+    progressbarId,
+    phaseQuestions,
+    answeredQuestions,
+    calculateProgress,
+  ]);
 
   const stringDate = transformReadableDate(endDate);
   const progressPercentage = (numAnswered / numMandatory) * 100;

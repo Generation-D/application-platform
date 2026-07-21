@@ -18,7 +18,8 @@ export interface CheckBoxQuestionTypeExtraProps {
   answerid: string | null;
 }
 
-export type CheckBoxQuestionTypeProps = CheckBoxQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type CheckBoxQuestionTypeProps = CheckBoxQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   questionid,
@@ -39,15 +40,18 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answer: boolean, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answer,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answer: boolean, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answer,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -66,7 +70,13 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     }
 
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = () => {
     if (!iseditable) {

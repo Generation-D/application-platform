@@ -38,19 +38,18 @@ const ViewerApplicationOverview: React.FC<{
 }) => {
   const dispatch = useAppDispatch();
 
-  const updateAnswerState = useCallback((
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch]);
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
@@ -62,7 +61,6 @@ const ViewerApplicationOverview: React.FC<{
     });
   }, [phaseAnswers, updateAnswerState]);
 
-  
   let failedPhase: boolean = false;
   return (
     <>
@@ -77,7 +75,7 @@ const ViewerApplicationOverview: React.FC<{
             (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
           );
           if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
-            // TODO: 
+            // TODO:
             // eslint-disable-next-line react-hooks/immutability
             failedPhase = true;
           }

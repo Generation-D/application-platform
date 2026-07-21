@@ -23,7 +23,8 @@ export interface DropdownQuestionTypeExtraProps {
   userinput: boolean;
 }
 
-export type DropdownQuestionTypeProps = DropdownQuestionTypeExtraProps & DefaultQuestionTypeProps;
+export type DropdownQuestionTypeProps = DropdownQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   phasename,
@@ -48,15 +49,18 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -74,7 +78,14 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, maxanswers, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    maxanswers,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleSingleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!iseditable) {

@@ -26,7 +26,8 @@ export interface MultipleChoiceQuestionTypeExtraProps {
   userinput: boolean;
 }
 
-export type MultipleChoiceQuestionTypeProps = MultipleChoiceQuestionTypeExtraProps & DefaultQuestionTypeProps
+export type MultipleChoiceQuestionTypeProps =
+  MultipleChoiceQuestionTypeExtraProps & DefaultQuestionTypeProps;
 
 const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   phasename,
@@ -51,15 +52,18 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch, questionid]);
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -77,7 +81,13 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleSingleChange = async (choice: ChoiceProps) => {
     if (!iseditable) {

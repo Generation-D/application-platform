@@ -47,9 +47,8 @@ const ApplicantsList: React.FC<{
     });
   });
   const [currentAdminId, setCurrentAdminId] = useState<string>("");
-  const [applicantsState, setApplicantsState] = useState<ApplicantsStateType>(
-    state,
-  );
+  const [applicantsState, setApplicantsState] =
+    useState<ApplicantsStateType>(state);
   let renderedUnfinishedPhase = false;
   useEffect(() => {
     async function loadAnswer() {
@@ -83,17 +82,17 @@ const ApplicantsList: React.FC<{
       };
       const newStatus = currentUserState.status
         ? {
-          ...currentUserState.status,
-          outcome: !currentUserState.status.outcome,
-        }
+            ...currentUserState.status,
+            outcome: !currentUserState.status.outcome,
+          }
         : {
-          outcome_id: "",
-          phase_id: phase_id,
-          user_id: user_id,
-          outcome: true,
-          reviewed_by: "",
-          review_date: "",
-        };
+            outcome_id: "",
+            phase_id: phase_id,
+            user_id: user_id,
+            outcome: true,
+            reviewed_by: "",
+            review_date: "",
+          };
 
       return {
         ...prevState,

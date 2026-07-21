@@ -46,21 +46,25 @@ interface BaseQuestion<T extends QuestionType, P> extends DefaultQuestion {
   params: P;
 }
 
-export type Question = 
+export type Question =
   | BaseQuestion<QuestionType.ShortText, ShortTextQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.LongText, LongTextQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.NumberPicker, NumberPickerQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.DatetimePicker, DatetimePickerQuestionTypeExtraProps>
+  | BaseQuestion<
+      QuestionType.DatetimePicker,
+      DatetimePickerQuestionTypeExtraProps
+    >
   | BaseQuestion<QuestionType.DatePicker, DatePickerQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.ImageUpload, ImageUploadQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.VideoUpload, VideoUploadQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.PDFUpload, PDFUploadQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.MultipleChoice, MultipleChoiceQuestionTypeExtraProps>
+  | BaseQuestion<
+      QuestionType.MultipleChoice,
+      MultipleChoiceQuestionTypeExtraProps
+    >
   | BaseQuestion<QuestionType.Dropdown, DropdownQuestionTypeExtraProps>
   | BaseQuestion<QuestionType.CheckBox, CheckBoxQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.Conditional, ConditionalQuestionTypeExtraProps>
-  ;
-
+  | BaseQuestion<QuestionType.Conditional, ConditionalQuestionTypeExtraProps>;
 
 interface QuestionnaireProps {
   phaseData: PhaseData;
@@ -92,19 +96,18 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     }),
   );
 
-  const updateAnswerState = useCallback((
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  }, [dispatch]);
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
@@ -127,7 +130,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             phaseData.phasename,
             iseditable,
             selectedSection,
-            selectedCondChoice
+            selectedCondChoice,
           );
 
           return (
