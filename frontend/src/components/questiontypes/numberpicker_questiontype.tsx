@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchNumberPickerAnswer,
@@ -14,11 +14,14 @@ import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/numberpicker_questiontype");
 
-export interface NumberPickerQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface NumberPickerQuestionTypeExtraProps {
   answerid: string | null;
   minnumber: number;
   maxnumber: number;
 }
+
+export type NumberPickerQuestionTypeProps = NumberPickerQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   phasename,
@@ -42,15 +45,18 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -68,7 +74,13 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {
@@ -134,7 +146,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
       questionsuborder={questionsuborder}
     >
       <AwaitingChild isLoading={isLoading}>
-        <div className="relative flex items-center max-w-[8rem]">
+        <div className="relative flex items-center max-w-32">
           <button
             type="button"
             id="decrement-button"

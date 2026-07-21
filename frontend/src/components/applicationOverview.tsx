@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import { PhaseOutcome } from "@/actions/phase";
@@ -19,6 +19,19 @@ const ApplicationOverview: React.FC<{
 }> = ({ phasesData, phasesQuestions, phaseAnswers, phasesOutcome }) => {
   const dispatch = useAppDispatch();
 
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
       updateAnswerState(
@@ -27,22 +40,9 @@ const ApplicationOverview: React.FC<{
         answer?.answervalue,
       );
     });
-  }, [phaseAnswers]);
+  }, [phaseAnswers, updateAnswerState]);
 
-  const updateAnswerState = (
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  };
-  let failedPhase: boolean = false;
+  let failedPhase = false;
   return (
     <>
       {phasesData
@@ -56,6 +56,7 @@ const ApplicationOverview: React.FC<{
             (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
           );
           if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
+            // eslint-disable-next-line react-hooks/immutability
             failedPhase = true;
           }
           return (

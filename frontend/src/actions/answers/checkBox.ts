@@ -52,9 +52,6 @@ export async function fetchCheckBoxAnswer(
   applicationid: string,
 ): Promise<LongTextAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: checkBoxData, error: checkBoxError } = await supabase
     .rpc("fetch_checkbox_answer_table", {
       question_id: questionid,

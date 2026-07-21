@@ -1,19 +1,28 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import getQuestionComponent, {
   QuestionType,
 } from "@/components/questiontypes/utils/questiontype_selector";
-import { createLogger } from "@/logger/logger";
 import { INIT_PLACEHOLDER, UpdateAnswer } from "@/store/slices/answerSlice";
 import { PhaseData, setPhase } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
 
 import { InformationBox } from "./informationBox";
-
-const log = createLogger("components/question");
+import { ShortTextQuestionTypeExtraProps } from "./questiontypes/shorttext_questiontype";
+import { VideoUploadQuestionTypeExtraProps } from "./questiontypes/videoupload_questiontype";
+import { LongTextQuestionTypeExtraProps } from "./questiontypes/longtext_questiontype";
+import { NumberPickerQuestionTypeExtraProps } from "./questiontypes/numberpicker_questiontype";
+import { DatetimePickerQuestionTypeExtraProps } from "./questiontypes/datetimepicker_questiontype";
+import { DatePickerQuestionTypeExtraProps } from "./questiontypes/datepicker_questiontype";
+import { ImageUploadQuestionTypeExtraProps } from "./questiontypes/imageupload_questiontype";
+import { PDFUploadQuestionTypeExtraProps } from "./questiontypes/pdfupload_questiontype";
+import { MultipleChoiceQuestionTypeExtraProps } from "./questiontypes/multiplechoice_questiontype";
+import { DropdownQuestionTypeExtraProps } from "./questiontypes/dropdown_questiontype";
+import { CheckBoxQuestionTypeExtraProps } from "./questiontypes/checkbox_questiontype";
+import { ConditionalQuestionTypeExtraProps } from "./questiontypes/conditional_questiontype";
 
 export interface DefaultQuestion {
   questionid: string;
@@ -32,9 +41,30 @@ export interface DefaultQuestion {
   depends_on: string | null;
 }
 
-export interface Question extends DefaultQuestion {
-  params: any;
+interface BaseQuestion<T extends QuestionType, P> extends DefaultQuestion {
+  questiontype: T;
+  params: P;
 }
+
+export type Question =
+  | BaseQuestion<QuestionType.ShortText, ShortTextQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.LongText, LongTextQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.NumberPicker, NumberPickerQuestionTypeExtraProps>
+  | BaseQuestion<
+      QuestionType.DatetimePicker,
+      DatetimePickerQuestionTypeExtraProps
+    >
+  | BaseQuestion<QuestionType.DatePicker, DatePickerQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.ImageUpload, ImageUploadQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.VideoUpload, VideoUploadQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.PDFUpload, PDFUploadQuestionTypeExtraProps>
+  | BaseQuestion<
+      QuestionType.MultipleChoice,
+      MultipleChoiceQuestionTypeExtraProps
+    >
+  | BaseQuestion<QuestionType.Dropdown, DropdownQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.CheckBox, CheckBoxQuestionTypeExtraProps>
+  | BaseQuestion<QuestionType.Conditional, ConditionalQuestionTypeExtraProps>;
 
 interface QuestionnaireProps {
   phaseData: PhaseData;
@@ -57,9 +87,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   // need a copy, so I can modify it beneath
-  const copyPhaseQuestions = phaseQuestions.map((phaseQuestions) => {
-    return phaseQuestions;
-  });
+  const copyPhaseQuestions = [...phaseQuestions];
   dispatch(
     setPhase({
       phasename: phaseData.phasename,
@@ -68,19 +96,18 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     }),
   );
 
-  const updateAnswerState = (
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
@@ -90,7 +117,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         answer?.answervalue,
       );
     });
-  }, [phaseAnswers]);
+  }, [phaseAnswers, updateAnswerState]);
 
   return (
     <div className="mt-5 mb-7 border-b border-r rounded-xl shadow shadow-secondary p-5">
@@ -98,12 +125,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         .sort((a, b) => a.questionorder - b.questionorder)
         .map((phaseQuestion) => {
           const QuestionComponent = getQuestionComponent(
-            phaseQuestion.questiontype,
+            applicationid,
+            phaseQuestion,
+            phaseData.phasename,
+            iseditable,
+            selectedSection,
+            selectedCondChoice,
           );
-          if (!QuestionComponent) {
-            log.error(`Unknown question type: ${phaseQuestion.questiontype}`);
-            return null;
-          }
+
           return (
             <React.Fragment key={phaseQuestion.questionid}>
               {phaseQuestion.preinformationbox && (
@@ -112,7 +141,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                   text={phaseQuestion.preinformationbox}
                 />
               )}
-              <QuestionComponent
+              {QuestionComponent}
+              {/* <QuestionComponent
                 applicationid={applicationid}
                 key={phaseQuestion.questionid}
                 phasename={phaseData.phasename}
@@ -131,7 +161,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 }
                 phaseAnswers={phaseAnswers}
                 {...phaseQuestion.params}
-              />
+              /> */}
               {phaseQuestion.postinformationbox && (
                 <InformationBox
                   key={`${phaseQuestion.questionid}_post_infobox`}

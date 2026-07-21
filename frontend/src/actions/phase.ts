@@ -24,11 +24,24 @@ import { createLogger } from "@/logger/logger";
 
 type IdType = {
   questionid: string;
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
 
+type OptionsOrChoicesData = Record<
+  string,
+  {
+    choiceid?: string;
+    choicetext?: string;
+    optionid?: string;
+    optiontext?: string;
+    choicevalue?: string;
+  }[]
+>;
+
 export async function fetch_question_type_table(questions: DefaultQuestion[]) {
-  const result: Record<QuestionType, any> = {
+  const result = {
     [QuestionType.ShortText]: [{}],
     [QuestionType.LongText]: [{}],
     [QuestionType.NumberPicker]: [{}],
@@ -84,9 +97,7 @@ export async function fetch_question_type_table(questions: DefaultQuestion[]) {
   return result;
 }
 
-export async function fetchAdditionalParams(
-  questiontype: QuestionType,
-): Promise<Record<string, any>> {
+export async function fetchAdditionalParams(questiontype: QuestionType) {
   let table_name:
     | "multiple_choice_question_choice_table"
     | "dropdown_question_option_table"
@@ -162,11 +173,13 @@ export async function fetchAdditionalParams(
 }
 
 async function append_params(
+  // TODO: fix any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   question_types_questions: any,
   question: DefaultQuestion,
-  choicesData: Record<string, string[]>,
-  optionsData: Record<string, string[]>,
-  conditionalChoicesData: Record<string, string[]>,
+  choicesData: OptionsOrChoicesData,
+  optionsData: OptionsOrChoicesData,
+  conditionalChoicesData: OptionsOrChoicesData,
 ) {
   const question_type_questions =
     question_types_questions[question.questiontype];
@@ -174,6 +187,8 @@ async function append_params(
     question_type_questions!.find(
       (params: IdType) => params.questionid === question.questionid,
     ) || {};
+  // TODO: fix lint
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { questionid, ...rest } = question_type_params;
   if (question.questiontype === QuestionType.MultipleChoice) {
     rest["choices"] = choicesData[question.questionid];
@@ -235,11 +250,10 @@ export async function fetch_question_table(
     if (question.questiontype != QuestionType.Conditional) {
       return question;
     }
-    question.params.choices.map((choice: Record<string, any>) => {
+    question.params.choices.forEach((choice) => {
       choice["questions"] = dependingQuestions.filter(
         (q: Question) => q.depends_on == choice.choiceid,
       );
-      return choice;
     });
     return question;
   });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   ExtendedAnswerType,
@@ -32,11 +32,14 @@ export interface conditionalChoicesProps {
   questions: Question[];
 }
 
-export interface ConditionalQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface ConditionalQuestionTypeExtraProps {
   answerid: string | null;
   choices: conditionalChoicesProps[];
   phaseAnswers: ExtendedAnswerType[];
 }
+
+export type ConditionalQuestionTypeProps = ConditionalQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   phasename,
@@ -70,15 +73,18 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
     {} as { [key: string]: Question[] },
   );
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -96,7 +102,14 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice, phaseAnswers]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    phaseAnswers,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = (choice: conditionalChoicesProps) => {
     if (!iseditable) {
@@ -206,16 +219,16 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
             [...choice.questions]
               .sort((a, b) => a.questionorder - b.questionorder)
               .map((condQuestion) => {
-                const QuestionComponent = getQuestionComponent(
-                  condQuestion.questiontype,
-                );
-                if (!QuestionComponent) {
-                  log.error(
-                    `Unknown question type: ${condQuestion.questiontype}`,
-                  );
-                  return null;
-                }
                 const sub_order = numberToLetter(condQuestion.questionorder);
+                const QuestionComponent = getQuestionComponent(
+                  applicationid,
+                  condQuestion,
+                  phasename,
+                  iseditable,
+                  selectedSection,
+                  selectedCondChoice,
+                  sub_order,
+                );
                 return (
                   <div
                     key={condQuestion.questionid}
@@ -232,7 +245,8 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
                         text={condQuestion.preinformationbox}
                       />
                     )}
-                    <QuestionComponent
+                    {QuestionComponent}
+                    {/* <QuestionComponent
                       applicationid={applicationid}
                       key={condQuestion.questionid}
                       phasename={phasename}
@@ -253,7 +267,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
                         )?.answerid
                       }
                       {...condQuestion.params}
-                    />
+                    /> */}
                     {condQuestion.postinformationbox && (
                       <InformationBox
                         key={`${condQuestion.questionid}_post_infobox`}

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -102,7 +102,7 @@ export function SectionView({
       </ul>
       {sortedSections.map((phaseSection) => {
         const isVisible = selectedSection === phaseSection.sectionid;
-        phaseSection.sectionname;
+        // phaseSection.sectionname;
         if (!isVisible) {
           return null;
         }

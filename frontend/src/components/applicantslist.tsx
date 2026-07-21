@@ -28,10 +28,27 @@ const ApplicantsList: React.FC<{
   phases: PhaseData[];
   applicantsStatus: ApplicantsStatus[];
 }> = ({ users, phases, applicantsStatus }) => {
+  const state: ApplicantsStateType = {};
+  phases.forEach((phase) => {
+    state[phase.phaseid] = {};
+    users.forEach((user) => {
+      const applicantStatus = applicantsStatus.find(
+        (status) =>
+          status.phase_id === phase.phaseid && status.user_id === user.id,
+      );
+      const reviewer = users.find(
+        (reviewer) => reviewer.id === applicantStatus?.reviewed_by,
+      );
+
+      state[phase.phaseid][user.id] = {
+        status: applicantStatus,
+        reviewer: reviewer,
+      };
+    });
+  });
   const [currentAdminId, setCurrentAdminId] = useState<string>("");
-  const [applicantsState, setApplicantsState] = useState<ApplicantsStateType>(
-    {},
-  );
+  const [applicantsState, setApplicantsState] =
+    useState<ApplicantsStateType>(state);
   let renderedUnfinishedPhase = false;
   useEffect(() => {
     async function loadAnswer() {
@@ -44,28 +61,6 @@ const ApplicantsList: React.FC<{
     }
     loadAnswer();
   });
-
-  useEffect(() => {
-    const newState: ApplicantsStateType = {};
-    phases.forEach((phase) => {
-      newState[phase.phaseid] = {};
-      users.forEach((user) => {
-        const applicantStatus = applicantsStatus.find(
-          (status) =>
-            status.phase_id === phase.phaseid && status.user_id === user.id,
-        );
-        const reviewer = users.find(
-          (reviewer) => reviewer.id === applicantStatus?.reviewed_by,
-        );
-
-        newState[phase.phaseid][user.id] = {
-          status: applicantStatus,
-          reviewer: reviewer,
-        };
-      });
-    });
-    setApplicantsState(newState);
-  }, [applicantsStatus, phases, users]);
 
   const handleToggle = async (
     phase_id: string,
@@ -119,6 +114,7 @@ const ApplicantsList: React.FC<{
         const previousPhaseId = index > 0 ? phases[index - 1].phaseid : null;
         if (phase.finished_evaluation !== null || !renderedUnfinishedPhase) {
           if (phase.finished_evaluation === null) {
+            // eslint-disable-next-line react-hooks/immutability
             renderedUnfinishedPhase = true;
           }
           return (

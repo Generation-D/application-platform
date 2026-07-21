@@ -1,7 +1,6 @@
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
 import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
 import Apl_Header from "@/components/layout/header";
-import InternalHeader from "@/components/layout/internalHeader";
 import OverviewButton from "@/components/overviewButton";
 import { Question } from "@/components/questions";
 import ViewerApplicationOverview from "@/components/viewerApplicationOverview";

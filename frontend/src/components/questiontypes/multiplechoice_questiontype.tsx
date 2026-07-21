@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchMultipleChoiceAnswer,
@@ -18,13 +18,16 @@ const log = createLogger(
   "components/questiontypes/multiplechoice_questiontype",
 );
 
-export interface MultipleChoiceQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface MultipleChoiceQuestionTypeExtraProps {
   answerid: string | null;
   choices: ChoiceProps[];
   minanswers: number;
   maxanswers: number;
   userinput: boolean;
 }
+
+export type MultipleChoiceQuestionTypeProps =
+  MultipleChoiceQuestionTypeExtraProps & DefaultQuestionTypeProps;
 
 const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   phasename,
@@ -37,7 +40,6 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   choices,
   minanswers,
   maxanswers,
-  userinput,
   selectedSection,
   selectedCondChoice,
   questionsuborder,
@@ -50,15 +52,18 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -76,7 +81,13 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleSingleChange = async (choice: ChoiceProps) => {
     if (!iseditable) {

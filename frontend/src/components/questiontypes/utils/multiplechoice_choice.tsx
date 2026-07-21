@@ -16,7 +16,6 @@ export const Choice: React.FC<ChoiceProps> = ({
   choicetext,
   isSelected,
   iseditable,
-  minanswers,
   maxanswers,
   onSingleChange,
   onMultiChange,
