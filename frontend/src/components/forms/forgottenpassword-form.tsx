@@ -7,12 +7,12 @@ import { sendResetPasswordLink } from "@/actions/auth";
 
 import { SubmitButton } from "../submitButton";
 import { Turnstile } from "@marsidev/react-turnstile";
-interface messageType {
+export interface resetPasswordMessageType {
   message: string;
   status: string;
 }
 
-const initialState: messageType = {
+const initialState: resetPasswordMessageType = {
   message: "",
   status: "",
 };
@@ -23,7 +23,6 @@ export default function ForgottenPasswordForm() {
     initialState,
   );
   const [timer, setTimer] = useState(0);
-  const [buttonVisible, setButtonVisible] = useState(true);
   const [captchaToken, setCaptchaToken] = useState<string | undefined>();
 
   useEffect(() => {
@@ -31,17 +30,16 @@ export default function ForgottenPasswordForm() {
 
     if (timer > 0) {
       countdown = setTimeout(() => setTimer(timer - 1), 1000);
-    } else {
-      setButtonVisible(true);
     }
 
     return () => clearTimeout(countdown);
   }, [timer]);
 
   const handleSubmit = () => {
-    setButtonVisible(false);
     setTimer(30);
   };
+
+  const buttonVisible = timer <= 0;
 
   return (
     <div>

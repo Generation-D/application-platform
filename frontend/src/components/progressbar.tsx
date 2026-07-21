@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { AnswerState } from "@/store/slices/answerSlice";
 import { useAppSelector } from "@/store/store";
@@ -26,7 +26,7 @@ export const ProgressBar = ({
   const [numMandatory, setNumMandatory] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const calculateProgress = () => {
+  const calculateProgress = useCallback(() => {
     const answeredMandatory = mandatoryQuestionIds.filter(
       (questionId) => questionId in answeredQuestions,
     ).length;
@@ -67,7 +67,7 @@ export const ProgressBar = ({
 
     setNumAnswered(answeredMandatory + answeredConditional);
     setNumMandatory(mandatoryQuestionIds.length + conditionalMandatory);
-  };
+  }, [answeredQuestions, mandatoryQuestionIds, phaseQuestions]);
 
   useEffect(() => {
     (async () => {
@@ -75,7 +75,7 @@ export const ProgressBar = ({
       calculateProgress();
       setIsLoading(false);
     })();
-  }, [mandatoryQuestionIds, progressbarId, phaseQuestions, answeredQuestions]);
+  }, [mandatoryQuestionIds, progressbarId, phaseQuestions, answeredQuestions, calculateProgress]);
 
   const stringDate = transformReadableDate(endDate);
   const progressPercentage = (numAnswered / numMandatory) * 100;

@@ -1,41 +1,17 @@
-import { FC } from "react";
 
-import CheckBoxQuestionType, {
-  CheckBoxQuestionTypeProps,
-} from "@/components/questiontypes/checkbox_questiontype";
-import ConditionalQuestionType, {
-  ConditionalQuestionTypeProps,
-} from "@/components/questiontypes/conditional_questiontype";
-import DatePickerQuestionType, {
-  DatePickerQuestionTypeProps,
-} from "@/components/questiontypes/datepicker_questiontype";
-import DatetimePickerQuestionType, {
-  DatetimePickerQuestionTypeProps,
-} from "@/components/questiontypes/datetimepicker_questiontype";
-import DropdownQuestionType, {
-  DropdownQuestionTypeProps,
-} from "@/components/questiontypes/dropdown_questiontype";
-import ImageUploadQuestionType, {
-  ImageUploadQuestionTypeProps,
-} from "@/components/questiontypes/imageupload_questiontype";
-import LongTextQuestionType, {
-  LongTextQuestionTypeProps,
-} from "@/components/questiontypes/longtext_questiontype";
-import MultipleChoiceQuestionType, {
-  MultipleChoiceQuestionTypeProps,
-} from "@/components/questiontypes/multiplechoice_questiontype";
-import NumberPickerQuestionType, {
-  NumberPickerQuestionTypeProps,
-} from "@/components/questiontypes/numberpicker_questiontype";
-import PDFUploadQuestionType, {
-  PDFUploadQuestionTypeProps,
-} from "@/components/questiontypes/pdfupload_questiontype";
-import ShortTextQuestionType, {
-  ShortTextQuestionTypeProps,
-} from "@/components/questiontypes/shorttext_questiontype";
-import VideoUploadQuestionType, {
-  VideoUploadQuestionTypeProps,
-} from "@/components/questiontypes/videoupload_questiontype";
+import CheckBoxQuestionType from "@/components/questiontypes/checkbox_questiontype";
+import ConditionalQuestionType from "@/components/questiontypes/conditional_questiontype";
+import DatePickerQuestionType from "@/components/questiontypes/datepicker_questiontype";
+import DatetimePickerQuestionType from "@/components/questiontypes/datetimepicker_questiontype";
+import DropdownQuestionType from "@/components/questiontypes/dropdown_questiontype";
+import ImageUploadQuestionType from "@/components/questiontypes/imageupload_questiontype";
+import LongTextQuestionType from "@/components/questiontypes/longtext_questiontype";
+import MultipleChoiceQuestionType from "@/components/questiontypes/multiplechoice_questiontype";
+import NumberPickerQuestionType from "@/components/questiontypes/numberpicker_questiontype";
+import PDFUploadQuestionType from "@/components/questiontypes/pdfupload_questiontype";
+import ShortTextQuestionType from "@/components/questiontypes/shorttext_questiontype";
+import VideoUploadQuestionType from "@/components/questiontypes/videoupload_questiontype";
+import { Question } from "@/components/questions";
 
 export enum QuestionType {
   ShortText = "shortText",
@@ -82,44 +58,84 @@ export enum AnswerTypeTable {
   ConditionalAnswerTable = "conditional_answer_table",
 }
 
-type QuestionTypeSelectorProps = {
-  shortText: FC<ShortTextQuestionTypeProps>;
-  longText: FC<LongTextQuestionTypeProps>;
-  videoUpload: FC<VideoUploadQuestionTypeProps>;
-  datetimePicker: FC<DatetimePickerQuestionTypeProps>;
-  datePicker: FC<DatePickerQuestionTypeProps>;
-  numberPicker: FC<NumberPickerQuestionTypeProps>;
-  imageUpload: FC<ImageUploadQuestionTypeProps>;
-  pdfUpload: FC<PDFUploadQuestionTypeProps>;
-  multipleChoice: FC<MultipleChoiceQuestionTypeProps>;
-  dropdown: FC<DropdownQuestionTypeProps>;
-  checkBox: FC<CheckBoxQuestionTypeProps>;
-  conditional: FC<ConditionalQuestionTypeProps>;
-};
-
-const getQuestionComponent = (
-  questionType: keyof QuestionTypeSelectorProps,
-) => {
-  const QuestionTypeSelector: QuestionTypeSelectorProps = {
-    shortText: ShortTextQuestionType,
-    longText: LongTextQuestionType,
-    videoUpload: VideoUploadQuestionType,
-    datetimePicker: DatetimePickerQuestionType,
-    datePicker: DatePickerQuestionType,
-    numberPicker: NumberPickerQuestionType,
-    imageUpload: ImageUploadQuestionType,
-    pdfUpload: PDFUploadQuestionType,
-    multipleChoice: MultipleChoiceQuestionType,
-    dropdown: DropdownQuestionType,
-    checkBox: CheckBoxQuestionType,
-    conditional: ConditionalQuestionType,
-  };
-
-  const QuestionComponent = QuestionTypeSelector[questionType];
-  if (QuestionComponent) {
-    return QuestionComponent;
+const getQuestionComponent = (applicationid: string, phaseQuestion: Question, phasename: string, iseditable: boolean, selectedSection: string | null | undefined, selectedCondChoice: string | null | undefined, questionsuborder: string | undefined = undefined) => {
+  const questionProps = {
+    applicationid: applicationid,
+    key: phaseQuestion.questionid,
+    phasename: phasename,
+    questionid: phaseQuestion.questionid,
+    mandatory: phaseQuestion.mandatory,
+    questiontext: phaseQuestion.questiontext,
+    questionnote: phaseQuestion.questionnote,
+    questionorder: phaseQuestion.questionorder,
+    iseditable: iseditable,
+    selectedSection: selectedSection,
+    selectedCondChoice: selectedCondChoice,
+    questionsuborder: questionsuborder
   }
-  return null;
-};
+
+  switch (phaseQuestion.questiontype) {
+    case QuestionType.ShortText:
+      return <ShortTextQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.LongText:
+      return <LongTextQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.NumberPicker:
+      return <NumberPickerQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.DatetimePicker:
+      return <DatetimePickerQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.DatePicker:
+      return <DatePickerQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.ImageUpload:
+      return <ImageUploadQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.VideoUpload:
+      return <VideoUploadQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.PDFUpload:
+      return <PDFUploadQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.MultipleChoice:
+      return <MultipleChoiceQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.Dropdown:
+      return <DropdownQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.CheckBox:
+      return <CheckBoxQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+    case QuestionType.Conditional:
+      return <ConditionalQuestionType
+        {...questionProps}
+        {...phaseQuestion.params}
+      />
+  }
+}
 
 export default getQuestionComponent;

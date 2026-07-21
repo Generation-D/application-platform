@@ -10,12 +10,12 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
 
-interface messageType {
+export interface SignUpFormState {
   message: string;
   status: string;
 }
 
-const initialState: messageType = {
+const initialState = {
   message: "",
   status: "",
 };

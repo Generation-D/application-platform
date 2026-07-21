@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import { PhaseOutcome } from "@/actions/phase";
@@ -19,17 +19,7 @@ const ApplicationOverview: React.FC<{
 }> = ({ phasesData, phasesQuestions, phaseAnswers, phasesOutcome }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    phaseAnswers.forEach((answer) => {
-      updateAnswerState(
-        answer.questionid,
-        answer.answerid,
-        answer?.answervalue,
-      );
-    });
-  }, [phaseAnswers]);
-
-  const updateAnswerState = (
+  const updateAnswerState = useCallback((
     questionid: string,
     answerid?: string,
     answervalue?: string | null,
@@ -41,8 +31,20 @@ const ApplicationOverview: React.FC<{
         answerid: answerid || "",
       }),
     );
-  };
-  let failedPhase: boolean = false;
+  }, [dispatch]);
+
+  useEffect(() => {
+    phaseAnswers.forEach((answer) => {
+      updateAnswerState(
+        answer.questionid,
+        answer.answerid,
+        answer?.answervalue,
+      );
+    });
+  }, [phaseAnswers, updateAnswerState]);
+
+
+  let failedPhase = false;
   return (
     <>
       {phasesData
@@ -56,6 +58,7 @@ const ApplicationOverview: React.FC<{
             (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
           );
           if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
+            // eslint-disable-next-line react-hooks/immutability
             failedPhase = true;
           }
           return (

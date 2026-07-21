@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useActionState } from "react";
 import { signInUser } from "@/actions/auth";
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
@@ -8,14 +8,12 @@ import ForgottenPasswordForm from "./forgottenpassword-form";
 import Popup from "../layout/popup";
 import { SubmitButton } from "../submitButton";
 
-interface messageType {
+export interface messageType {
   message: string;
-  email: string;
 }
 
 const initialState: messageType = {
   message: "",
-  email: "",
 };
 
 export default function SignInForm() {
@@ -28,14 +26,6 @@ export default function SignInForm() {
   const togglePopup = () => {
     setPopupOpen(!isPopupOpen);
   };
-
-  // Reset Turnstile on failed sign-in
-  useEffect(() => {
-    if (state?.message) {
-      ref.current?.reset();
-      setCaptchaToken(""); // Clear captcha token to disable the button
-    }
-  }, [state]);
 
   return (
     <div>

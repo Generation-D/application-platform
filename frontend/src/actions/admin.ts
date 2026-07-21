@@ -7,21 +7,28 @@ import {
 } from "@/supabase-utils/cookiesUtilClient";
 import { createCurrentTimestamp } from "@/utils/helpers";
 import { UserRole } from "@/utils/userRole";
+import { User } from "@supabase/supabase-js";
 
 const log = createLogger("actions/admin");
 
 export interface userData {
   id: string;
-  email: string;
-  last_sign_in_at: string;
-  provider: string;
+  email: string | undefined;
+  last_sign_in_at: string | undefined;
+  provider: string | undefined;
   created_at: string;
-  updated_at: string;
+  updated_at: string | undefined;
   userrole: UserRole;
   isactive: boolean;
 }
 
-function mergeUserDatas(users: any[], userProfiles: any[]): userData[] {
+interface ProfileData {
+  isactive: boolean | null;
+  userid: string;
+  userrole: number;
+}
+
+function mergeUserDatas(users: User[], userProfiles: ProfileData[]): userData[] {
   return users.map((user) => {
     const correspondingItem = userProfiles.find(
       (profile) => profile.userid === user.id,
@@ -29,7 +36,7 @@ function mergeUserDatas(users: any[], userProfiles: any[]): userData[] {
 
     return {
       id: user.id,
-      email: user.email,
+      email: user.email!,
       last_sign_in_at: user.last_sign_in_at,
       provider: user.app_metadata?.provider,
       created_at: user.created_at,

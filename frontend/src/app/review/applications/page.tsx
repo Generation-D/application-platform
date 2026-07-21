@@ -1,5 +1,4 @@
 import Apl_Header from "@/components/layout/header";
-import InternalHeader from "@/components/layout/internalHeader";
 import PaginationControls from "@/components/paginationControls";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import Link from "next/link";
@@ -20,7 +19,7 @@ export default async function Applications({ searchParams }: PageProps) {
 
   const pageNumber = Number(page) || 1;
 
-  const { count, error } = await supabase
+  const { count } = await supabase
     .from("application_table")
     .select("*", { count: "exact", head: true });
 

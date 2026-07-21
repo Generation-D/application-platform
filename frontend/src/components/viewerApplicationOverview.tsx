@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import { PhaseOutcome } from "@/actions/phase";
@@ -38,17 +38,7 @@ const ViewerApplicationOverview: React.FC<{
 }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    phaseAnswers.forEach((answer) => {
-      updateAnswerState(
-        answer.questionid,
-        answer.answerid,
-        answer?.answervalue,
-      );
-    });
-  }, [phaseAnswers]);
-
-  const updateAnswerState = (
+  const updateAnswerState = useCallback((
     questionid: string,
     answerid?: string,
     answervalue?: string | null,
@@ -60,7 +50,19 @@ const ViewerApplicationOverview: React.FC<{
         answerid: answerid || "",
       }),
     );
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    phaseAnswers.forEach((answer) => {
+      updateAnswerState(
+        answer.questionid,
+        answer.answerid,
+        answer?.answervalue,
+      );
+    });
+  }, [phaseAnswers, updateAnswerState]);
+
+  
   let failedPhase: boolean = false;
   return (
     <>
@@ -75,6 +77,8 @@ const ViewerApplicationOverview: React.FC<{
             (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
           );
           if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
+            // TODO: 
+            // eslint-disable-next-line react-hooks/immutability
             failedPhase = true;
           }
           return (

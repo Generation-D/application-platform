@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchShortTextAnswer,
@@ -15,12 +15,14 @@ import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/shorttext_questiontype");
 
-export interface ShortTextQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface ShortTextQuestionTypeExtraProps  {
   answerid: string | null;
   maxtextlength: number;
   formattingregex: string | null;
   formattingdescription: string | null;
 }
+
+export type ShortTextQuestionTypeProps = ShortTextQuestionTypeExtraProps & DefaultQuestionTypeProps
 
 const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   phasename,
@@ -33,7 +35,6 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   answerid,
   maxtextlength,
   formattingregex,
-  formattingdescription,
   selectedSection,
   selectedCondChoice,
   questionsuborder,
@@ -46,7 +47,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -54,7 +55,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
         answerid: answerid || "",
       }),
     );
-  };
+  }, [dispatch, questionid]);
 
   useEffect(() => {
     async function loadAnswer() {
@@ -73,7 +74,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
     }
 
     loadAnswer();
-  }, [questionid, answerid, selectedSection, selectedCondChoice]);
+  }, [questionid, answerid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!iseditable) {

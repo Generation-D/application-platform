@@ -9,12 +9,8 @@ import { updatePassword } from "@/actions/auth";
 import PasswordRequirementsComponent from "../passwordRequirements";
 import { SubmitButton } from "../submitButton";
 
-interface messageType {
-  message: string;
-  status: string;
-}
 
-const initialState: messageType = {
+const initialState = {
   message: "",
   status: "",
 };

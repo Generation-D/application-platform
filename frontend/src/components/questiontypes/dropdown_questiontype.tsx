@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchDropdownAnswer,
@@ -15,13 +15,15 @@ import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/dropdown_questiontype");
 
-export interface DropdownQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface DropdownQuestionTypeExtraProps {
   answerid: string | null;
   options: DropdownOptionProps[];
   minanswers: number;
   maxanswers: number;
   userinput: boolean;
 }
+
+export type DropdownQuestionTypeProps = DropdownQuestionTypeExtraProps & DefaultQuestionTypeProps;
 
 const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   phasename,
@@ -33,7 +35,6 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   iseditable,
   minanswers,
   maxanswers,
-  userinput,
   options,
   selectedSection,
   selectedCondChoice,
@@ -47,7 +48,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -55,7 +56,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
         answerid: answerid || "",
       }),
     );
-  };
+  }, [dispatch, questionid]);
 
   useEffect(() => {
     async function loadAnswer() {
@@ -73,7 +74,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, maxanswers, selectedSection, selectedCondChoice]);
+  }, [questionid, maxanswers, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
 
   const handleSingleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!iseditable) {

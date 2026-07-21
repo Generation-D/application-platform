@@ -11,10 +11,13 @@ import {
   getSupabaseCookiesUtilClientAdmin,
 } from "@/supabase-utils/cookiesUtilClient";
 import { createLogger } from "@/logger/logger";
+import { messageType } from "@/components/forms/signin-form";
+import { resetPasswordMessageType } from "@/components/forms/forgottenpassword-form";
+import { SignUpFormState } from "@/components/forms/signup-form";
 
 const log = createLogger("actions/auth");
 
-export async function signUpUser(prevState: any, formData: FormData) {
+export async function signUpUser(prevState: SignUpFormState, formData: FormData) {
   const schema = z.object({
     email: z.string().min(1),
     password: z.string().min(1),
@@ -106,7 +109,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
   }
 }
 
-export async function signInUser(prevState: any, formData: FormData) {
+export async function signInUser(prevState: messageType, formData: FormData) {
   const schema = z.object({
     email: z.string().min(1),
     password: z.string().min(1),
@@ -173,7 +176,7 @@ export async function signInUser(prevState: any, formData: FormData) {
 }
 
 export async function sendResetPasswordLink(
-  prevState: any,
+  prevState: resetPasswordMessageType,
   formData: FormData,
 ) {
   const schema = z.object({
@@ -253,7 +256,12 @@ export async function deleteUser(): Promise<{
   };
 }
 
-export async function updatePassword(prevState: any, formData: FormData) {
+interface UpdatePasswordFormState {
+  message: string;
+  status: string;
+}
+
+export async function updatePassword(prevState: UpdatePasswordFormState, formData: FormData) {
   const schema = z.object({
     // For Implementation with Old Password Check: https://github.com/orgs/supabase/discussions/4042#discussioncomment-1707356
     //old_password: z.string().min(1),
@@ -335,7 +343,7 @@ export async function signInWithSlack() {
   }
 }
 
-export async function signInWithMagicLink(prevState: any, formData: FormData) {
+export async function signInWithMagicLink(prevState: unknown, formData: FormData) {
   const schema = z.object({
     magicLinkEmail: z.string().min(1),
   });
@@ -358,9 +366,14 @@ export async function signInWithMagicLink(prevState: any, formData: FormData) {
   }
 }
 
+export interface SendPasswordResetFormState {
+  message: string;
+  status: string;
+  email: string;
+}
+
 export async function sendResetPasswordLinkFromSettings(
-  prevState: any,
-  formData: FormData,
+  prevState: SendPasswordResetFormState,
 ) {
   const email = prevState.email;
   try {
@@ -374,17 +387,19 @@ export async function sendResetPasswordLinkFromSettings(
       );
     if (PasswordResetError) {
       log.error(JSON.stringify(PasswordResetError));
-      return { message: PasswordResetError.message, status: "ERROR" };
+      return { email, message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
     log.info(`Reset Password for ${email}`);
     return {
+      email,
       message: `Dir wurde ein Passwort Zurücksetzen Link gesendet!`,
       status: "SUCCESS",
     };
   } catch (error) {
     log.error(JSON.stringify(error));
     return {
+      email,
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",
     };

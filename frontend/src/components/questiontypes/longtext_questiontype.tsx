@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchLongTextAnswer,
@@ -15,10 +15,12 @@ import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/longtext_questiontype");
 
-export interface LongTextQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface LongTextQuestionTypeExtraProps {
   answerid: string | null;
   maxtextlength: number;
 }
+
+export type LongTextQuestionTypeProps = LongTextQuestionTypeExtraProps & DefaultQuestionTypeProps;
 
 const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   phasename,
@@ -41,7 +43,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
+  const updateAnswerState = useCallback((answervalue: string, answerid?: string) => {
     dispatch(
       UpdateAnswer({
         questionid: questionid,
@@ -49,7 +51,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
         answerid: answerid || "",
       }),
     );
-  };
+  }, [dispatch, questionid]);
 
   useEffect(() => {
     async function loadAnswer() {
@@ -67,7 +69,7 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [questionid, selectedSection, selectedCondChoice, applicationid, updateAnswerState]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!iseditable) {
