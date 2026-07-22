@@ -4,7 +4,6 @@ INSERT INTO
         id,
         aud,
         role,
-        team_name,
         email,
         encrypted_password,
         email_confirmed_at,
@@ -24,7 +23,6 @@ INSERT INTO
             gen_random_uuid(),
             'authenticated',
             'authenticated',
-            ''
             email_val,
             crypt ('password123', gen_salt ('bf')),
             current_timestamp,
