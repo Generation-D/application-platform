@@ -2,7 +2,7 @@ import { parseArgs } from "node:util";
 import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database.types";
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { parse } from 'csv-parse/sync';
 
 
