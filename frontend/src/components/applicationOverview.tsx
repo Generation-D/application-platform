@@ -84,10 +84,10 @@ export function createPhaseOverviewData(
   phasesQuestions: Record<string, Question[]>,
   phasesOutcome: PhaseOutcome[],
 ) {
-  let failedPhase: boolean = false;
+  let failedPhase = false;
 
   return phasesData
-    .sort((a, b) => a.phaseorder - b.phaseorder)
+    .toSorted((a, b) => a.phaseorder - b.phaseorder)
     .map((phase) => {
       const phaseQuestions = phasesQuestions[phase.phaseid];
       const mandatoryPhaseQuestionIds = phaseQuestions
