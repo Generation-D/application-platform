@@ -142,26 +142,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 />
               )}
               {QuestionComponent}
-              {/* <QuestionComponent
-                applicationid={applicationid}
-                key={phaseQuestion.questionid}
-                phasename={phaseData.phasename}
-                questionid={phaseQuestion.questionid}
-                mandatory={phaseQuestion.mandatory}
-                questiontext={phaseQuestion.questiontext}
-                questionnote={phaseQuestion.questionnote}
-                questionorder={phaseQuestion.questionorder}
-                iseditable={iseditable}
-                selectedSection={selectedSection}
-                selectedCondChoice={selectedCondChoice}
-                answerid={
-                  phaseAnswers.find(
-                    (answer) => answer.questionid == phaseQuestion.questionid,
-                  )?.answerid
-                }
-                phaseAnswers={phaseAnswers}
-                {...phaseQuestion.params}
-              /> */}
               {phaseQuestion.postinformationbox && (
                 <InformationBox
                   key={`${phaseQuestion.questionid}_post_infobox`}

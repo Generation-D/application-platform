@@ -49,7 +49,6 @@ const ApplicantsList: React.FC<{
   const [currentAdminId, setCurrentAdminId] = useState<string>("");
   const [applicantsState, setApplicantsState] =
     useState<ApplicantsStateType>(state);
-  let renderedUnfinishedPhase = false;
   useEffect(() => {
     async function loadAnswer() {
       const supabase = getSupabaseBrowserClient();
@@ -107,16 +106,20 @@ const ApplicantsList: React.FC<{
     });
   };
 
+  const firstUnfinishedIndex = phases.findIndex(
+    (phase) => phase.finished_evaluation === null,
+  );
+
   return (
     <div className="overflow-x-auto">
       {phases.map((phase, index) => {
         const isFirstPhase = index === 0;
         const previousPhaseId = index > 0 ? phases[index - 1].phaseid : null;
-        if (phase.finished_evaluation !== null || !renderedUnfinishedPhase) {
-          if (phase.finished_evaluation === null) {
-            // eslint-disable-next-line react-hooks/immutability
-            renderedUnfinishedPhase = true;
-          }
+
+        const isFinished = phase.finished_evaluation !== null;
+        const isFirstUnfinished = index === firstUnfinishedIndex;
+
+        if (isFinished || isFirstUnfinished) {
           return (
             <div key={phase.phaseid}>
               <h3 className="text-l font-bold mb-4 mt-7">{phase.phaselabel}</h3>

@@ -42,23 +42,22 @@ const ApplicationOverview: React.FC<{
     });
   }, [phaseAnswers, updateAnswerState]);
 
-  let failedPhase = false;
+  const phaseOverviewData = createPhaseOverviewData(
+    phasesData,
+    phasesQuestions,
+    phasesOutcome,
+  );
+
   return (
     <>
-      {phasesData
-        .sort((a, b) => a.phaseorder - b.phaseorder)
-        .map((phase) => {
-          const phaseQuestions = phasesQuestions[phase.phaseid];
-          const mandatoryPhaseQuestionIds = phaseQuestions
-            .filter((q) => q.mandatory)
-            .map((q) => q.questionid);
-          const phaseOutcome = phasesOutcome.find(
-            (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
-          );
-          if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
-            // eslint-disable-next-line react-hooks/immutability
-            failedPhase = true;
-          }
+      {phaseOverviewData.map(
+        ({
+          phase,
+          mandatoryPhaseQuestionIds,
+          phaseQuestions,
+          phaseOutcome,
+          failedPhase,
+        }) => {
           return (
             <PhaseOverview
               key={phase.phaseid}
@@ -74,9 +73,40 @@ const ApplicationOverview: React.FC<{
               failedPhase={failedPhase}
             />
           );
-        })}
+        },
+      )}
     </>
   );
 };
+
+export function createPhaseOverviewData(
+  phasesData: PhaseData[],
+  phasesQuestions: Record<string, Question[]>,
+  phasesOutcome: PhaseOutcome[],
+) {
+  let failedPhase: boolean = false;
+
+  return phasesData
+    .sort((a, b) => a.phaseorder - b.phaseorder)
+    .map((phase) => {
+      const phaseQuestions = phasesQuestions[phase.phaseid];
+      const mandatoryPhaseQuestionIds = phaseQuestions
+        .filter((q) => q.mandatory)
+        .map((q) => q.questionid);
+      const phaseOutcome = phasesOutcome.find(
+        (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
+      );
+      if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
+        failedPhase = true;
+      }
+      return {
+        phase,
+        mandatoryPhaseQuestionIds,
+        phaseQuestions,
+        phaseOutcome,
+        failedPhase,
+      };
+    });
+}
 
 export default ApplicationOverview;

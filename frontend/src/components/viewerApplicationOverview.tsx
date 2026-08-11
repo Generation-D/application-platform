@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ProgressBar } from "./progressbar";
 import { Question } from "./questions";
+import { createPhaseOverviewData } from "./applicationOverview";
 
 const ViewerApplicationOverview: React.FC<{
   phasesData: PhaseData[];
@@ -61,24 +62,22 @@ const ViewerApplicationOverview: React.FC<{
     });
   }, [phaseAnswers, updateAnswerState]);
 
-  let failedPhase: boolean = false;
+  const phaseOverviewData = createPhaseOverviewData(
+    phasesData,
+    phasesQuestions,
+    phasesOutcome,
+  );
+
   return (
     <>
-      {phasesData
-        .sort((a, b) => a.phaseorder - b.phaseorder)
-        .map((phase) => {
-          const phaseQuestions = phasesQuestions[phase.phaseid];
-          const mandatoryPhaseQuestionIds = phaseQuestions
-            .filter((q) => q.mandatory)
-            .map((q) => q.questionid);
-          const phaseOutcome = phasesOutcome.find(
-            (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
-          );
-          if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
-            // TODO:
-            // eslint-disable-next-line react-hooks/immutability
-            failedPhase = true;
-          }
+      {phaseOverviewData.map(
+        ({
+          phase,
+          mandatoryPhaseQuestionIds,
+          phaseQuestions,
+          phaseOutcome,
+          failedPhase,
+        }) => {
           return (
             <PhaseOverview
               key={phase.phaseid}
@@ -95,7 +94,8 @@ const ViewerApplicationOverview: React.FC<{
               applicationid={applicationid}
             />
           );
-        })}
+        },
+      )}
     </>
   );
 };

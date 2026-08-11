@@ -102,7 +102,6 @@ export function SectionView({
       </ul>
       {sortedSections.map((phaseSection) => {
         const isVisible = selectedSection === phaseSection.sectionid;
-        // phaseSection.sectionname;
         if (!isVisible) {
           return null;
         }
