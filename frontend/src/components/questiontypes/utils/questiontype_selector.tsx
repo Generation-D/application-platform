@@ -27,6 +27,18 @@ export enum QuestionType {
   Conditional = "conditional",
 }
 
+export function listQuestionTypeValues(): QuestionType[] {
+  return Object.values(QuestionType);
+}
+
+export function questionTypeFromStr(value: string): QuestionType | null {
+  const values = Object.values(QuestionType) as string[];
+  if (values.includes(value)) {
+    return value as QuestionType;
+  }
+  return null;
+}
+
 export enum QuestionTypeTable {
   ShortTextQuestionTable = "short_text_question_table",
   LongTextQuestionTable = "long_text_question_table",
