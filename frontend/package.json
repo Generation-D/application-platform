@@ -10,7 +10,7 @@
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
     "update-team-names": "tsx scripts/update-team-names.ts",
-    "gen-types": "supabase gen types typescript --local > src/types/database.types.ts"
+    "gen-types": "npx supabase gen types typescript --local > src/types/database.types.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

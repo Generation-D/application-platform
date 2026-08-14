@@ -18,7 +18,7 @@ export default async function Application({
 
   const { data, error } = await supabase
     .from("application_table")
-    .select("userid")
+    .select("userid, team_name")
     .eq("applicationid", application_id)
     .single();
   if (error) {
@@ -47,6 +47,7 @@ export default async function Application({
         <div className="w-full">
           <h1>Bewerbung</h1>
           <div>ID: {application_id}</div>
+          {data.team_name !== "null" && <div>Teamname: {data.team_name}</div>}
           <ViewerApplicationOverview
             phasesData={phasesData}
             phasesQuestions={phasesQuestions}
