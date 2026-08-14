@@ -68,7 +68,6 @@ const getQuestionComponent = (
 ) => {
   const questionProps = {
     applicationid: applicationid,
-    key: phaseQuestion.questionid,
     phasename: phasename,
     questionid: phaseQuestion.questionid,
     mandatory: phaseQuestion.mandatory,
@@ -84,15 +83,24 @@ const getQuestionComponent = (
   switch (phaseQuestion.questiontype) {
     case QuestionType.ShortText:
       return (
-        <ShortTextQuestionType {...questionProps} {...phaseQuestion.params} />
+        <ShortTextQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.LongText:
       return (
-        <LongTextQuestionType {...questionProps} {...phaseQuestion.params} />
+        <LongTextQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.NumberPicker:
       return (
         <NumberPickerQuestionType
+          key={phaseQuestion.questionid}
           {...questionProps}
           {...phaseQuestion.params}
         />
@@ -100,44 +108,74 @@ const getQuestionComponent = (
     case QuestionType.DatetimePicker:
       return (
         <DatetimePickerQuestionType
+          key={phaseQuestion.questionid}
           {...questionProps}
           {...phaseQuestion.params}
         />
       );
     case QuestionType.DatePicker:
       return (
-        <DatePickerQuestionType {...questionProps} {...phaseQuestion.params} />
+        <DatePickerQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.ImageUpload:
       return (
-        <ImageUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+        <ImageUploadQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.VideoUpload:
       return (
-        <VideoUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+        <VideoUploadQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.PDFUpload:
       return (
-        <PDFUploadQuestionType {...questionProps} {...phaseQuestion.params} />
+        <PDFUploadQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.MultipleChoice:
       return (
         <MultipleChoiceQuestionType
+          key={phaseQuestion.questionid}
           {...questionProps}
           {...phaseQuestion.params}
         />
       );
     case QuestionType.Dropdown:
       return (
-        <DropdownQuestionType {...questionProps} {...phaseQuestion.params} />
+        <DropdownQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.CheckBox:
       return (
-        <CheckBoxQuestionType {...questionProps} {...phaseQuestion.params} />
+        <CheckBoxQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
     case QuestionType.Conditional:
       return (
-        <ConditionalQuestionType {...questionProps} {...phaseQuestion.params} />
+        <ConditionalQuestionType
+          key={phaseQuestion.questionid}
+          {...questionProps}
+          {...phaseQuestion.params}
+        />
       );
   }
 };
