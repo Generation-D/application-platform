@@ -47,7 +47,7 @@ export default async function Application({
         <div className="w-full">
           <h1>Bewerbung</h1>
           <div>ID: {application_id}</div>
-          {data.team_name !== "null" && <div>Teamname: {data.team_name}</div>}
+          {data.team_name !== null && <div>Teamname: {data.team_name}</div>}
           <ViewerApplicationOverview
             phasesData={phasesData}
             phasesQuestions={phasesQuestions}
