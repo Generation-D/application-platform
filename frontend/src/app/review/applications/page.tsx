@@ -34,30 +34,27 @@ export default async function Applications({ searchParams }: PageProps) {
   return (
     <>
       <Apl_Header />
-      {/* {count} */}
       <div className="max-w-4xl mx-auto p-8">
         <h1 className="text-2xl font-bold mb-6">Bewerbungen</h1>
         <h2 className="text-xl mb-4">Insgesamt: {count}</h2>
-
-        {/* 2. Server-Rendered "Table" using CSS Grid Links */}
         <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm mb-6">
-          <div className="grid grid-cols-2 bg-gray-50 p-4 font-semibold text-gray-700 border-b border-gray-200 text-sm">
+          <div className="grid grid-cols-3 bg-gray-50 p-4 font-semibold text-gray-700 border-b border-gray-200 text-sm">
             <div>Bewerbungs ID</div>
+            <div>Teamname</div>
             <div>E-Mail</div>
           </div>
-
-          {/* Rows (Each row is a real, clickable HTML link) */}
           <div className="divide-y divide-gray-200 bg-white">
             {applications.map((application) => (
               <Link
                 key={application.applicationid}
                 href={`/review/applications/${application.applicationid}`}
-                className="grid grid-cols-2 p-4 text-sm text-secondary hover:bg-gray-50 transition-colors items-center"
+                className="grid grid-cols-3 gap-4 p-4 text-sm text-secondary hover:bg-gray-50 transition-colors items-center"
               >
                 <div className="font-medium text-secondary hover:underline">
                   {application.applicationid}
                 </div>
-                <div>{application.email}</div>
+                <div className="truncate">{application.team_name}</div>
+                <div className="truncate">{application.email}</div>
               </Link>
             ))}
           </div>

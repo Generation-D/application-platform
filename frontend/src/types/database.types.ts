@@ -76,14 +76,17 @@ export type Database = {
       application_table: {
         Row: {
           applicationid: string;
+          team_name: string | null;
           userid: string;
         };
         Insert: {
           applicationid?: string;
+          team_name?: string | null;
           userid: string;
         };
         Update: {
           applicationid?: string;
+          team_name?: string | null;
           userid?: string;
         };
         Relationships: [
@@ -1146,6 +1149,7 @@ export type Database = {
         Returns: {
           applicationid: string;
           email: string;
+          team_name: string;
         }[];
       };
       fetch_checkbox_answer_table: {
