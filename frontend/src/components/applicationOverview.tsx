@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
 import { PhaseOutcome } from "@/actions/phase";
@@ -19,6 +19,19 @@ const ApplicationOverview: React.FC<{
 }> = ({ phasesData, phasesQuestions, phaseAnswers, phasesOutcome }) => {
   const dispatch = useAppDispatch();
 
+  const updateAnswerState = useCallback(
+    (questionid: string, answerid?: string, answervalue?: string | null) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue || INIT_PLACEHOLDER,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   useEffect(() => {
     phaseAnswers.forEach((answer) => {
       updateAnswerState(
@@ -27,37 +40,24 @@ const ApplicationOverview: React.FC<{
         answer?.answervalue,
       );
     });
-  }, [phaseAnswers]);
+  }, [phaseAnswers, updateAnswerState]);
 
-  const updateAnswerState = (
-    questionid: string,
-    answerid?: string,
-    answervalue?: string | null,
-  ) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue || INIT_PLACEHOLDER,
-        answerid: answerid || "",
-      }),
-    );
-  };
-  let failedPhase: boolean = false;
+  const phaseOverviewData = createPhaseOverviewData(
+    phasesData,
+    phasesQuestions,
+    phasesOutcome,
+  );
+
   return (
     <>
-      {phasesData
-        .sort((a, b) => a.phaseorder - b.phaseorder)
-        .map((phase) => {
-          const phaseQuestions = phasesQuestions[phase.phaseid];
-          const mandatoryPhaseQuestionIds = phaseQuestions
-            .filter((q) => q.mandatory)
-            .map((q) => q.questionid);
-          const phaseOutcome = phasesOutcome.find(
-            (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
-          );
-          if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
-            failedPhase = true;
-          }
+      {phaseOverviewData.map(
+        ({
+          phase,
+          mandatoryPhaseQuestionIds,
+          phaseQuestions,
+          phaseOutcome,
+          failedPhase,
+        }) => {
           return (
             <PhaseOverview
               key={phase.phaseid}
@@ -73,9 +73,40 @@ const ApplicationOverview: React.FC<{
               failedPhase={failedPhase}
             />
           );
-        })}
+        },
+      )}
     </>
   );
 };
+
+export function createPhaseOverviewData(
+  phasesData: PhaseData[],
+  phasesQuestions: Record<string, Question[]>,
+  phasesOutcome: PhaseOutcome[],
+) {
+  let failedPhase = false;
+
+  return phasesData
+    .toSorted((a, b) => a.phaseorder - b.phaseorder)
+    .map((phase) => {
+      const phaseQuestions = phasesQuestions[phase.phaseid];
+      const mandatoryPhaseQuestionIds = phaseQuestions
+        .filter((q) => q.mandatory)
+        .map((q) => q.questionid);
+      const phaseOutcome = phasesOutcome.find(
+        (thisPhase) => thisPhase.phase.phaseid == phase.phaseid,
+      );
+      if (phaseOutcome !== undefined && !phaseOutcome.outcome) {
+        failedPhase = true;
+      }
+      return {
+        phase,
+        mandatoryPhaseQuestionIds,
+        phaseQuestions,
+        phaseOutcome,
+        failedPhase,
+      };
+    });
+}
 
 export default ApplicationOverview;

@@ -28,11 +28,27 @@ const ApplicantsList: React.FC<{
   phases: PhaseData[];
   applicantsStatus: ApplicantsStatus[];
 }> = ({ users, phases, applicantsStatus }) => {
+  const state: ApplicantsStateType = {};
+  phases.forEach((phase) => {
+    state[phase.phaseid] = {};
+    users.forEach((user) => {
+      const applicantStatus = applicantsStatus.find(
+        (status) =>
+          status.phase_id === phase.phaseid && status.user_id === user.id,
+      );
+      const reviewer = users.find(
+        (reviewer) => reviewer.id === applicantStatus?.reviewed_by,
+      );
+
+      state[phase.phaseid][user.id] = {
+        status: applicantStatus,
+        reviewer: reviewer,
+      };
+    });
+  });
   const [currentAdminId, setCurrentAdminId] = useState<string>("");
-  const [applicantsState, setApplicantsState] = useState<ApplicantsStateType>(
-    {},
-  );
-  let renderedUnfinishedPhase = false;
+  const [applicantsState, setApplicantsState] =
+    useState<ApplicantsStateType>(state);
   useEffect(() => {
     async function loadAnswer() {
       const supabase = getSupabaseBrowserClient();
@@ -44,28 +60,6 @@ const ApplicantsList: React.FC<{
     }
     loadAnswer();
   });
-
-  useEffect(() => {
-    const newState: ApplicantsStateType = {};
-    phases.forEach((phase) => {
-      newState[phase.phaseid] = {};
-      users.forEach((user) => {
-        const applicantStatus = applicantsStatus.find(
-          (status) =>
-            status.phase_id === phase.phaseid && status.user_id === user.id,
-        );
-        const reviewer = users.find(
-          (reviewer) => reviewer.id === applicantStatus?.reviewed_by,
-        );
-
-        newState[phase.phaseid][user.id] = {
-          status: applicantStatus,
-          reviewer: reviewer,
-        };
-      });
-    });
-    setApplicantsState(newState);
-  }, [applicantsStatus, phases, users]);
 
   const handleToggle = async (
     phase_id: string,
@@ -112,15 +106,20 @@ const ApplicantsList: React.FC<{
     });
   };
 
+  const firstUnfinishedIndex = phases.findIndex(
+    (phase) => phase.finished_evaluation === null,
+  );
+
   return (
     <div className="overflow-x-auto">
       {phases.map((phase, index) => {
         const isFirstPhase = index === 0;
         const previousPhaseId = index > 0 ? phases[index - 1].phaseid : null;
-        if (phase.finished_evaluation !== null || !renderedUnfinishedPhase) {
-          if (phase.finished_evaluation === null) {
-            renderedUnfinishedPhase = true;
-          }
+
+        const isFinished = phase.finished_evaluation !== null;
+        const isFirstUnfinished = index === firstUnfinishedIndex;
+
+        if (isFinished || isFirstUnfinished) {
           return (
             <div key={phase.phaseid}>
               <h3 className="text-l font-bold mb-4 mt-7">{phase.phaselabel}</h3>

@@ -76,10 +76,12 @@ export default async function Application({
     />
   );
 
-  const BackButton = <OverviewButton
-    slug={`review/applications/${application_id}`}
-    text="<- Bewerbungsübersicht"
-  />
+  const BackButton = (
+    <OverviewButton
+      slug={`review/applications/${application_id}`}
+      text="<- Bewerbungsübersicht"
+    />
+  );
 
   return (
     <span className="w-full">

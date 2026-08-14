@@ -19,22 +19,20 @@ export default function SendPasswordResetForm({ email }: { email: string }) {
     initialState,
   );
   const [timer, setTimer] = useState(0);
-  const [buttonVisible, setButtonVisible] = useState(true);
   useEffect(() => {
     let countdown: NodeJS.Timeout;
 
     if (timer > 0) {
       countdown = setTimeout(() => setTimer(timer - 1), 1000);
-    } else {
-      setButtonVisible(true);
     }
     return () => clearTimeout(countdown);
   }, [timer]);
 
   const handleSubmit = () => {
-    setButtonVisible(false);
     setTimer(30);
   };
+
+  const buttonVisible = timer <= 0;
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="space-y-6">

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   fetchCheckBoxAnswer,
@@ -14,12 +14,14 @@ import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/checkbox_questiontype");
 
-export interface CheckBoxQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface CheckBoxQuestionTypeExtraProps {
   answerid: string | null;
 }
 
+export type CheckBoxQuestionTypeProps = CheckBoxQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
+
 const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
-  phasename,
   questionid,
   mandatory,
   questiontext,
@@ -38,15 +40,18 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateAnswerState = (answer: boolean, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answer,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (answer: boolean, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answer,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -65,7 +70,13 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     }
 
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   const handleChange = () => {
     if (!iseditable) {

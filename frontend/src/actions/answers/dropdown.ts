@@ -55,9 +55,6 @@ export async function fetchDropdownAnswer(
   applicationid: string,
 ): Promise<DropdownAnswerResponse> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: dropdownData, error: dropdownError } = await supabase
     .rpc("fetch_dropdown_answer_table", {
       question_id: questionid,

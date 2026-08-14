@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
@@ -15,9 +15,12 @@ import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
 
 const log = createLogger("components/questiontypes/pdfupload_questiontype");
 
-export interface PDFUploadQuestionTypeProps extends DefaultQuestionTypeProps {
+export interface PDFUploadQuestionTypeExtraProps {
   maxfilesizeinmb: number;
 }
+
+export type PDFUploadQuestionTypeProps = PDFUploadQuestionTypeExtraProps &
+  DefaultQuestionTypeProps;
 
 export interface PdfAnswerResponse {
   userid: string;
@@ -76,15 +79,18 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
 
   const validImgTypes = ["application/pdf"];
 
-  const updateAnswerState = (answervalue: string, answerid?: string) => {
-    dispatch(
-      UpdateAnswer({
-        questionid: questionid,
-        answervalue: answervalue,
-        answerid: answerid || "",
-      }),
-    );
-  };
+  const updateAnswerState = useCallback(
+    (answervalue: string, answerid?: string) => {
+      dispatch(
+        UpdateAnswer({
+          questionid: questionid,
+          answervalue: answervalue,
+          answerid: answerid || "",
+        }),
+      );
+    },
+    [dispatch, questionid],
+  );
 
   useEffect(() => {
     async function loadAnswer() {
@@ -118,7 +124,13 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       }
     }
     loadAnswer();
-  }, [questionid, selectedSection, selectedCondChoice]);
+  }, [
+    questionid,
+    selectedSection,
+    selectedCondChoice,
+    applicationid,
+    updateAnswerState,
+  ]);
 
   function set_pdf_for_upload(file: File) {
     if (!iseditable) {
