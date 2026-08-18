@@ -101,4 +101,4 @@ async function syncTexts(
   }
 
   await syncTexts(supabase, filePath);
-})().catch((e) => console.error(e));;
+})().catch((e) => console.error(e));
