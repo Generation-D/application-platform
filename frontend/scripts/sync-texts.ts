@@ -1,10 +1,10 @@
 import { Database } from "@/types/database.types";
-import { loadEnvConfig } from "@next/env";
-import { createClient } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 import path from "path";
 import * as fs from "node:fs";
 import { parseArgs } from "node:util";
 import { marked } from "marked";
+import { getSupabase } from "./utils";
 
 function getAllMarkdownFiles(dirPath: string, base: string = ""): string[] {
   let files: string[] = [];
@@ -29,8 +29,7 @@ function markdownToHtml(mdText: string): string {
 }
 
 async function syncTexts(
-  supabaseUrl: string,
-  supabaseKey: string,
+  supabase: SupabaseClient<Database>,
   markdownFilesPath: string,
 ): Promise<void> {
   const baseDir = path.resolve(markdownFilesPath);
@@ -42,8 +41,6 @@ async function syncTexts(
     );
     return;
   }
-
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
   // Clear existing records where id != 0
   const { error: deleteError } = await supabase
@@ -82,11 +79,7 @@ async function syncTexts(
 }
 
 (async () => {
-  const projectDir = process.cwd();
-  loadEnvConfig(projectDir);
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = getSupabase();
 
   const { values, positionals } = parseArgs({
     options: {
@@ -107,5 +100,5 @@ async function syncTexts(
     return;
   }
 
-  await syncTexts(supabaseUrl, supabaseKey, filePath);
+  await syncTexts(supabase, filePath);
 })();

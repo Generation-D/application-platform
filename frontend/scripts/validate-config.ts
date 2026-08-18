@@ -53,16 +53,18 @@ const QUESTION_TYPE_PARAMS: Record<QuestionType, string[]> = {
   [QuestionType.Conditional]: ["Answers"],
 };
 
-export const MANDATORY_PARAMS: Record<string, Record<string, RuntimeType>> =
-  Object.fromEntries(
-    Object.entries(QUESTION_TYPE_PARAMS).map(([questionType, params]) => {
-      const specificMap = Object.fromEntries(
-        params.map((param) => [param, SPECIFIC_PARAMS[param]]),
-      );
+export const MANDATORY_PARAMS: Record<
+  string,
+  Record<string, RuntimeType>
+> = Object.fromEntries(
+  Object.entries(QUESTION_TYPE_PARAMS).map(([questionType, params]) => {
+    const specificMap = Object.fromEntries(
+      params.map((param) => [param, SPECIFIC_PARAMS[param]]),
+    );
 
-      return [questionType, { ...specificMap, ...DEFAULT_PARAMS }];
-    }),
-  );
+    return [questionType, { ...specificMap, ...DEFAULT_PARAMS }];
+  }),
+);
 
 export const OPTIONAL_PARAMS: Record<string, Record<string, RuntimeType>> = {
   ALL: {
