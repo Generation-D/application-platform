@@ -9,7 +9,6 @@ import {
   MANDATORY_PARAMS,
   OPTIONAL_PARAMS,
   QUESTION_TYPES_DB_TABLE,
-  //   runStructureChecks,
 } from "./validate-config";
 import { loadEnvConfig } from "@next/env";
 import { parseArgs } from "util";
@@ -24,7 +23,6 @@ import {
   questionTypeFromStr,
 } from "@/components/questiontypes/utils/questiontype_selector";
 
-// Replace with your preferred logging utility (e.g., pino, winston, or console)
 const log = {
   debug: console.debug,
   info: console.info,
@@ -222,15 +220,6 @@ export async function processConfig(
       }
     }
 
-    // const dataPhaseTable = createDataPhaseTable(
-    //   phaseName,
-    //   phase['phaseLabel'],
-    //   phaseCounter,
-    //   phase['startDate'],
-    //   phase['endDate'],
-    //   'sections' in phase
-    // );
-
     const dataPhaseTable = {
       phasename: phaseName,
       phaselabel: phase.phaseLabel,
@@ -240,8 +229,7 @@ export async function processConfig(
       sectionsenabled: "sections" in phase,
       phaseid: phaseId,
     };
-    // dataPhaseTable['phaseid'] = phaseId;
-
+    
     log.info(`Creating new Phase ${phaseName}`);
     const responsePhaseTable = await supabase
       .from("phase_table")
@@ -255,12 +243,12 @@ export async function processConfig(
     if (phase.sections) {
       for (let order = 0; order < phase["sections"].length; order++) {
         const section = phase["sections"][order];
-        const dataSectionTable = createDataSectionTable(
-          section["name"],
-          section["description"] ?? "",
-          order + 1,
-          phaseId,
-        );
+        const dataSectionTable = {
+          sectionname: section["name"],
+          sectiondescription: section["description"] ?? "",
+          sectionorder: order + 1,
+          phaseid: phaseId,
+        };
         const responseSectionTable = await supabase
           .from("sections_table")
           .insert(dataSectionTable)
@@ -277,38 +265,6 @@ export async function processConfig(
     }
     log.info(`Processed Phase ${phaseName} successfully`);
   }
-}
-
-// export function createDataPhaseTable(
-//   phaseName: string,
-//   phaseLabel: string,
-//   orderNumber: number,
-//   startDate: Date,
-//   endDate: Date,
-//   sectionsEnabled: boolean
-// ) {
-//   return {
-//     phasename: phaseName,
-//     phaselabel: phaseLabel,
-//     phaseorder: orderNumber,
-//     startdate: convertToTimezone(startDate),
-//     enddate: convertToTimezone(endDate, { endOfDay: true }),
-//     sectionsenabled: sectionsEnabled,
-//   };
-// }
-
-export function createDataSectionTable(
-  sectionName: string,
-  sectionDescription: string,
-  sectionOrder: number,
-  phaseId: string,
-) {
-  return {
-    sectionname: sectionName,
-    sectiondescription: sectionDescription,
-    sectionorder: sectionOrder,
-    phaseid: phaseId,
-  };
 }
 
 export function createDataQuestionsTable(

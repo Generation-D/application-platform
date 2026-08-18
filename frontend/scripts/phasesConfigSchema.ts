@@ -2,31 +2,6 @@ import { z } from "zod";
 import { regexKeys } from "./consts";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
 
-// ==========================================
-// 1. Date & Regex Helper Schemas
-// ==========================================
-
-// YAML parsers often parse `YYYY-MM-DD` as Date objects automatically.
-// This helper accepts both native Date instances and ISO strings.
-const DateOrStringSchema = z.union([
-  z.date(),
-  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected format: YYYY-MM-DD"),
-]);
-
-const DatetimeOrStringSchema = z.union([
-  z.date(),
-  z
-    .string()
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
-      "Expected format: YYYY-MM-DDTHH:mm:ss",
-    ),
-]);
-
-// ==========================================
-// 2. Base & Specific Question Definitions
-// ==========================================
-
 const BaseQuestionSchema = z.object({
   order: z.number().int().positive(),
   question: z.string().min(1),
@@ -39,7 +14,6 @@ const BaseQuestionSchema = z.object({
 
 export const RegexKeySchema = z.enum(regexKeys);
 
-// Short Text Question
 const ShortTextQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.ShortText),
   maxTextLength: z.number().int().positive().optional(),
@@ -47,13 +21,11 @@ const ShortTextQuestionSchema = BaseQuestionSchema.extend({
   formattingDescription: z.string().optional(),
 });
 
-// Long Text Question
 const LongTextQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.LongText),
   maxTextLength: z.number().int().positive().optional(),
 });
 
-// Multiple Choice Question
 const MultipleChoiceQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.MultipleChoice),
   minAnswers: z.number().int().nonnegative().optional(),
@@ -62,7 +34,6 @@ const MultipleChoiceQuestionSchema = BaseQuestionSchema.extend({
   userInput: z.boolean().optional(),
 });
 
-// Dropdown Question
 const DropdownQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.Dropdown),
   minAnswers: z.number().int().nonnegative().optional(),
@@ -71,12 +42,10 @@ const DropdownQuestionSchema = BaseQuestionSchema.extend({
   userInput: z.boolean().optional(),
 });
 
-// Checkbox Question
 const CheckBoxQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.CheckBox),
 });
 
-// File Upload Questions (video, pdf, image)
 const VideoUploadQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.VideoUpload),
   maxFileSizeInMB: z.number().positive().default(10.0),
@@ -92,29 +61,23 @@ const ImageUploadQuestionSchema = BaseQuestionSchema.extend({
   maxFileSizeInMB: z.number().positive().default(5.0),
 });
 
-// Date & Time Pickers
 const DatePickerQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.DatePicker),
-  minDate: DateOrStringSchema.optional(),
-  maxDate: DateOrStringSchema.optional(),
+  minDate: z.coerce.date().optional(),
+  maxDate: z.coerce.date().optional(),
 });
 
 const DatetimePickerQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.DatetimePicker),
-  minDatetime: DatetimeOrStringSchema.optional(),
-  maxDatetime: DatetimeOrStringSchema.optional(),
+  minDatetime: z.coerce.date().optional(),
+  maxDatetime: z.coerce.date().optional(),
 });
 
-// Number Picker
 const NumberPickerQuestionSchema = BaseQuestionSchema.extend({
   questionType: z.literal(QuestionType.NumberPicker),
   minNumber: z.number().optional(),
   maxNumber: z.number().optional(),
 });
-
-// ==========================================
-// 3. Non-recursive Question Discriminated Union
-// ==========================================
 
 const NonConditionalQuestionSchema = z.discriminatedUnion("questionType", [
   ShortTextQuestionSchema,
@@ -129,10 +92,6 @@ const NonConditionalQuestionSchema = z.discriminatedUnion("questionType", [
   DatetimePickerQuestionSchema,
   NumberPickerQuestionSchema,
 ]);
-
-// ==========================================
-// 4. Recursive Conditional Question Schema
-// ==========================================
 
 export type Question =
   | z.infer<typeof NonConditionalQuestionSchema>
@@ -166,10 +125,6 @@ export const QuestionSchema: z.ZodType<Question> = z.lazy(() =>
   ]),
 );
 
-// ==========================================
-// 5. Sections, Phases, and Root Config
-// ==========================================
-
 export const SectionSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
@@ -187,7 +142,6 @@ export const PhasesConfigSchema = z.object({
   questions: z.record(z.string(), PhaseSchema), // Matches dynamic keys like `phase-1`, `phase-2`
 });
 
-// Inferred TypeScript Type for the entire YAML structure
 export type PhasesConfig = z.infer<typeof PhasesConfigSchema>;
 export type Phase = z.infer<typeof PhaseSchema>;
 export type Section = z.infer<typeof SectionSchema>;
