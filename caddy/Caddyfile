@@ -1,0 +1,25 @@
+{$DOMAIN:localhost} {
+    encode zstd gzip
+    root * /srv/public
+
+    # Uncomment the handle block below when the phase is over:
+    # handle {
+    #     try_files /closed.html =503
+    #     file_server
+    # }
+
+    handle {
+        reverse_proxy frontend:3000 {
+            @http_error status 500 502 503 504
+            handle_response @http_error {
+                rewrite * /down.html
+                file_server
+            }
+        }
+    }
+
+    handle_errors {
+        rewrite * /down.html
+        file_server
+    }
+}
