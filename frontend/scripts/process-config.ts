@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { type SupabaseClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 import { REGEX_JS, REGEX_TO_DESCRIPTION } from "./consts";
 import { convertToTimezone } from "./datetime";
@@ -10,7 +10,6 @@ import {
   OPTIONAL_PARAMS,
   QUESTION_TYPES_DB_TABLE,
 } from "./validate-config";
-import { loadEnvConfig } from "@next/env";
 import { parseArgs } from "util";
 import { Database } from "@/types/database.types";
 import {
@@ -22,6 +21,7 @@ import {
   QuestionType,
   questionTypeFromStr,
 } from "@/components/questiontypes/utils/questiontype_selector";
+import { getSupabase } from "./utils";
 
 const log = {
   debug: console.debug,
@@ -229,7 +229,7 @@ export async function processConfig(
       sectionsenabled: "sections" in phase,
       phaseid: phaseId,
     };
-    
+
     log.info(`Creating new Phase ${phaseName}`);
     const responsePhaseTable = await supabase
       .from("phase_table")
@@ -389,13 +389,7 @@ export async function getPhasesConfig(
 }
 
 (async () => {
-  const projectDir = process.cwd();
-  loadEnvConfig(projectDir);
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+  const supabase = getSupabase();
 
   const { values, positionals } = parseArgs({
     options: {
