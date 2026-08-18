@@ -22,6 +22,7 @@ import {
   questionTypeFromStr,
 } from "@/components/questiontypes/utils/questiontype_selector";
 import { getSupabase } from "./utils";
+import { error } from "node:console";
 
 const log = {
   debug: console.debug,
@@ -411,4 +412,4 @@ export async function getPhasesConfig(
   }
 
   await processConfig(filePath, supabase);
-})();
+})().catch((e) => console.error(e));
