@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gleich wieder da - Generation-D</title>
+  <style>
+    :root {
+      --primary-color: #fdcc89;
+      --secondary-color: #153757;
+      --card-bg: #ffffff;
+      --text-muted: #556980;
+      --box-bg: #f8fafc;
+      --box-border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--primary-color);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      max-width: 520px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: var(--secondary-color);
+      font-size: 1.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .message-box {
+      background-color: var(--box-bg);
+      border: 1px solid var(--box-border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+      width: 100%;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    .message-box p + p {
+      margin-top: 0.75rem;
+    }
+
+    .apl-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.05s ease;
+    }
+
+    .apl-button:hover {
+      opacity: 0.95;
+    }
+
+    .apl-button:active {
+      transform: scale(0.99);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Gleich wieder da!</h1>
+
+    <div class="message-box">
+      <p>Das Bewerbungsportal ist derzeit kurzzeitig nicht erreichbar.</p>
+      <p>Wir führen gerade Wartungsarbeiten durch oder beheben ein Problem. Bitte versuche es in wenigen Augenblicken noch einmal.</p>
+    </div>
+
+    <button onclick="window.location.reload()" class="apl-button">
+      Seite neu laden
+    </button>
+  </div>
+
+</body>
+</html>
