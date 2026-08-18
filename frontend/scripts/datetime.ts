@@ -30,7 +30,6 @@ export function convertToTimezone(
   const minutes = endOfDay ? 59 : 0;
   const seconds = 0;
 
-  // Localize datetime in 'Europe/Berlin'
   const berlinDate = new TZDate(
     year,
     month,
@@ -41,9 +40,7 @@ export function convertToTimezone(
     timeZone,
   );
 
-  // Convert to UTC
   const utcDate = new TZDate(berlinDate, "UTC");
 
-  // Format using standard date-fns tokens matching DATETIME_FORMAT ("yyyy-MM-dd'T'HH:mm:ss")
   return format(utcDate, DATETIME_FORMAT);
 }
