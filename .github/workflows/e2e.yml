@@ -44,6 +44,8 @@ jobs:
       - run: cp .env ./frontend/
       - run: npm ci
         working-directory: ./e2e
+      - run: npm ci
+        working-directory: ./frontend
       - name: Process application configuration
         run: npm run  process:config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml
         working-directory: ./frontend
