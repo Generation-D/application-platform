@@ -41,17 +41,15 @@ jobs:
           echo "  Service Role Key: ${SUPABASE_SERVICE_ROLE_KEY:0:20}..."
       - run: supabase db lint
       - run: supabase test db
+      - run: cp .env ./frontend/
       - run: npm ci
         working-directory: ./e2e
-      - name: Install Python dependencies
-        run: pip install poetry && poetry install
-        working-directory: ./backend
       - name: Process application configuration
-        run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../.env
-        working-directory: ./backend
+        run: npm run  process:config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml
+        working-directory: ./frontend
       - name: Sync application texts
-        run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../.env
-        working-directory: ./backend
+        run:  npm run sync:texts ../texts/
+        working-directory: ./frontend
       - name: Create additional env variables
         run: |
           echo "NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321" >> ./.env
