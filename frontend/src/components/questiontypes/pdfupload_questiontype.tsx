@@ -5,13 +5,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile, storageSaveName } from "@/utils/helpers";
+import { storageSaveName } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deletePdfUploadAnswer } from "@/actions/answers/deleteUpload";
-import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+import {
+  downloadApplicationFile,
+  fetchUploadAnswer,
+  saveUploadAnswer,
+} from "@/utils/uploadHelpers";
 
 const log = createLogger("components/questiontypes/pdfupload_questiontype");
 
@@ -106,11 +110,12 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
           applicationid,
         );
         if (savedAnswer && savedAnswer?.pdfname != "") {
-          const imageUploadBucketData = await downloadFile(
-            `pdf-${questionid}`,
-            `${savedAnswer!.userid}_${savedAnswer!.pdfname}`,
+          const file = await downloadApplicationFile(
+            applicationid,
+            questionid,
+            "pdf",
           );
-          const url = URL.createObjectURL(imageUploadBucketData!);
+          const url = URL.createObjectURL(file);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {

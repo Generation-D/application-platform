@@ -1,5 +1,24 @@
 # application-platform
 
+## Admin-Bewertungsprozess
+
+Der Ablauf unter `/admin/evaluation` ersetzt die Schritte 3 bis 5 des früheren
+Bewertungsprozess-Repositories:
+
+1. Phase auswählen und Bewerter-CSV mit `name,email,new,max` hochladen.
+2. Matching prüfen und verbindlich speichern.
+3. Testmail senden und anschließend den produktiven Versand bestätigen.
+4. Bestandene E-Mail-Adressen einfügen oder Entscheidungen einzeln setzen.
+5. Phase abschließen.
+
+Die feste E-Mail-Vorlage liegt in
+`frontend/src/emails/reviewerAssignmentEmail.ts`. Die jährlich anzupassenden
+Fristen und Links stehen gebündelt in
+`frontend/src/config/reviewEmailConfig.ts`. Für eine dauerhafte Anpassung muss
+nur diese Konfigurationsdatei geändert und die Anwendung neu deployed werden.
+Die Werte können vor einem einzelnen Versand zusätzlich auf der Admin-Seite
+überschrieben werden.
+
 ## Local Testing
 
 ### 1. Prerequisites
@@ -354,4 +373,3 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
     - HTTP/2 Support: On
     - HSTS Enabled: On
     - Agree to Terms of Service
-
