@@ -1,25 +1,22 @@
-import { fetchAllApplicantsStatus, fetchAllUsers } from "@/actions/admin";
-import { fetch_all_phases } from "@/actions/phase";
-import ApplicantsList from "@/components/applicantslist";
+import { fetchAllUsers } from "@/actions/admin";
 import InternalHeader from "@/components/layout/internalHeader";
 import UserList from "@/components/userslist";
+import Link from "next/link";
 
 export default async function Page() {
   const users = await fetchAllUsers();
-  const applicantsStatus = await fetchAllApplicantsStatus();
-  const phases = await fetch_all_phases();
   return (
     <div className="container mx-auto px-4 py-8">
       <InternalHeader />
       <h1 className="text-2xl font-bold mb-4">ADMIN DASHBOARD</h1>
+      <Link
+        href="/admin/evaluation"
+        className="apl-button-fixed inline-block mb-8"
+      >
+        Bewertungsprozess öffnen
+      </Link>
       <h2 className="text-xl font-bold mb-4">User List</h2>
       <UserList users={users} />
-      <h2 className="text-xl font-bold mb-4 mt-9">Applicants List</h2>
-      <ApplicantsList
-        users={users}
-        phases={phases.sort((a, b) => a.phaseorder - b.phaseorder)}
-        applicantsStatus={applicantsStatus}
-      />
     </div>
   );
 }

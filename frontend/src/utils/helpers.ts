@@ -1,4 +1,3 @@
-import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
 
@@ -37,18 +36,6 @@ export function transformReadableDateTime(dateString: string) {
   if (!dateString) return "";
   const zonedDate = new TZDate(new Date(dateString), TIMEZONE);
   return format(zonedDate, "dd.MM.yyyy HH:mm");
-}
-
-export async function downloadFile(bucket_name: string, filename: string) {
-  const supabase = getSupabaseBrowserClient();
-
-  const { data: fileUploadBucketData, error: fileUploadBucketError } =
-    await supabase.storage.from(bucket_name).download(filename);
-  if (fileUploadBucketError) {
-    return;
-  }
-  // Can't return Blob from Server Component to Client Component!
-  return fileUploadBucketData!;
 }
 
 export function calcPhaseStatus(phaseStart: string, phaseEnd: string) {
