@@ -5,6 +5,7 @@ import * as fs from "node:fs";
 import { parseArgs } from "node:util";
 import { marked } from "marked";
 import { getSupabase } from "./utils";
+import { resolvePathWithinRepository } from "./path-security";
 
 function getAllMarkdownFiles(dirPath: string, base: string = ""): string[] {
   let files: string[] = [];
@@ -32,7 +33,7 @@ async function syncTexts(
   supabase: SupabaseClient<Database>,
   markdownFilesPath: string,
 ): Promise<void> {
-  const baseDir = path.resolve(markdownFilesPath);
+  const baseDir = resolvePathWithinRepository(markdownFilesPath);
   const markdownFiles = getAllMarkdownFiles(baseDir);
 
   if (markdownFiles.length === 0) {
