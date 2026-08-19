@@ -22,6 +22,7 @@ import {
   questionTypeFromStr,
 } from "@/components/questiontypes/utils/questiontype_selector";
 import { getSupabase } from "./utils";
+import { resolvePathWithinRepository } from "./path-security";
 
 const log = {
   debug: console.debug,
@@ -381,7 +382,8 @@ export async function createFileStorage(
 export async function getPhasesConfig(
   configFilePath: string,
 ): Promise<PhasesConfig> {
-  const fileContent = fs.readFileSync(configFilePath, "utf-8");
+  const validatedConfigPath = resolvePathWithinRepository(configFilePath);
+  const fileContent = fs.readFileSync(validatedConfigPath, "utf-8");
 
   const rawData = YAML.parse(fileContent);
 
