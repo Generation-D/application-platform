@@ -12,10 +12,10 @@ jobs:
           version: latest
       - uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version: "24"
       - name: disable supabase smtp
         run: |
-          sed -i '/\[auth.email.smtp\]/{n;s/true/false/;}' supabase/config.toml 
+          sed -i '/\[auth.email.smtp\]/{n;s/true/false/;}' supabase/config.toml
       - name: Create env variables
         run: |
           echo "NEXT_PUBLIC_LOGFLARE_CLIENT_TOKEN=123" >> ./.env 
@@ -41,17 +41,20 @@ jobs:
           echo "  Service Role Key: ${SUPABASE_SERVICE_ROLE_KEY:0:20}..."
       - run: supabase db lint
       - run: supabase test db
+      - run: cp .env ./frontend/
       - run: npm ci
         working-directory: ./e2e
-      - name: Install Python dependencies
-        run: pip install poetry && poetry install
-        working-directory: ./backend
+      - run: npm ci --ignore-scripts
+        working-directory: ./frontend
+      - name: Rebuild required frontend tooling
+        run: npm rebuild esbuild
+        working-directory: ./frontend
       - name: Process application configuration
-        run: poetry run python backend/process_config.py --config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml --env_file ../.env
-        working-directory: ./backend
+        run: npm run  process:config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml
+        working-directory: ./frontend
       - name: Sync application texts
-        run: poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../.env
-        working-directory: ./backend
+        run: npm run sync:texts ../texts/
+        working-directory: ./frontend
       - name: Create additional env variables
         run: |
           echo "NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321" >> ./.env

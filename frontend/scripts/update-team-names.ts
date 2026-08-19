@@ -1,9 +1,7 @@
 import { parseArgs } from "node:util";
-import { loadEnvConfig } from "@next/env";
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/types/database.types";
 import * as fs from "node:fs";
 import { parse } from "csv-parse/sync";
+import { getSupabase } from "./utils";
 
 interface ApplicationRow {
   applicationid: string;
@@ -22,13 +20,7 @@ function readCsvFile(filePath: string): ApplicationRow[] {
 }
 
 (async () => {
-  const projectDir = process.cwd();
-  loadEnvConfig(projectDir);
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+  const supabase = getSupabase();
 
   const { values, positionals } = parseArgs({
     options: {
@@ -64,4 +56,4 @@ function readCsvFile(filePath: string): ApplicationRow[] {
   if (errors.length > 0) {
     console.error("Some updates failed:", errors);
   }
-})();
+})().catch((e) => console.error(e));

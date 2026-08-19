@@ -9,8 +9,11 @@
     "lint": "eslint .",
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
-    "update-team-names": "tsx scripts/update-team-names.ts",
-    "gen-types": "npx supabase gen types typescript --local > src/types/database.types.ts"
+    "test:scripts": "tsx --test scripts/*.test.ts",
+    "update:team-names": "tsx scripts/update-team-names.ts",
+    "gen:types": "npx supabase gen types typescript --local > src/types/database.types.ts",
+    "sync:texts": "tsx scripts/sync-texts.ts",
+    "process:config": "tsx scripts/process-config.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -23,7 +26,6 @@
     "@tailwindcss/postcss": "^4.3.0",
     "csv-parse": "^7.0.1",
     "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "github-markdown-css": "^5.5.0",
     "next": "16.2.6",
@@ -38,6 +40,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@date-fns/tz": "^1.5.0",
     "@eslint/eslintrc": "^3",
     "@types/node": "^25.9.5",
     "@types/nodemailer": "^8.0.1",
@@ -47,10 +50,13 @@
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.0.1",
     "license-report": "^6.7.1",
+    "marked": "^18.0.9",
     "postcss": "^8.5.14",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "uuid": "^14.0.1",
+    "yaml": "^2.9.0"
   },
   "overrides": {
     "@types/react": "19.2.14",

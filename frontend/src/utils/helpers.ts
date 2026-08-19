@@ -1,7 +1,6 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
-// import moment from "moment-timezone";
+import { TZDate } from "@date-fns/tz";
 import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 
 export const getURL = () => {
   let url = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -15,8 +14,7 @@ export const getURL = () => {
 const TIMEZONE = "Europe/Berlin";
 
 export function createCurrentTimestamp() {
-  // Get current date, convert to Berlin time
-  const zonedDate = toZonedTime(new Date(), TIMEZONE);
+  const zonedDate = new TZDate(new Date(), TIMEZONE);
   return format(zonedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS");
 }
 
@@ -25,42 +23,21 @@ export function setToPrefferedTimeZone(dateString: string) {
     return "";
   }
   // Parse the input string and move it to Berlin time
-  const zonedDate = toZonedTime(new Date(dateString), TIMEZONE);
+  const zonedDate = new TZDate(new Date(dateString), TIMEZONE);
   return format(zonedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS");
 }
 
 export function transformReadableDate(dateString: string) {
   if (!dateString) return "";
-  const zonedDate = toZonedTime(new Date(dateString), TIMEZONE);
+  const zonedDate = new TZDate(new Date(dateString), TIMEZONE);
   return format(zonedDate, "dd.MM.yyyy");
 }
 
 export function transformReadableDateTime(dateString: string) {
   if (!dateString) return "";
-  const zonedDate = toZonedTime(new Date(dateString), TIMEZONE);
+  const zonedDate = new TZDate(new Date(dateString), TIMEZONE);
   return format(zonedDate, "dd.MM.yyyy HH:mm");
 }
-
-// export function createCurrentTimestamp() {
-//   return moment().tz("Europe/Berlin").format("YYYY-MM-DDTHH:mm:ss.SSS");
-// }
-
-// export function setToPrefferedTimeZone(dateString: string) {
-//   if (dateString == "") {
-//     return "";
-//   }
-//   return moment(dateString)
-//     .tz("Europe/Berlin")
-//     .format("YYYY-MM-DDTHH:mm:ss.SSS");
-// }
-
-// export function transformReadableDate(dateString: string) {
-//   return moment(dateString).tz("Europe/Berlin").format("DD.MM.YYYY");
-// }
-
-// export function transformReadableDateTime(dateString: string) {
-//   return moment(dateString).tz("Europe/Berlin").format("DD.MM.YYYY HH:mm");
-// }
 
 export async function downloadFile(bucket_name: string, filename: string) {
   const supabase = getSupabaseBrowserClient();
