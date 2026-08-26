@@ -26,7 +26,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.3",
     "github-markdown-css": "^5.5.0",
-    "next": "16.2.6",
+    "next": "16.2.11",
     "nodemailer": "^9.0.3",
     "pino-logflare": "^0.5.2",
     "react": "19.2.6",
