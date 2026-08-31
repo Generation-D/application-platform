@@ -28,5 +28,6 @@ export async function sendEmail(to: string, subject: string, html: string) {
     });
   } catch (error) {
     log.error(JSON.stringify(error));
+    throw error;
   }
 }
