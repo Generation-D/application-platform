@@ -158,6 +158,9 @@ verify they cannot see each other's unassigned applications.
 
 ## 8. Email template
 
+Sender editing, Mailpit and real SMTP setup are documented in
+[reviewer-email-configuration.md](reviewer-email-configuration.md).
+
 - [ ] After saving a matching, `Testmail senden` and
       `Produktiv an alle senden` become enabled.
 - [ ] Subject, deadlines, links, and the phase note are prefilled.

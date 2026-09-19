@@ -8,7 +8,7 @@ export interface ReviewEmailDefaults {
   phaseNote: string;
 }
 
-/** Sender identity from the former email_config.json. Keep this aligned with the SMTP account. */
+/** Edit these public mail headers here. The SMTP account must be allowed to use this From address. */
 export const reviewEmailSender = {
   name: "no-reply",
   email: "no-reply@generation-d.org",
