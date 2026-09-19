@@ -112,15 +112,17 @@ export async function signUpUser(
 }
 
 export async function signInUser(prevState: messageType, formData: FormData) {
+  const isLocalSupabase =
+    process.env.NEXT_PUBLIC_SUPABASE_URL === "http://127.0.0.1:54321";
   const schema = z.object({
     email: z.string().min(1),
     password: z.string().min(1),
-    captchaToken: z.string().min(1),
+    captchaToken: isLocalSupabase ? z.string().optional() : z.string().min(1),
   });
   const signInFormData = schema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
-    captchaToken: formData.get("captcha"),
+    captchaToken: formData.get("captcha") || undefined,
   });
 
   if (!signInFormData.success) {
@@ -137,9 +139,9 @@ export async function signInUser(prevState: messageType, formData: FormData) {
           "@gmail.com",
         ),
         password: signInFormData.data.password,
-        options: {
-          captchaToken: signInFormData.data.captchaToken,
-        },
+        options: isLocalSupabase
+          ? undefined
+          : { captchaToken: signInFormData.data.captchaToken },
       });
     if (userError) {
       if (userError.status == 400) {

@@ -154,11 +154,13 @@ questions:
           - value: "Ja"
             questions:
               - questionType: shortText
+                order: 1
                 question: "Was ist Eure Handelsregisternummer?"
                 mandatory: true
                 maxTextLength: 100
                 note: "Beispiel: HRB 123456"
               - questionType: pdfUpload
+                order: 2
                 question: "Bitte ladet ein Dokument hoch, in dem erkennbar ist, dass Eure Handelsregistereintragung nicht vor 2020 geschehen ist (max. 5 Jahre)"
                 maxFileSizeInMB: 5.0  # in Mega Byte
                 mandatory: true
@@ -175,6 +177,7 @@ questions:
           - value: "Ja"
             questions:
               - questionType: shortText
+                order: 1
                 question: "Wie lautet der Link zur Webseite?"
                 mandatory: true
                 maxTextLength: 60
@@ -198,11 +201,13 @@ questions:
           - value: "Ja"
             questions:
               - questionType: shortText
+                order: 1
                 question: "In welchem Jahr?"
                 mandatory: true
                 maxTextLength: 60
                 note: "Beispiel: \"2022\""
               - questionType: multipleChoice
+                order: 2
                 question: "Wart Ihr schon einmal im Finale von Generation-D?"
                 minAnswers: 1
                 maxAnswers: 1
