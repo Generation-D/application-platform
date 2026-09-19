@@ -7,6 +7,7 @@ import { z } from "zod";
 import { sendEmail } from "@/actions/smtp";
 import {
   reviewEmailDefaults,
+  reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
 import { createReviewerAssignmentEmail } from "@/emails/reviewerAssignmentEmail";
@@ -553,15 +554,18 @@ async function buildReviewerEmails(
 export async function sendReviewerTestEmail(
   phaseId: string,
   settings: ReviewEmailDefaults,
+  recipient: string,
 ) {
-  const { adminEmail, messages } = await buildReviewerEmails(phaseId, settings);
+  const { messages } = await buildReviewerEmails(phaseId, settings);
+  const testRecipient = z.email().parse(recipient.trim());
   const example = messages[0];
   await sendEmail(
-    adminEmail,
+    testRecipient,
     `[TEST] ${example.subject}`,
     `<p><strong>Testmail für ${example.reviewerEmail}</strong></p>${example.html}`,
+    reviewEmailSender,
   );
-  return { recipient: adminEmail };
+  return { recipient: testRecipient };
 }
 
 export async function sendReviewerAssignmentEmails(
@@ -573,7 +577,12 @@ export async function sendReviewerAssignmentEmails(
 
   for (const message of messages) {
     try {
-      await sendEmail(message.reviewerEmail, message.subject, message.html);
+      await sendEmail(
+        message.reviewerEmail,
+        message.subject,
+        message.html,
+        reviewEmailSender,
+      );
     } catch {
       errors.push(message.reviewerEmail);
     }

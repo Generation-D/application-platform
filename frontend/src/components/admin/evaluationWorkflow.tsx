@@ -13,7 +13,10 @@ import {
   sendReviewerAssignmentEmails,
   sendReviewerTestEmail,
 } from "@/actions/evaluation";
-import { ReviewEmailDefaults } from "@/config/reviewEmailConfig";
+import {
+  reviewEmailSender,
+  ReviewEmailDefaults,
+} from "@/config/reviewEmailConfig";
 import { ReviewerAssignment } from "@/utils/reviewerMatching";
 
 function errorMessage(error: unknown) {
@@ -47,6 +50,7 @@ export default function EvaluationWorkflow({
   const [emailSettings, setEmailSettings] = useState<ReviewEmailDefaults>(
     data.emailDefaults,
   );
+  const [testEmail, setTestEmail] = useState("");
   const [approvedEmails, setApprovedEmails] = useState("");
   const [decisions, setDecisions] = useState<
     Record<string, boolean | undefined>
@@ -283,6 +287,10 @@ export default function EvaluationWorkflow({
           Die dauerhaften Standardwerte stehen in reviewEmailConfig.ts.
           Änderungen hier gelten nur für diesen Versand.
         </p>
+        <p className="mt-1 text-sm text-gray-600">
+          Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
+          Antwort an: {reviewEmailSender.replyTo.join(", ")}
+        </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium md:col-span-2">
             Betreff
@@ -359,16 +367,36 @@ export default function EvaluationWorkflow({
             />
           </label>
         </div>
+        <label className="mt-4 block max-w-md text-sm font-medium">
+          Empfänger der Testmail
+          <input
+            className={fieldClass}
+            type="email"
+            placeholder="dein.postfach@example.org"
+            value={testEmail}
+            onChange={(event) => setTestEmail(event.target.value)}
+          />
+        </label>
+        <p className="mt-1 text-sm text-gray-600">
+          Nur die Testmail geht an diese Adresse. Lokales SMTP landet in
+          Mailpit; für dein echtes Postfach muss ein echter SMTP-Server
+          konfiguriert sein.
+        </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
             className="apl-button-fixed"
-            disabled={currentAssignments.length === 0 || pendingAction !== ""}
+            disabled={
+              currentAssignments.length === 0 ||
+              pendingAction !== "" ||
+              !testEmail.trim()
+            }
             onClick={() =>
               runAction("test-email", async () => {
                 const result = await sendReviewerTestEmail(
                   phaseId,
                   emailSettings,
+                  testEmail,
                 );
                 return `Testmail wurde an ${result.recipient} gesendet.`;
               })
