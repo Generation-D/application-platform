@@ -11,12 +11,13 @@ the local Supabase Docker stack and the accounts from `supabase/seed.sql`.
 
   ```dotenv
   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+  NEXT_PUBLIC_SITE_URL=http://localhost:3000
   ```
 
 - [ ] No command in this checklist contains `--linked`, `--db-url`, or
       `db push`.
 - [ ] Another local Supabase project is not occupying ports `54321` through
-      `54324`. If necessary, stop that project without `--no-backup` first.
+      `54325`. If necessary, stop that project without `--no-backup` first.
 
 ## 2. Create the local test state
 
@@ -69,9 +70,30 @@ npm run build
 
 ## 4. Test accounts
 
-Use the local-only Admin, Reviewer, and Applicant accounts defined in
-`supabase/seed.sql`. Read the current values from that file so this checklist
-does not duplicate credentials that may change.
+Use the local-only accounts defined in `supabase/seed.sql`. Read the current
+passwords from that file so this checklist does not duplicate credentials.
+The seeded roles and names are:
+
+| Login | Name | Role |
+| --- | --- | --- |
+| `admin@test.com` | Mara Fischer | Admin |
+| `viewer@test.com` | Anna Weber | Reviewer |
+| `user1@test.com` | Lea Bergmann | Applicant |
+| `user2@test.com` | David Richter | Applicant |
+| `user3@test.com` | Aylin Demir | Applicant |
+| `user4@test.com` | Jonas Keller | Reviewer |
+| `user5@test.com` | Sophie Nguyen | Reviewer |
+| `user6@test.com` | Lukas Hoffmann | Reviewer |
+| `user7@test.com` | Miriam Schneider | Reviewer |
+
+The admin landing page `/admin` is for access/role management; matching,
+reviewer mail and phase decisions are on `/admin/evaluation`.
+
+- [ ] `/admin` shows these names and roles, with no unexpected `Unknown` roles.
+- [ ] Search for `Sophie` and `user5@test.com`; both find the same account.
+- [ ] Deactivate and reactivate a reviewer; the status persists after refresh.
+- [ ] Change a reviewer's role and change it back; both persist after refresh.
+- [ ] The current admin cannot deactivate or demote their own account.
 
 ## 5. Access control
 
@@ -86,12 +108,20 @@ passed the preceding phase.
 
 ## 6. Matching validation
 
-Create `reviewers.csv`:
+Use `~/Downloads/reviewers.csv` (five named reviewers). The file has this
+format:
 
 ```csv
 name,email,new,max
-Test Reviewer,<seeded-reviewer-email>,nein,10
+Anna Weber,viewer@test.com,nein,3
+Jonas Keller,user4@test.com,ja,2
+Sophie Nguyen,user5@test.com,nein,2
+Lukas Hoffmann,user6@test.com,ja,2
+Miriam Schneider,user7@test.com,nein,2
 ```
+
+These five accounts must be active Reviewers. The file supports two reviewers
+per startup for the three seeded applicants. `new=nein` means experienced.
 
 ### Invalid input
 
@@ -105,7 +135,7 @@ Test Reviewer,<seeded-reviewer-email>,nein,10
 ### Successful preview and persistence
 
 - [ ] Upload `reviewers.csv`.
-- [ ] Set `Bewerter pro Startup` to `1`.
+- [ ] Set `Bewerter pro Startup` to `2`.
 - [ ] Click `Matching prüfen`.
 - [ ] The number of preview rows equals the number of eligible startups.
 - [ ] Every row contains the expected reviewer and experience flag.
@@ -123,9 +153,8 @@ Test Reviewer,<seeded-reviewer-email>,nein,10
 - [ ] Uploaded application files are accessible for an assigned application.
 - [ ] Uploaded files from an unassigned application are not accessible.
 
-To test a genuine split, temporarily promote another seeded user to Reviewer in
-the local admin dashboard, use both reviewers with one assignment per startup,
-and verify each reviewer separately. Reset the local database afterwards.
+The CSV includes five Reviewer accounts, so sign in as at least two of them and
+verify they cannot see each other's unassigned applications.
 
 ## 8. Email template
 
@@ -136,10 +165,34 @@ and verify each reviewer separately. Reset the local database afterwards.
       defaults in `reviewEmailConfig.ts`.
 - [ ] The automated email test escapes HTML in startup names.
 - [ ] The automated email test rejects non-HTTP links.
+- [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
+      `it@generation-d.org` and `cmd@generation-d.org`.
+- [ ] Enter an email address in `Empfänger der Testmail`; the test button is
+      disabled without one and sends only to the address entered.
 
-Do not click either send button unless `SMTP_HOST` and `SMTP_PORT` intentionally
-point to a local mail catcher. Merely running local Supabase does not guarantee
-that the frontend SMTP variables are local.
+For a safe local delivery test, use these settings in the ignored `frontend/.env`
+and restart the frontend:
+
+```dotenv
+SMTP_HOST=127.0.0.1
+SMTP_PORT=54325
+```
+
+Leave `SMTP_USER` and `SMTP_PASSWORD` unset for local Mailpit. Send a test mail
+to any syntactically valid address, then inspect it at
+<http://127.0.0.1:54324>. Mailpit catches it locally; it does **not** deliver
+to a real inbox. Check the From and Reply-To headers there.
+
+Verified through the portal button on 2026-09-19: the page reported
+`Testmail wurde an mailpit-ui-test@example.invalid gesendet.`, and Mailpit
+received the message with the configured sender and both Reply-To addresses.
+
+To receive it in a real inbox, replace the local SMTP host and port with your
+organization's SMTP server (usually port `465` or `587`), set `SMTP_USER` and
+`SMTP_PASSWORD` in the ignored `frontend/.env`, restart the frontend, and enter
+your own inbox address in `Empfänger der Testmail`. The server must authorize
+`no-reply@generation-d.org` as sender. First check the subject has `[TEST]`;
+do not click `Produktiv an alle senden` for this test. Never commit SMTP secrets.
 
 ## 9. Decisions and completion
 
@@ -152,11 +205,11 @@ that the frontend SMTP variables are local.
 
 ### Bulk decision path
 
-Enter, for example:
+Use `~/Downloads/approved-applicants.txt`, containing:
 
 ```text
-<seeded-applicant-email-1>
-<seeded-applicant-email-2>
+user1@test.com
+user3@test.com
 ```
 
 - [ ] Confirming `Liste auf alle anwenden` marks those two applicants as

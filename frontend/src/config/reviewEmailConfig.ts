@@ -8,6 +8,13 @@ export interface ReviewEmailDefaults {
   phaseNote: string;
 }
 
+/** Sender identity from the former email_config.json. Keep this aligned with the SMTP account. */
+export const reviewEmailSender = {
+  name: "no-reply",
+  email: "no-reply@generation-d.org",
+  replyTo: ["it@generation-d.org", "cmd@generation-d.org"],
+};
+
 /**
  * Adjust these defaults once per competition year. Admins can still change
  * them for a single send on the preview page.

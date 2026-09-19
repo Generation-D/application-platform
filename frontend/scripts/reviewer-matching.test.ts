@@ -64,10 +64,19 @@ test("assigns the requested number and one experienced reviewer per application"
   }
 });
 
-test("is deterministic regardless of application input order", () => {
+test("preserves the former script's input-order tie breaking", () => {
+  const assignments = assignReviewers(applications, reviewers, 2);
   assert.deepEqual(
-    assignReviewers(applications, reviewers, 2),
-    assignReviewers([...applications].reverse(), reviewers, 2),
+    assignments.map((assignment) => [
+      assignment.applicationId,
+      assignment.reviewerEmail,
+    ]),
+    [
+      ["application-2", "experienced2@example.org"],
+      ["application-2", "new@example.org"],
+      ["application-1", "experienced1@example.org"],
+      ["application-1", "new@example.org"],
+    ],
   );
 });
 

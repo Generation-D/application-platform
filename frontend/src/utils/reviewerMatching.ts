@@ -24,20 +24,20 @@ export interface ReviewerAssignment {
   reviewerIsExperienced: boolean;
 }
 
-function byCurrentLoadThenEmail(assignmentsByReviewer: Map<string, string[]>) {
+function byCurrentLoad(assignmentsByReviewer: Map<string, string[]>) {
   return (left: MatchingReviewer, right: MatchingReviewer) => {
-    const loadDifference =
+    return (
       assignmentsByReviewer.get(left.userId)!.length -
-      assignmentsByReviewer.get(right.userId)!.length;
-
-    return loadDifference || left.email.localeCompare(right.email);
+      assignmentsByReviewer.get(right.userId)!.length
+    );
   };
 }
 
 /**
- * Deterministic version of the matching used by the former Python process.
+ * Matches the former Python process for the same ordered inputs.
  * Each application receives one experienced reviewer first. Remaining places
- * are filled with the currently least-loaded eligible reviewer.
+ * are filled with the currently least-loaded eligible reviewer. Stable sorting
+ * preserves CSV order when reviewers have equal load, like Python's sorted().
  */
 export function assignReviewers(
   applications: MatchingApplication[],
@@ -97,20 +97,17 @@ export function assignReviewers(
     );
   }
 
-  const sortedApplications = [...applications].sort((left, right) =>
-    left.applicationId.localeCompare(right.applicationId),
-  );
   const assignmentsByReviewer = new Map(
     reviewers.map((reviewer) => [reviewer.userId, [] as string[]]),
   );
   const reviewersByApplication = new Map(
-    sortedApplications.map((application) => [
+    applications.map((application) => [
       application.applicationId,
       [] as MatchingReviewer[],
     ]),
   );
 
-  for (const application of sortedApplications) {
+  for (const application of applications) {
     const experiencedReviewer = reviewers
       .filter(
         (reviewer) =>
@@ -118,7 +115,7 @@ export function assignReviewers(
           assignmentsByReviewer.get(reviewer.userId)!.length <
             reviewer.maxApplications,
       )
-      .sort(byCurrentLoadThenEmail(assignmentsByReviewer))[0];
+      .sort(byCurrentLoad(assignmentsByReviewer))[0];
 
     if (!experiencedReviewer) {
       throw new Error(
@@ -134,7 +131,7 @@ export function assignReviewers(
       .push(application.applicationId);
   }
 
-  for (const application of sortedApplications) {
+  for (const application of applications) {
     const assignedReviewers = reviewersByApplication.get(
       application.applicationId,
     )!;
@@ -149,7 +146,7 @@ export function assignReviewers(
             assignmentsByReviewer.get(reviewer.userId)!.length <
               reviewer.maxApplications,
         )
-        .sort(byCurrentLoadThenEmail(assignmentsByReviewer))[0];
+        .sort(byCurrentLoad(assignmentsByReviewer))[0];
 
       if (!nextReviewer) {
         throw new Error(
@@ -164,7 +161,7 @@ export function assignReviewers(
     }
   }
 
-  return sortedApplications.flatMap((application) =>
+  return applications.flatMap((application) =>
     reviewersByApplication.get(application.applicationId)!.map((reviewer) => ({
       applicationId: application.applicationId,
       applicantUserId: application.applicantUserId,
