@@ -4,6 +4,7 @@ import { createLogger } from "@/logger/logger";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
+  getSupabaseServiceRoleClient,
 } from "@/supabase-utils/cookiesUtilClient";
 import { createCurrentTimestamp } from "@/utils/helpers";
 import { UserRole } from "@/utils/userRole";
@@ -13,6 +14,7 @@ const log = createLogger("actions/admin");
 
 export interface userData {
   id: string;
+  name: string;
   email: string | undefined;
   last_sign_in_at: string | undefined;
   provider: string | undefined;
@@ -39,26 +41,61 @@ function mergeUserDatas(
 
     return {
       id: user.id,
+      name:
+        typeof user.user_metadata?.full_name === "string"
+          ? user.user_metadata.full_name
+          : "",
       email: user.email!,
       last_sign_in_at: user.last_sign_in_at,
       provider: user.app_metadata?.provider,
       created_at: user.created_at,
       updated_at: user.updated_at,
-      userrole: correspondingItem?.userrole || 0,
-      isactive: correspondingItem?.isactive || false,
+      userrole: correspondingItem?.userrole ?? UserRole.Unknown,
+      isactive: correspondingItem?.isactive ?? false,
     };
   });
 }
 
-export async function fetchAllUsers() {
-  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+async function requireAdminForUserManagement() {
+  const supabase = await getSupabaseCookiesUtilClient();
   const {
-    data: { users },
-    error: adminError,
-  } = await supabaseAdmin.auth.admin.listUsers();
-  if (adminError) {
-    log.error(JSON.stringify(adminError));
-    throw adminError;
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error("Nicht angemeldet.");
+
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles_table")
+    .select("userrole,isactive")
+    .eq("userid", user.id)
+    .single();
+  if (
+    profileError ||
+    !profile?.isactive ||
+    profile.userrole !== UserRole.Admin
+  ) {
+    throw new Error("Diese Aktion ist nur für Administratoren erlaubt.");
+  }
+  return {
+    supabaseAdmin: getSupabaseServiceRoleClient(),
+    adminUserId: user.id,
+  };
+}
+
+export async function fetchAllUsers() {
+  const { supabaseAdmin } = await requireAdminForUserManagement();
+  const users: User[] = [];
+  for (let page = 1; ; page += 1) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+    if (error) {
+      log.error(JSON.stringify(error));
+      throw error;
+    }
+    users.push(...data.users);
+    if (data.users.length < 1000) break;
   }
   const { data: profileData, error: profileError } = await supabaseAdmin
     .from("user_profiles_table")
@@ -70,48 +107,51 @@ export async function fetchAllUsers() {
   return mergeUserDatas(users, profileData!);
 }
 
-export async function toggleStatusOfUser(currUser: userData) {
-  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
-  try {
-    const { error: userProfileError } = await supabaseAdmin
-      .from("user_profiles_table")
-      .update({ isactive: !currUser.isactive })
-      .eq("userid", currUser.id);
-
-    if (userProfileError) {
-      log.error(JSON.stringify(userProfileError));
-      throw userProfileError;
-    }
-    log.info(
-      `Changed Status of User (${currUser.email} to '${
-        currUser.isactive ? "inactive" : "active"
-      }')`,
+export async function toggleStatusOfUser(userId: string) {
+  const { supabaseAdmin, adminUserId } = await requireAdminForUserManagement();
+  if (userId === adminUserId) {
+    throw new Error(
+      "Du kannst deinen eigenen Admin-Zugang nicht deaktivieren.",
     );
-    return { ...currUser, isactive: !currUser.isactive };
-  } catch (error) {
-    log.error(`Error toggling user status: ${error}`);
-    return null;
   }
+  const { data: profile, error: readError } = await supabaseAdmin
+    .from("user_profiles_table")
+    .select("isactive")
+    .eq("userid", userId)
+    .single();
+  if (readError || !profile) throw readError ?? new Error("Profil fehlt.");
+
+  const { data: updated, error: updateError } = await supabaseAdmin
+    .from("user_profiles_table")
+    .update({ isactive: !profile.isactive })
+    .eq("userid", userId)
+    .select("isactive")
+    .single();
+  if (updateError || !updated) {
+    throw (
+      updateError ?? new Error("Aktiv-Status konnte nicht geändert werden.")
+    );
+  }
+  return updated.isactive ?? false;
 }
 
-export async function changeRoleOfUser(currUser: userData, role: UserRole) {
-  const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
-  try {
-    const { error: userProfileError } = await supabaseAdmin
-      .from("user_profiles_table")
-      .update({ userrole: role.valueOf() })
-      .eq("userid", currUser.id);
-
-    if (userProfileError) {
-      log.error(JSON.stringify(userProfileError));
-      throw userProfileError;
-    }
-    log.info(`Changed Userrole of User (${currUser.email} to '${role}')`);
-    return { ...currUser, userrole: role.valueOf() };
-  } catch (error) {
-    log.error(`Error changing user status: ${error}`);
-    return null;
+export async function changeRoleOfUser(userId: string, role: UserRole) {
+  if (![UserRole.Applicant, UserRole.Reviewer, UserRole.Admin].includes(role)) {
+    throw new Error("Ungültige Rolle.");
   }
+  const { supabaseAdmin, adminUserId } = await requireAdminForUserManagement();
+  if (userId === adminUserId && role !== UserRole.Admin) {
+    throw new Error("Du kannst deine eigene Admin-Rolle nicht entfernen.");
+  }
+  const { data: updated, error } = await supabaseAdmin
+    .from("user_profiles_table")
+    .update({ userrole: role })
+    .eq("userid", userId)
+    .select("userrole")
+    .single();
+  if (error || !updated)
+    throw error ?? new Error("Rolle konnte nicht geändert werden.");
+  return updated.userrole;
 }
 
 export interface ApplicantsStatus {

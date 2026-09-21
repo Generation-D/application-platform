@@ -1,5 +1,6 @@
 import { Database } from "@/types/database.types";
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export const getSupabaseCookiesUtilClient = async () => {
@@ -47,3 +48,16 @@ export const getSupabaseCookiesUtilClientAdmin = async () => {
     },
   );
 };
+
+/** Service-role client for server actions after they explicitly checked admin access. */
+export const getSupabaseServiceRoleClient = () =>
+  createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    },
+  );
