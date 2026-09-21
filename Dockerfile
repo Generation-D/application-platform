@@ -23,4 +23,6 @@ CMD ["npm", "start"]
 
 FROM caddy:2 AS reverse_proxy
 
-COPY Caddyfile /etc/caddy/Caddyfile
+COPY caddy/Caddyfile /etc/caddy/Caddyfile
+COPY caddy/down.html /srv/public/down.html
+COPY caddy/closed.html /srv/public/closed.html
