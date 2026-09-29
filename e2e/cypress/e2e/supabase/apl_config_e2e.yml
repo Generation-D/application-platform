@@ -65,6 +65,7 @@ questions:
           - value: "Yes"
             questions:
               - questionType: shortText
+                order: 1
                 question: "Yes"
                 mandatory: true
                 maxTextLength: 100
