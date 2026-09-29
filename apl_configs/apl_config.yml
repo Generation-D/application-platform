@@ -110,10 +110,12 @@ questions:
           - value: "Yes"
             questions:
               - questionType: shortText
+                order: 1
                 question: Describe your experience in XYZ.
                 mandatory: true
                 maxTextLength: 100
               - questionType: numberPicker
+                order: 2
                 question: How many years of experience do you have in XYZ?
                 minNumber: 1
                 maxNumber: 30
@@ -121,10 +123,12 @@ questions:
           - value: "No"
             questions:
               - questionType: longText
+                order: 1
                 question: What are your areas of interest?
                 mandatory: false
                 maxTextLength: 300
               - questionType: multipleChoice
+                order: 2
                 question: Which of these fields are you interested in learning more about?
                 Answers:
                   - Field 1
