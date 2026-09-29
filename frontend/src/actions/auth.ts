@@ -137,9 +137,8 @@ export async function signInUser(prevState: messageType, formData: FormData) {
           "@gmail.com",
         ),
         password: signInFormData.data.password,
-        options: {
-          captchaToken: signInFormData.data.captchaToken,
-        },
+        options: 
+          {captchaToken: signInFormData.data.captchaToken },
       });
     if (userError) {
       if (userError.status == 400) {

@@ -92,25 +92,25 @@ export default function SignInForm() {
         </div>
         <div className="text-red-600 italic">{state?.message}</div>
 
-        <div className="flex justify-center mx-auto">
-          <Turnstile
-            ref={ref}
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-            onSuccess={(token) => setCaptchaToken(token)}
-            onExpire={() => {
-              ref.current?.reset();
-              setCaptchaToken("");
-            }}
-            onError={() => {
-              ref.current?.reset();
-              setCaptchaToken("");
-            }}
-            options={{
-              theme: "light",
-              language: "de",
-            }}
-          />
-        </div>
+          <div className="flex justify-center mx-auto">
+            <Turnstile
+              ref={ref}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              onSuccess={(token) => setCaptchaToken(token)}
+              onExpire={() => {
+                ref.current?.reset();
+                setCaptchaToken("");
+              }}
+              onError={() => {
+                ref.current?.reset();
+                setCaptchaToken("");
+              }}
+              options={{
+                theme: "light",
+                language: "de",
+              }}
+            />
+          </div>
 
         <input type="hidden" name="captcha" id="captcha" value={captchaToken} />
 

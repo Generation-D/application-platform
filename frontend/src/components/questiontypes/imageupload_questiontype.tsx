@@ -7,8 +7,12 @@ import Image from "next/image";
 import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile, storageSaveName } from "@/utils/helpers";
-import { saveUploadAnswer, fetchUploadAnswer } from "@/utils/uploadHelpers";
+import { storageSaveName } from "@/utils/helpers";
+import {
+  downloadApplicationFile,
+  fetchUploadAnswer,
+  saveUploadAnswer,
+} from "@/utils/uploadHelpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
@@ -107,12 +111,12 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
           applicationid,
         );
         if (savedAnswer && savedAnswer.imagename != "") {
-          const imageUploadBucketData = await downloadFile(
-            `image-${questionid}`,
-            `${savedAnswer!.userid}_${savedAnswer!.imagename}`,
+          const file = await downloadApplicationFile(
+            applicationid,
+            questionid,
+            "image",
           );
-          log.debug(imageUploadBucketData);
-          const url = URL.createObjectURL(imageUploadBucketData!);
+          const url = URL.createObjectURL(file);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {

@@ -64,9 +64,28 @@ INSERT INTO
             auth.users
     );
 
-UPDATE user_profiles_table SET userrole = 2 FROM auth.users WHERE email = 'viewer@test.com' AND userid = id;
+UPDATE user_profiles_table SET userrole = 2 FROM auth.users
+WHERE email IN ('viewer@test.com', 'user4@test.com', 'user5@test.com', 'user6@test.com', 'user7@test.com')
+AND userid = id;
 
 UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'admin@test.com' AND userid = id;
+
+UPDATE auth.users SET raw_user_meta_data = raw_user_meta_data || jsonb_build_object(
+    'full_name', CASE email
+        WHEN 'admin@test.com' THEN 'Mara Fischer'
+        WHEN 'viewer@test.com' THEN 'Anna Weber'
+        WHEN 'user1@test.com' THEN 'Lea Bergmann'
+        WHEN 'user2@test.com' THEN 'David Richter'
+        WHEN 'user3@test.com' THEN 'Aylin Demir'
+        WHEN 'user4@test.com' THEN 'Jonas Keller'
+        WHEN 'user5@test.com' THEN 'Sophie Nguyen'
+        WHEN 'user6@test.com' THEN 'Lukas Hoffmann'
+        WHEN 'user7@test.com' THEN 'Miriam Schneider'
+    END
+) WHERE email IN (
+    'admin@test.com', 'viewer@test.com', 'user1@test.com', 'user2@test.com',
+    'user3@test.com', 'user4@test.com', 'user5@test.com', 'user6@test.com', 'user7@test.com'
+);
 
 INSERT INTO application_table (
     applicationid,
@@ -78,5 +97,11 @@ SELECT
 FROM
     auth.users
 WHERE
-    email LIKE 'user%@test.com';
-    
+    email IN ('user1@test.com', 'user2@test.com', 'user3@test.com');
+
+UPDATE application_table SET team_name = CASE users.email
+    WHEN 'user1@test.com' THEN 'GreenHarbor'
+    WHEN 'user2@test.com' THEN 'SolarNest'
+    WHEN 'user3@test.com' THEN 'CareBridge'
+    ELSE team_name
+END FROM auth.users AS users WHERE application_table.userid = users.id;
