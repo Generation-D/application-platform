@@ -371,12 +371,17 @@ export async function createFileStorage(
   allowedMimeTypes: string[],
 ): Promise<void> {
   const bucketName = `${fileType}-${questionId}`;
-  const response = await supabase.storage.createBucket(bucketName, {
+  const { data, error } = await supabase.storage.createBucket(bucketName, {
     public: false,
     fileSizeLimit: fileSizeLimitInMB * Math.pow(2, 20),
     allowedMimeTypes: allowedMimeTypes,
   });
-  log.info(JSON.stringify(response));
+  if (error) {
+    log.error(error.message);
+    throw error;
+  }
+
+  log.info(data);
 }
 
 export async function getPhasesConfig(
@@ -413,4 +418,7 @@ export async function getPhasesConfig(
   }
 
   await processConfig(filePath, supabase);
-})().catch((e) => console.error(e));
+})().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});
