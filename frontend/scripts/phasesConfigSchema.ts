@@ -147,21 +147,6 @@ export const SectionSchema = z.object({
   description: z.string().optional(),
 });
 
-function collectAllQuestions(questions: Question[]): Question[] {
-  const result: Question[] = [];
-  for (const q of questions) {
-    result.push(q);
-    if (q.questionType === "conditional" && Array.isArray(q.Answers)) {
-      for (const branch of q.Answers) {
-        if (Array.isArray(branch.questions)) {
-          result.push(...collectAllQuestions(branch.questions));
-        }
-      }
-    }
-  }
-  return result;
-}
-
 function validateQuestionOrdersAndSections(
   questions: Question[],
   sectionCount: number,
@@ -202,12 +187,12 @@ function validateQuestionOrdersAndSections(
     if (q.questionType === "conditional" && Array.isArray(q.Answers)) {
       q.Answers.forEach((ans, ansIdx) => {
         if (Array.isArray(ans.questions)) {
-          validateQuestionOrdersAndSections(
-            ans.questions,
-            sectionCount,
-            ctx,
-            [...questionPath, "Answers", ansIdx, "questions"],
-          );
+          validateQuestionOrdersAndSections(ans.questions, sectionCount, ctx, [
+            ...questionPath,
+            "Answers",
+            ansIdx,
+            "questions",
+          ]);
         }
       });
     }
