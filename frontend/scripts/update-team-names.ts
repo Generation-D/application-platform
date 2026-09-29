@@ -56,4 +56,7 @@ function readCsvFile(filePath: string): ApplicationRow[] {
   if (errors.length > 0) {
     console.error("Some updates failed:", errors);
   }
-})().catch((e) => console.error(e));
+})().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

@@ -1,6 +1,6 @@
 import { Database } from "@/types/database.types";
 import { SupabaseClient } from "@supabase/supabase-js";
-import path from "path";
+import path from "node:path";
 import * as fs from "node:fs";
 import { parseArgs } from "node:util";
 import { marked } from "marked";
@@ -102,4 +102,7 @@ async function syncTexts(
   }
 
   await syncTexts(supabase, filePath);
-})().catch((e) => console.error(e));
+})().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});
