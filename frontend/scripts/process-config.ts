@@ -185,8 +185,6 @@ export async function processConfig(
   supabase: SupabaseClient<Database>,
 ): Promise<void> {
   const configData = await getPhasesConfig(configFilepath);
-  //   runStructureChecks(configData);
-
   const phaseEntries = Object.entries(configData["questions"]);
 
   for (

@@ -162,6 +162,58 @@ function collectAllQuestions(questions: Question[]): Question[] {
   return result;
 }
 
+function validateQuestionOrdersAndSections(
+  questions: Question[],
+  sectionCount: number,
+  ctx: z.RefinementCtx,
+  path: (string | number)[] = ["questions"],
+) {
+  const seenOrders = new Set<number>();
+
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const questionPath = [...path, i];
+
+    if (seenOrders.has(q.order)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Duplicate question order detected: ${q.order}. Question orders must be unique within their section/scope.`,
+        path: questionPath,
+      });
+    }
+    seenOrders.add(q.order);
+
+    if (q.sectionNumber !== undefined) {
+      if (sectionCount === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Question with order ${q.order} references section ${q.sectionNumber}, but no sections exist for this phase.`,
+          path: questionPath,
+        });
+      } else if (q.sectionNumber < 1 || q.sectionNumber > sectionCount) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Question with order ${q.order} references section ${q.sectionNumber}, but valid sections are 1 through ${sectionCount}.`,
+          path: questionPath,
+        });
+      }
+    }
+
+    if (q.questionType === "conditional" && Array.isArray(q.Answers)) {
+      q.Answers.forEach((ans, ansIdx) => {
+        if (Array.isArray(ans.questions)) {
+          validateQuestionOrdersAndSections(
+            ans.questions,
+            sectionCount,
+            ctx,
+            [...questionPath, "Answers", ansIdx, "questions"],
+          );
+        }
+      });
+    }
+  }
+}
+
 export const PhaseSchema = z
   .object({
     phaseLabel: z.string().min(1),
@@ -175,36 +227,8 @@ export const PhaseSchema = z
     path: ["startDate"],
   })
   .superRefine((phase, ctx) => {
-    const allQuestions = collectAllQuestions(phase.questions);
-    const seenOrders = new Set<number>();
     const sectionCount = phase.sections?.length ?? 0;
-
-    for (const q of allQuestions) {
-      if (seenOrders.has(q.order)) {
-        ctx.addIssue({
-          code: "custom",
-          message: `Duplicate question order detected: ${q.order}. Question orders must be unique within a phase.`,
-          path: ["questions"],
-        });
-      }
-      seenOrders.add(q.order);
-
-      if (q.sectionNumber !== undefined) {
-        if (sectionCount === 0) {
-          ctx.addIssue({
-            code: "custom",
-            message: `Question with order ${q.order} references section ${q.sectionNumber}, but no sections exist for this phase.`,
-            path: ["questions"],
-          });
-        } else if (q.sectionNumber < 1 || q.sectionNumber > sectionCount) {
-          ctx.addIssue({
-            code: "custom",
-            message: `Question with order ${q.order} references section ${q.sectionNumber}, but valid sections are 1 through ${sectionCount}.`,
-            path: ["questions"],
-          });
-        }
-      }
-    }
+    validateQuestionOrdersAndSections(phase.questions, sectionCount, ctx);
   });
 
 export const PhasesConfigSchema = z.object({
