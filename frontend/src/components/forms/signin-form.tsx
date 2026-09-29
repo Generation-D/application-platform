@@ -17,8 +17,6 @@ const initialState: messageType = {
 };
 
 export default function SignInForm() {
-  const isLocalSupabase =
-    process.env.NEXT_PUBLIC_SUPABASE_URL === "http://127.0.0.1:54321";
   const [state, formAction] = useActionState(signInUser, initialState);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
@@ -94,7 +92,6 @@ export default function SignInForm() {
         </div>
         <div className="text-red-600 italic">{state?.message}</div>
 
-        {!isLocalSupabase && (
           <div className="flex justify-center mx-auto">
             <Turnstile
               ref={ref}
@@ -114,11 +111,10 @@ export default function SignInForm() {
               }}
             />
           </div>
-        )}
 
         <input type="hidden" name="captcha" id="captcha" value={captchaToken} />
 
-        <div className={`${isLocalSupabase || captchaToken ? "" : "hidden"}`}>
+        <div className={`${captchaToken ? "" : "hidden"}`}>
           <SubmitButton text={"Bestätigen"} expanded={true} />
         </div>
       </form>
