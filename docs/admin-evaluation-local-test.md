@@ -150,6 +150,8 @@ applicants. `new=nein` means experienced.
 
 - [ ] Log out and sign in as the seeded Reviewer.
 - [ ] The review overview lists all applications for an active Reviewer.
+- [ ] The overview shows rows as well as the correct count (an RPC error must not appear as an empty list).
+- [ ] A direct link opens the matching application and its phases in read-only mode, even after the application deadline.
 - [ ] An active Reviewer can open an application even if its delivery address is not in the CSV.
 - [ ] Uploaded application files are accessible to an active Reviewer.
 - [ ] An inactive Reviewer and an Applicant cannot view others' applications or uploads.
@@ -169,14 +171,17 @@ Sender editing, Mailpit and real SMTP setup are documented in
 - [ ] Changing a field affects the current form without changing the versioned
       defaults in `reviewEmailConfig.ts`.
 - [ ] The automated email test escapes HTML in application labels.
+- [ ] Each assigned team has an explicit `Bewerbung öffnen` link; the optional link to all applications is below the tasks.
 - [ ] The automated email test rejects non-HTTP links.
 - [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
       disabled without one and sends only to the address entered.
 - [ ] The production send creates one matching-overview email addressed to the
-      configured no-reply mailbox. It includes each recipient, SMTP status and
+      configured `it@generation-d.org` mailbox. It includes each recipient, SMTP status and
       a copy of their message. Test mails do not create an overview.
+- [ ] In user management, applicant test accounts have no invented person name;
+      admin and reviewer test accounts have a visible `Test-` prefix.
 
 For a safe local delivery test, use these settings in the ignored `frontend/.env`
 and restart the frontend:

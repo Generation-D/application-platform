@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { reviewEmailOverviewRecipient } from "../src/config/reviewEmailConfig";
 import {
   createMatchingOverviewEmail,
   createReviewerAssignmentEmail,
@@ -23,7 +24,14 @@ test("renders reviewer assignments and escapes application labels", () => {
 
   assert.match(html, /Bewerbung &lt;script&gt;/);
   assert.doesNotMatch(html, /Bewerbung <script>/);
-  assert.match(html, /https:\/\/example\.org\/review/);
+  assert.match(
+    html,
+    /href="https:\/\/example\.org\/review\/123">Bewerbung öffnen<\/a>/,
+  );
+  assert.ok(
+    html.indexOf("Deine zu bewertenden Teams") <
+      html.indexOf("Alle Bewerbungen im Portal ansehen"),
+  );
 });
 
 test("rejects non-http links", () => {
@@ -57,4 +65,8 @@ test("overview contains recipient, SMTP status and a copy of the mail", () => {
   assert.match(html, /angenommen/);
   assert.match(html, /2 Bewerbungen/);
   assert.match(html, /<p>Mailkopie<\/p>/);
+});
+
+test("matching overview goes to the IT inbox", () => {
+  assert.equal(reviewEmailOverviewRecipient, "it@generation-d.org");
 });

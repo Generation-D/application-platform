@@ -7,6 +7,7 @@ import { z } from "zod";
 import { sendEmail } from "@/actions/smtp";
 import {
   reviewEmailDefaults,
+  reviewEmailOverviewRecipient,
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
@@ -522,26 +523,26 @@ export async function sendReviewerAssignmentEmails(
   );
   try {
     await sendEmail(
-      reviewEmailSender.email,
+      reviewEmailOverviewRecipient,
       `[Matching-Übersicht] ${phaseLabel}`,
       overview,
       reviewEmailSender,
     );
   } catch {
     throw new Error(
-      "Die Bewerter-Mails wurden bereits verarbeitet, aber die Übersicht an das no-reply-Postfach ist fehlgeschlagen. Bitte nicht den Rundversand erneut starten.",
+      `Die Bewerter-Mails wurden bereits verarbeitet, aber die Übersicht an ${reviewEmailOverviewRecipient} ist fehlgeschlagen. Bitte nicht den Rundversand erneut starten.`,
     );
   }
 
   const failed = results.filter(({ status }) => status === "fehlgeschlagen");
   if (failed.length > 0) {
     throw new Error(
-      `Versand an ${failed.length} Empfänger fehlgeschlagen: ${failed.map(({ message }) => message.reviewerEmail).join(", ")}. Details stehen in der Matching-Übersicht im no-reply-Postfach.`,
+      `Versand an ${failed.length} Empfänger fehlgeschlagen: ${failed.map(({ message }) => message.reviewerEmail).join(", ")}. Details stehen in der Matching-Übersicht bei ${reviewEmailOverviewRecipient}.`,
     );
   }
   return {
     sentEmails: messages.length,
-    overviewRecipient: reviewEmailSender.email,
+    overviewRecipient: reviewEmailOverviewRecipient,
   };
 }
 

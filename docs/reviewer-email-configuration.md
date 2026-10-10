@@ -5,6 +5,7 @@ The reviewer email has two separate kinds of settings:
 | Setting | Where to change it | What it controls |
 | --- | --- | --- |
 | `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` mail headers |
+| `reviewEmailOverviewRecipient` | The same file | Internal recipient of the matching overview after production send |
 | `reviewEmailDefaults` | The same file | Annual subject, deadlines, links and phase note |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Server environment | Which SMTP server actually sends the email and how the portal authenticates |
 | `NEXT_PUBLIC_SITE_URL` | Server environment | Base URL for the review link in the message |
@@ -20,9 +21,9 @@ reject the message or replace the From address. The Reply-To addresses do not
 need SMTP passwords; they only specify where responses go.
 
 After the production round, the portal sends a matching overview to
-`reviewEmailSender.email`. It includes each delivery address, the SMTP result
-and a copy of each reviewer message, so the no-reply address must accept
-incoming mail. SMTP delivery does not itself save outgoing messages in the
+`reviewEmailOverviewRecipient` (`it@generation-d.org` by default). It includes
+each delivery address, the SMTP result and a copy of each reviewer message.
+SMTP delivery does not itself save outgoing messages in the
 mailbox's Sent folder. If the overview fails, reviewer messages may already
 have been sent; do not click the round-send button again without checking.
 
