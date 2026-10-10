@@ -2,8 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  reviewEmailCmdAddress,
   reviewEmailItAddress,
   reviewEmailSender,
+  requiredProductionReviewCc,
+  selectedReviewEmailCc,
 } from "../src/config/reviewEmailConfig";
 import {
   createReviewerAssignmentEmail,
@@ -86,8 +89,26 @@ test("rejects non-http application links", () => {
 
 test("production copies go to both IT and CMD inboxes", () => {
   assert.equal(reviewEmailItAddress, "it@generation-d.org");
+  assert.equal(reviewEmailCmdAddress, "cmd@generation-d.org");
   assert.deepEqual(reviewEmailSender.replyTo, [
     reviewEmailItAddress,
-    "cmd@generation-d.org",
+    reviewEmailCmdAddress,
+  ]);
+  assert.deepEqual(selectedReviewEmailCc({ it: true, cmd: false }), [
+    reviewEmailItAddress,
+  ]);
+  assert.deepEqual(selectedReviewEmailCc({ it: false, cmd: true }), [
+    reviewEmailCmdAddress,
+  ]);
+  assert.deepEqual(selectedReviewEmailCc({ it: false, cmd: false }), []);
+  assert.deepEqual(selectedReviewEmailCc({ it: true, cmd: true }), [
+    reviewEmailItAddress,
+    reviewEmailCmdAddress,
+  ]);
+  assert.throws(() => requiredProductionReviewCc({ it: true, cmd: false }));
+  assert.throws(() => requiredProductionReviewCc({ it: false, cmd: true }));
+  assert.deepEqual(requiredProductionReviewCc({ it: true, cmd: true }), [
+    reviewEmailItAddress,
+    reviewEmailCmdAddress,
   ]);
 });

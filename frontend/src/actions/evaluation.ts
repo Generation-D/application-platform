@@ -7,9 +7,11 @@ import { z } from "zod";
 import { sendEmail } from "@/actions/smtp";
 import {
   reviewEmailDefaults,
-  reviewEmailItAddress,
   reviewEmailSender,
   ReviewEmailDefaults,
+  ReviewEmailCcSelection,
+  requiredProductionReviewCc,
+  selectedReviewEmailCc,
 } from "@/config/reviewEmailConfig";
 import {
   createReviewerAssignmentEmail,
@@ -98,6 +100,7 @@ const emailSettingsSchema = z.object({
   ratingUrl: z.string().trim(),
   phaseNote: z.string().trim().min(1),
 });
+const emailCcSelectionSchema = z.object({ it: z.boolean(), cmd: z.boolean() });
 
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase().replace("@googlemail.com", "@gmail.com");
@@ -470,25 +473,33 @@ export async function sendReviewerTestEmail(
   phaseId: string,
   settings: ReviewEmailDefaults,
   recipient: string,
+  ccSelection: ReviewEmailCcSelection,
 ) {
+  const ccRecipients = selectedReviewEmailCc(
+    emailCcSelectionSchema.parse(ccSelection),
+  );
   const { messages } = await buildReviewerEmails(phaseId, settings);
   const testRecipient = z.email().parse(recipient.trim());
   const example = messages[0];
-  const testSender = { ...reviewEmailSender, replyTo: [reviewEmailItAddress] };
+  const testSender = { ...reviewEmailSender, replyTo: ccRecipients };
   await sendEmail(
     testRecipient,
     `[TEST] ${example.subject}`,
     `<p><strong>Testmail für ${example.reviewerEmail}</strong></p>${example.html}`,
     testSender,
-    [reviewEmailItAddress],
+    ccRecipients,
   );
-  return { recipient: testRecipient };
+  return { recipient: testRecipient, copiedTo: ccRecipients };
 }
 
 export async function sendReviewerAssignmentEmails(
   phaseId: string,
   settings: ReviewEmailDefaults,
+  ccSelection: ReviewEmailCcSelection,
 ) {
+  const ccRecipients = requiredProductionReviewCc(
+    emailCcSelectionSchema.parse(ccSelection),
+  );
   const { messages } = await buildReviewerEmails(phaseId, settings);
   const failedRecipients: string[] = [];
 
@@ -499,7 +510,7 @@ export async function sendReviewerAssignmentEmails(
         message.subject,
         message.html,
         reviewEmailSender,
-        reviewEmailSender.replyTo,
+        ccRecipients,
       );
     } catch {
       failedRecipients.push(message.reviewerEmail);

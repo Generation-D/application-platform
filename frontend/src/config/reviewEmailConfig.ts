@@ -10,11 +10,33 @@ export interface ReviewEmailDefaults {
 
 /** Edit these mail headers here. Production reviewer mails also CC the Reply-To addresses. */
 export const reviewEmailItAddress = "it@generation-d.org";
+export const reviewEmailCmdAddress = "cmd@generation-d.org";
+
+export interface ReviewEmailCcSelection {
+  it: boolean;
+  cmd: boolean;
+}
+
+export function selectedReviewEmailCc(selection: ReviewEmailCcSelection) {
+  return [
+    ...(selection.it ? [reviewEmailItAddress] : []),
+    ...(selection.cmd ? [reviewEmailCmdAddress] : []),
+  ];
+}
+
+export function requiredProductionReviewCc(selection: ReviewEmailCcSelection) {
+  if (!selection.it || !selection.cmd) {
+    throw new Error(
+      "Für den produktiven Versand müssen IT und CMD beide in CC aktiviert sein.",
+    );
+  }
+  return selectedReviewEmailCc(selection);
+}
 
 export const reviewEmailSender = {
   name: "no-reply",
   email: "no-reply@generation-d.org",
-  replyTo: [reviewEmailItAddress, "cmd@generation-d.org"],
+  replyTo: [reviewEmailItAddress, reviewEmailCmdAddress],
 };
 
 /**

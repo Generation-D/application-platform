@@ -47,6 +47,7 @@ die CC-Kopien an IT und CMD. **Nicht** mit einer echten Bewerterliste testen.
    Mail wird er nicht anklickbar. Für einen lokalen Linktest muss
    `NEXT_PUBLIC_SITE_URL=http://localhost:3000` bleiben.
 5. Als Testempfänger dieselbe private Adresse eintragen und „Testmail senden“.
+   Für diesen Durchlauf IT ankreuzen und CMD abwählen.
    Erwartung in Mailpit: genau eine neue Nachricht mit Absender
    `no-reply@generation-d.org` und der privaten Testadresse als Empfänger,
    `Reply-To: it@generation-d.org` und `Cc: it@generation-d.org`,
@@ -56,7 +57,8 @@ die CC-Kopien an IT und CMD. **Nicht** mit einer echten Bewerterliste testen.
    „Euer CMD & IT Team“.
 6. Mit dem lokalen Reviewer-Konto im Portal anmelden und die Links aus der
    Mail öffnen. Die private Zustelladresse muss dafür **nicht** als Login
-   existieren. Nach Rückkehr als Admin den produktiven Versand bestätigen.
+   existieren. Nach Rückkehr als Admin auch CMD ankreuzen und den produktiven
+   Versand bestätigen. Ohne beide Häkchen bleibt der Versand gesperrt.
    Erwartung: **genau eine** weitere Mail in Mailpit, an die private
    Testadresse und mit `Cc: it@generation-d.org, cmd@generation-d.org`.
    Es gibt keine separate Übersichtsmail.
@@ -76,24 +78,33 @@ und beide internen Adressen in `Cc` waren im empfangenen Mailpit-Eintrag
 vorhanden. Das ist ein Header-/Transporttest, noch kein abgeschlossener
 Browser-Durchlauf des gesamten Workflows.
 
+Am 11.10.2026 wurde außerdem die Hetzner-Verbindung mit STARTTLS und dem
+vorhandenen `no-reply`-Login erfolgreich geprüft. Danach hat Hetzners
+SMTP-Server genau eine mit `[TEST]` markierte technische Nachricht an die
+private Testadresse mit IT in CC angenommen; CMD war nicht adressiert.
+Ein tatsächlicher Posteingang wurde hier nicht verifiziert. Für weitere
+lokale Tests wurden Host und Port wieder auf Mailpit zurückgestellt.
+
 ## 2. Eine echte E-Mail empfangen
 
-Für diesen Schritt ist die lokale SMTP-Konfiguration noch unvollständig. Zugangsdaten gehören
-**nur** in die ignorierte `frontend/.env` bzw. in geschützte
-Deployment-Variablen, niemals in Git oder einen PR-Kommentar. Benötigt werden
-`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` und `SMTP_PASSWORD` für einen Account,
+Zugangsdaten gehören **nur** in die ignorierte `frontend/.env` bzw. in
+geschützte Deployment-Variablen, niemals in Git oder einen PR-Kommentar.
+Für diesen Schritt benötigt das Portal
+`SMTP_HOST`, `SMTP_PORT`, `EMAIL` und `EMAIL_PASSWORD` für einen Account,
 der als `no-reply@generation-d.org` senden darf. Die Werte und die Einrichtung
 sind in [der SMTP-Anleitung](reviewer-email-configuration.md) beschrieben.
-Die vorhandenen Variablen `EMAIL` und `EMAIL_PASSWORD` verwendet der
-Portalversand derzeit nicht; `SMTP_HOST`/`SMTP_PORT` zeigen noch auf Mailpit.
+Der Portalversand verwendet die vorhandenen `EMAIL`-/`EMAIL_PASSWORD`-Werte.
+Für Hetzner Managed Mail sind `SMTP_HOST=mail.your-server.de` und
+`SMTP_PORT=587` vorgesehen; nach dem Test wieder auf Mailpit umstellen.
 
-Nach Umstellung auf echten SMTP und Neustart des Portals nur die Testmail an
-die private Testadresse schicken. Erwartung: eine
+Nach Umstellung auf echten SMTP und Neustart des Portals für den Test IT
+ankreuzen und CMD abwählen, dann nur die Testmail an die private Testadresse
+schicken. Erwartung: eine
 Nachricht an die private Testadresse und eine Kopie an
 `it@generation-d.org`; **CMD erhält keine Testmail und steht auch nicht im
 Reply-To der Testmail**. Eingang, Spam-Ordner,
 Absender, Reply-To und Teamlinks prüfen. Den produktiven Rundversand für
-diesen Echtmail-Test nicht verwenden: Dort stünden IT **und** CMD in CC.
+diesen Echtmail-Test nicht verwenden: Dort sind IT **und** CMD in CC verpflichtend.
 Danach `SMTP_HOST`/`SMTP_PORT` wieder auf Mailpit stellen und das Portal neu
 starten, damit weitere lokale Tests nicht versehentlich echte Mails
 verschicken. Ein SMTP-Erfolg bestätigt die Annahme durch den Server, nicht
