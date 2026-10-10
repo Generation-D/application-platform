@@ -212,41 +212,84 @@ do not click `Produktiv an alle senden` for this test. Never commit SMTP secrets
 
 ## 9. Decisions and completion
 
-### Validation
+Use the local Supabase project only. At preparation time, `phase-1`
+(`Kurzbewerbung`) is open and all three seeded startups have a saved
+`Nicht bestanden` decision. Do **not** reset the local database just to run
+this section. Log in as `admin@test.com`, open
+<http://localhost:3000/admin/evaluation>, and select `1. Kurzbewerbung`.
+The accounts and password are defined in `supabase/seed.sql`.
 
-- [ ] Attempting to finish the phase before all decisions exist reports how
-      many decisions are missing.
-- [ ] Adding an unknown or ineligible email to the bulk list is rejected without
-      changing existing decisions.
+### Validation before changing decisions
+
+- [ ] Confirm that GreenHarbor (`user1@test.com`), SolarNest
+      (`user2@test.com`) and CareBridge (`user3@test.com`) are listed.
+- [ ] Paste `user1@test.com` and `nicht-vorhanden@example.invalid` into the
+      bulk field, then confirm `Liste auf alle anwenden`. The unknown address
+      must produce an error; after refresh, all three decisions must remain
+      unchanged. This test must not partially save the valid address.
 
 ### Bulk decision path
 
-Use `~/Downloads/approved-applicants.txt`, containing:
+Replace the bulk field with the contents of
+[`docs/test-data/approved-applicants-part-3.txt`](test-data/approved-applicants-part-3.txt):
 
 ```text
 user1@test.com
 user3@test.com
 ```
 
-- [ ] Confirming `Liste auf alle anwenden` marks those two applicants as
-      `Bestanden`.
-- [ ] Every other eligible applicant is marked `Nicht bestanden`.
-- [ ] The success message reports the correct passed and failed counts.
-- [ ] Refreshing the page preserves all decisions.
+- [ ] Confirm `Liste auf alle anwenden`. The success message says
+      `2 bestanden, 1 nicht bestanden`.
+- [ ] GreenHarbor and CareBridge now show `Bestanden`; SolarNest shows
+      `Nicht bestanden`.
+- [ ] Refresh the page. All three decisions persist.
+- [ ] In local Supabase Studio, verify `phase_outcome_table` has exactly one
+      outcome per applicant for `phase-1`: two `true`, one `false`.
+
+In Supabase Studio (<http://127.0.0.1:54323>), the following read-only SQL
+shows the saved decisions without needing to copy UUIDs:
+
+```sql
+select u.email, o.outcome, o.review_date
+from public.phase_outcome_table as o
+join public.phase_table as p on p.phaseid = o.phase_id
+join auth.users as u on u.id = o.user_id
+where p.phasename = 'phase-1'
+order by u.email;
+```
 
 ### Individual decision path
 
-- [ ] Change one decision with its dropdown.
-- [ ] A success message names the affected startup.
-- [ ] Refreshing the page preserves the changed decision.
+- [ ] Set SolarNest to `Bestanden`. A success message names SolarNest.
+- [ ] Refresh: all three now show `Bestanden`.
+- [ ] Set SolarNest back to `Nicht bestanden` and refresh. This leaves the
+      intended final result at two passed and one failed.
 
 ### Final completion
 
+Only perform this step when you want to finish the local test phase: the portal
+has no undo button for a completed phase. Before completion, confirm the two
+passed / one failed result in the UI and in local Supabase Studio.
+
 - [ ] Click `Phase verbindlich abschließen` and confirm the dialog.
-- [ ] The phase selector marks the phase as `abgeschlossen`.
-- [ ] A completion timestamp is shown.
-- [ ] Decision controls are disabled after completion.
-- [ ] Applicants see the outcome intended for them.
+- [ ] The phase selector marks `Kurzbewerbung` as `abgeschlossen` and a
+      completion timestamp appears.
+- [ ] Decision controls are disabled; a new save attempt is rejected.
+- [ ] In local Supabase Studio, `phase_table.finished_evaluation` is non-null
+      for `phase-1` and still null for `phase-2`.
+- [ ] Log in as `user1@test.com` and `user3@test.com`: neither is blocked from
+      the next-phase overview. As `user2@test.com`, the next phase says
+      `Vorherige Phase leider nicht bestanden!`. Since the configured 2026
+      application dates have passed, the next phase is read-only even for
+      passed applicants.
+- [ ] On returning as Admin, `phase-2` has exactly GreenHarbor and CareBridge
+      as eligible startups.
+
+The missing-decision guard (`Für ... Startups fehlt noch eine Entscheidung`)
+cannot be exercised with the current local state because all three decisions
+already exist. Test it on a fresh *local* reset before applying a bulk list;
+do not remove existing outcomes merely for this check. The reset procedure is
+in section 10 below.
 
 ## 10. Clean rerun
 
