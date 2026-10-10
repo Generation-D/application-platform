@@ -1144,6 +1144,10 @@ export type Database = {
       };
     };
     Functions: {
+      count_reviewable_applications: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       fetch_applications_paginated: {
         Args: { page_number?: number; page_size?: number };
         Returns: {

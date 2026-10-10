@@ -1,5 +1,6 @@
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
+import { getApplicationUploadUrl } from "@/actions/answers/downloadUpload";
 import { createLogger } from "@/logger/logger";
 
 const log = createLogger("utils/uploadHelpers");
@@ -13,6 +14,23 @@ export type UploadRpcName =
   | "fetch_image_upload_answer_table"
   | "fetch_pdf_upload_answer_table"
   | "fetch_video_upload_answer_table";
+
+export async function downloadApplicationFile(
+  applicationId: string,
+  questionId: string,
+  uploadType: "image" | "pdf" | "video",
+) {
+  const signedUrl = await getApplicationUploadUrl(
+    applicationId,
+    questionId,
+    uploadType,
+  );
+  const response = await fetch(signedUrl);
+  if (!response.ok) {
+    throw new Error("Die hochgeladene Datei konnte nicht geladen werden.");
+  }
+  return response.blob();
+}
 
 export async function saveUploadAnswer(
   questionid: string,
