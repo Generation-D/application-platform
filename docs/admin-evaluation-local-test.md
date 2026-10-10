@@ -76,15 +76,15 @@ The seeded roles and names are:
 
 | Login | Name | Role |
 | --- | --- | --- |
-| `admin@test.com` | Mara Fischer | Admin |
-| `viewer@test.com` | Anna Weber | Reviewer |
-| `user1@test.com` | Lea Bergmann | Applicant |
-| `user2@test.com` | David Richter | Applicant |
-| `user3@test.com` | Aylin Demir | Applicant |
-| `user4@test.com` | Jonas Keller | Reviewer |
-| `user5@test.com` | Sophie Nguyen | Reviewer |
-| `user6@test.com` | Lukas Hoffmann | Reviewer |
-| `user7@test.com` | Miriam Schneider | Reviewer |
+| `admin@test.com` | Test-Admin | Admin |
+| `viewer@test.com` | Test-Bewerterin Anna Weber | Reviewer |
+| `user1@test.com` | Kein Personenname | Applicant |
+| `user2@test.com` | Kein Personenname | Applicant |
+| `user3@test.com` | Kein Personenname | Applicant |
+| `user4@test.com` | Test-Bewerter Jonas Keller | Reviewer |
+| `user5@test.com` | Test-Bewerterin Sophie Nguyen | Reviewer |
+| `user6@test.com` | Test-Bewerter Lukas Hoffmann | Reviewer |
+| `user7@test.com` | Test-Bewerterin Miriam Schneider | Reviewer |
 
 The admin landing page `/admin` is for access/role management; matching,
 reviewer mail and phase decisions are on `/admin/evaluation`.
