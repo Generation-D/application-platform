@@ -178,9 +178,10 @@ Sender editing, Mailpit and real SMTP setup are documented in
 - [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
-      disabled without one and sends to that address with IT in CC.
+      disabled without one. IT and CMD can each be selected for the test CC.
 - [ ] Every production reviewer email has `it@generation-d.org` and
-      `cmd@generation-d.org` in CC. Test mails copy IT, but never CMD.
+      `cmd@generation-d.org` in CC. The production button is disabled if either
+      checkbox is off, and the server action rejects an incomplete selection.
 - [ ] In user management, applicant test accounts have no invented person name;
       admin and reviewer test accounts have a visible `Test-` prefix.
 
@@ -192,18 +193,19 @@ SMTP_HOST=127.0.0.1
 SMTP_PORT=54325
 ```
 
-Leave `SMTP_USER` and `SMTP_PASSWORD` unset for local Mailpit. Send a test mail
+Local Mailpit does not use mailbox authentication, even when `EMAIL` and
+`EMAIL_PASSWORD` are set. Send a test mail
 to any syntactically valid address, then inspect it at
 <http://127.0.0.1:54324>. Mailpit catches it locally; it does **not** deliver
 to a real inbox. Check the From and Reply-To headers there.
 
 An earlier portal-button check on 2026-09-19 used the previous mail headers.
-For the current behavior, confirm Mailpit shows IT in CC and Reply-To, and
-CMD in neither header.
+For the current behavior, test IT-only, CMD-only, both and neither; Mailpit
+must show exactly the selected CC and Reply-To addresses.
 
-To receive it in a real inbox, replace the local SMTP host and port with your
-organization's SMTP server (usually port `465` or `587`), set `SMTP_USER` and
-`SMTP_PASSWORD` in the ignored `frontend/.env`, restart the frontend, and enter
+To receive it in a real inbox through Hetzner Managed Mail, use
+`SMTP_HOST=mail.your-server.de` and `SMTP_PORT=587` with the existing `EMAIL`
+and `EMAIL_PASSWORD` in the ignored `frontend/.env`, restart the frontend, and enter
 your own inbox address in `Empfänger der Testmail`. The server must authorize
 `no-reply@generation-d.org` as sender. First check the subject has `[TEST]`;
 do not click `Produktiv an alle senden` for this test. Never commit SMTP secrets.

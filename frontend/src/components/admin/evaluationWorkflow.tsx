@@ -15,6 +15,7 @@ import {
 } from "@/actions/evaluation";
 import {
   reviewEmailSender,
+  ReviewEmailCcSelection,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
 import { isHttpUrl } from "@/emails/reviewerAssignmentEmail";
@@ -52,6 +53,10 @@ export default function EvaluationWorkflow({
     data.emailDefaults,
   );
   const [testEmail, setTestEmail] = useState("");
+  const [ccSelection, setCcSelection] = useState<ReviewEmailCcSelection>({
+    it: true,
+    cmd: false,
+  });
   const [approvedEmails, setApprovedEmails] = useState("");
   const [decisions, setDecisions] = useState<
     Record<string, boolean | undefined>
@@ -391,6 +396,41 @@ export default function EvaluationWorkflow({
             onChange={(event) => setTestEmail(event.target.value)}
           />
         </label>
+        <fieldset className="mt-4">
+          <legend className="text-sm font-medium">Kopien (CC)</legend>
+          <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={ccSelection.it}
+                onChange={(event) =>
+                  setCcSelection((current) => ({
+                    ...current,
+                    it: event.target.checked,
+                  }))
+                }
+              />
+              IT ({reviewEmailSender.replyTo[0]})
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={ccSelection.cmd}
+                onChange={(event) =>
+                  setCcSelection((current) => ({
+                    ...current,
+                    cmd: event.target.checked,
+                  }))
+                }
+              />
+              CMD ({reviewEmailSender.replyTo[1]})
+            </label>
+          </div>
+          <p className="mt-1 text-xs text-gray-600">
+            Für Testmails frei wählbar. Beim produktiven Versand sind beide
+            Kopien erforderlich.
+          </p>
+        </fieldset>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
@@ -407,8 +447,9 @@ export default function EvaluationWorkflow({
                   phaseId,
                   emailSettings,
                   testEmail,
+                  ccSelection,
                 );
-                return `Testmail wurde an ${result.recipient} gesendet; IT stand in CC.`;
+                return `Testmail wurde an ${result.recipient} gesendet${result.copiedTo.length ? `; CC: ${result.copiedTo.join(", ")}` : "; ohne CC"}.`;
               });
             }}
           >
@@ -419,7 +460,12 @@ export default function EvaluationWorkflow({
           <button
             type="button"
             className="apl-alert-button-fixed"
-            disabled={currentAssignments.length === 0 || pendingAction !== ""}
+            disabled={
+              currentAssignments.length === 0 ||
+              pendingAction !== "" ||
+              !ccSelection.it ||
+              !ccSelection.cmd
+            }
             onClick={() => {
               if (!confirmUnlinkedReferences()) return;
               if (
@@ -433,6 +479,7 @@ export default function EvaluationWorkflow({
                 const result = await sendReviewerAssignmentEmails(
                   phaseId,
                   emailSettings,
+                  ccSelection,
                 );
                 return `${result.sentEmails} E-Mails wurden versendet; IT und CMD standen jeweils in CC.`;
               });
