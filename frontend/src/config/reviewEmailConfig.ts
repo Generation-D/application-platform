@@ -8,15 +8,12 @@ export interface ReviewEmailDefaults {
   phaseNote: string;
 }
 
-/** Edit these public mail headers here. The SMTP account must be allowed to use this From address. */
+/** Edit these mail headers here. Production reviewer mails also CC the Reply-To addresses. */
 export const reviewEmailSender = {
   name: "no-reply",
   email: "no-reply@generation-d.org",
   replyTo: ["it@generation-d.org", "cmd@generation-d.org"],
 };
-
-/** Internal inbox for the matching overview after the production send. */
-export const reviewEmailOverviewRecipient = "it@generation-d.org";
 
 /**
  * Adjust these defaults once per competition year. Admins can still change

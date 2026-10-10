@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { reviewEmailOverviewRecipient } from "../src/config/reviewEmailConfig";
-import {
-  createMatchingOverviewEmail,
-  createReviewerAssignmentEmail,
-} from "../src/emails/reviewerAssignmentEmail";
+import { reviewEmailSender } from "../src/config/reviewEmailConfig";
+import { createReviewerAssignmentEmail } from "../src/emails/reviewerAssignmentEmail";
 
 test("renders reviewer assignments and escapes application labels", () => {
   const html = createReviewerAssignmentEmail({
@@ -52,21 +49,9 @@ test("rejects non-http links", () => {
   );
 });
 
-test("overview contains recipient, SMTP status and a copy of the mail", () => {
-  const html = createMatchingOverviewEmail("Phase 1", [
-    {
-      recipient: "private@example.org",
-      status: "angenommen",
-      applicationCount: 2,
-      html: "<p>Mailkopie</p>",
-    },
+test("production copies go to both IT and CMD inboxes", () => {
+  assert.deepEqual(reviewEmailSender.replyTo, [
+    "it@generation-d.org",
+    "cmd@generation-d.org",
   ]);
-  assert.match(html, /private@example\.org/);
-  assert.match(html, /angenommen/);
-  assert.match(html, /2 Bewerbungen/);
-  assert.match(html, /<p>Mailkopie<\/p>/);
-});
-
-test("matching overview goes to the IT inbox", () => {
-  assert.equal(reviewEmailOverviewRecipient, "it@generation-d.org");
 });

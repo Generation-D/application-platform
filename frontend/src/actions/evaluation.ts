@@ -7,14 +7,10 @@ import { z } from "zod";
 import { sendEmail } from "@/actions/smtp";
 import {
   reviewEmailDefaults,
-  reviewEmailOverviewRecipient,
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
-import {
-  createMatchingOverviewEmail,
-  createReviewerAssignmentEmail,
-} from "@/emails/reviewerAssignmentEmail";
+import { createReviewerAssignmentEmail } from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import {
   getSupabaseCookiesUtilClient,
@@ -445,9 +441,6 @@ async function buildReviewerEmails(
     ([reviewerEmail, reviewerAssignments]) => {
       return {
         reviewerEmail,
-        applicationIds: reviewerAssignments.map(
-          (assignment) => assignment.applicationId,
-        ),
         subject: settings.subject,
         html: createReviewerAssignmentEmail({
           phaseLabel: phase.phaselabel,
@@ -467,7 +460,7 @@ async function buildReviewerEmails(
     },
   );
 
-  return { phaseLabel: phase.phaselabel, messages };
+  return { messages };
 }
 
 export async function sendReviewerTestEmail(
@@ -491,59 +484,29 @@ export async function sendReviewerAssignmentEmails(
   phaseId: string,
   settings: ReviewEmailDefaults,
 ) {
-  const { phaseLabel, messages } = await buildReviewerEmails(phaseId, settings);
-  const results: {
-    message: (typeof messages)[number];
-    status: "angenommen" | "fehlgeschlagen";
-  }[] = [];
+  const { messages } = await buildReviewerEmails(phaseId, settings);
+  const failedRecipients: string[] = [];
 
   for (const message of messages) {
-    let status: "angenommen" | "fehlgeschlagen" = "angenommen";
     try {
       await sendEmail(
         message.reviewerEmail,
         message.subject,
         message.html,
         reviewEmailSender,
+        reviewEmailSender.replyTo,
       );
     } catch {
-      status = "fehlgeschlagen";
+      failedRecipients.push(message.reviewerEmail);
     }
-    results.push({ message, status });
   }
 
-  const overview = createMatchingOverviewEmail(
-    phaseLabel,
-    results.map(({ message, status }) => ({
-      recipient: message.reviewerEmail,
-      status,
-      applicationCount: message.applicationIds.length,
-      html: message.html,
-    })),
-  );
-  try {
-    await sendEmail(
-      reviewEmailOverviewRecipient,
-      `[Matching-Übersicht] ${phaseLabel}`,
-      overview,
-      reviewEmailSender,
-    );
-  } catch {
+  if (failedRecipients.length > 0) {
     throw new Error(
-      `Die Bewerter-Mails wurden bereits verarbeitet, aber die Übersicht an ${reviewEmailOverviewRecipient} ist fehlgeschlagen. Bitte nicht den Rundversand erneut starten.`,
+      `Versand an ${failedRecipients.length} Empfänger fehlgeschlagen: ${failedRecipients.join(", ")}. Andere Nachrichten können bereits versandt sein; bitte nicht den gesamten Rundversand erneut starten.`,
     );
   }
-
-  const failed = results.filter(({ status }) => status === "fehlgeschlagen");
-  if (failed.length > 0) {
-    throw new Error(
-      `Versand an ${failed.length} Empfänger fehlgeschlagen: ${failed.map(({ message }) => message.reviewerEmail).join(", ")}. Details stehen in der Matching-Übersicht bei ${reviewEmailOverviewRecipient}.`,
-    );
-  }
-  return {
-    sentEmails: messages.length,
-    overviewRecipient: reviewEmailOverviewRecipient,
-  };
+  return { sentEmails: messages.length };
 }
 
 export async function savePhaseDecision(
