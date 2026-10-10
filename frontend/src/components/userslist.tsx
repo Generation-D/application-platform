@@ -93,7 +93,7 @@ export default function UserList({ users }: { users: userData[] }) {
                 <td className="px-6 py-4 text-sm text-gray-700">
                   <input
                     aria-label={`ID von ${user.email}`}
-                    className="w-40 cursor-text bg-transparent font-mono text-xs text-gray-600"
+                    className="w-[38ch] cursor-text bg-transparent font-mono text-xs text-gray-600"
                     readOnly
                     title="Doppelklick markiert die vollständige ID"
                     value={user.id}
