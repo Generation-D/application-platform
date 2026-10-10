@@ -167,18 +167,21 @@ Sender editing, Mailpit and real SMTP setup are documented in
 
 - [ ] After saving a matching, `Testmail senden` and
       `Produktiv an alle senden` become enabled.
-- [ ] Subject and phase note are prefilled; blank annual deadlines and links must be entered before sending.
+- [ ] Subject prefix and phase note are prefilled; the subject preview includes the round number and phase name. Deadlines must be entered before sending.
+- [ ] Confirmation, instructions and rating fields accept HTTP(S) links or plain text. Plain text shows a warning and is not rendered as a link.
 - [ ] Changing a field affects the current form without changing the versioned
       defaults in `reviewEmailConfig.ts`.
 - [ ] The automated email test escapes HTML in application labels.
-- [ ] Each assigned team has an explicit `Bewerbung öffnen` link; the optional link to all applications is below the tasks.
-- [ ] The automated email test rejects non-HTTP links.
+- [ ] Each assigned team has one explicit `Bewerbung öffnen` link, without a second raw URL; the optional link to all applications is below the tasks.
+- [ ] The mail body names the numbered round and ends with `Euer CMD & IT Team`.
+- [ ] The automated email test rejects non-HTTP application links and safely renders free-text references.
 - [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
       disabled without one and sends only to the address entered.
 - [ ] Every production reviewer email has `it@generation-d.org` and
-      `cmd@generation-d.org` in CC. Test mails go only to the entered test address.
+      `cmd@generation-d.org` in CC. Test mails go to the entered test address;
+      optionally IT can be CC'd, but never CMD.
 - [ ] In user management, applicant test accounts have no invented person name;
       admin and reviewer test accounts have a visible `Test-` prefix.
 
