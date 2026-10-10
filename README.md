@@ -13,8 +13,9 @@ Bewertungsprozess-Repositories:
 
 Die CSV-Adresse ist ausschließlich die Zustelladresse; sie muss nicht mit dem
 Slack-/Portal-Login übereinstimmen. Das gespeicherte Matching ist im Admin-
-Bereich sichtbar. Nach dem Rundversand erhält `it@generation-d.org` eine
-Übersicht mit SMTP-Status und Kopien aller Bewerter-Mails. Die Bewerter-Mails
+Bereich sichtbar. Jede produktive Bewerter-Mail setzt `it@generation-d.org`
+und `cmd@generation-d.org` in CC, damit beide Postfächer eine Kopie für einen
+gegebenenfalls nötigen manuellen Nachversand erhalten. Die Bewerter-Mails
 kommen weiterhin von `no-reply@generation-d.org`. Die Portalberechtigung richtet sich
 allein nach einer aktiven Reviewer-Rolle; neue Slack-Konten erhalten diese
 nicht automatisch. Externe Bewerter können sich per E-Mail anmelden und von

@@ -11,6 +11,7 @@ export async function sendEmail(
   subject: string,
   html: string,
   sender?: { name: string; email: string; replyTo: string[] },
+  cc?: string[],
 ) {
   try {
     if (!process.env.SMTP_HOST || !process.env.SMTP_PORT) {
@@ -35,6 +36,7 @@ export async function sendEmail(
         : process.env.SMTP_USER,
       replyTo: sender?.replyTo,
       to, // list of receivers
+      cc,
       subject, // Subject line
       html, // HTML body content
     });

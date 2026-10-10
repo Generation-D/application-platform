@@ -4,8 +4,7 @@ The reviewer email has two separate kinds of settings:
 
 | Setting | Where to change it | What it controls |
 | --- | --- | --- |
-| `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` mail headers |
-| `reviewEmailOverviewRecipient` | The same file | Internal recipient of the matching overview after production send |
+| `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` headers; `replyTo` addresses also receive every production reviewer mail in CC |
 | `reviewEmailDefaults` | The same file | Annual subject, deadlines, links and phase note |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Server environment | Which SMTP server actually sends the email and how the portal authenticates |
 | `NEXT_PUBLIC_SITE_URL` | Server environment | Base URL for the review link in the message |
@@ -17,15 +16,16 @@ in the public repository; enter them in the admin form before sending or set
 non-sensitive annual defaults in the configuration file. The
 SMTP login is **not** the displayed sender: your mail provider must permit the
 authenticated account to send as `reviewEmailSender.email`. Otherwise it may
-reject the message or replace the From address. The Reply-To addresses do not
-need SMTP passwords; they only specify where responses go.
+reject the message or replace the From address. The Reply-To/CC addresses do
+not need SMTP passwords; they receive replies and copies of production mails.
 
-After the production round, the portal sends a matching overview to
-`reviewEmailOverviewRecipient` (`it@generation-d.org` by default). It includes
-each delivery address, the SMTP result and a copy of each reviewer message.
-SMTP delivery does not itself save outgoing messages in the
-mailbox's Sent folder. If the overview fails, reviewer messages may already
-have been sent; do not click the round-send button again without checking.
+Each production reviewer mail has `it@generation-d.org` and
+`cmd@generation-d.org` in CC by default. Both inboxes thus receive the exact
+message and can forward it manually if needed. There is no separate overview
+mail. SMTP acceptance does not guarantee final inbox delivery, and SMTP does
+not itself save outgoing messages in the sender's Sent folder. If a send
+partially fails, some reviewer mails may already have been accepted; check
+the CC inboxes before repeating the round-send action. Test mails have no CC.
 
 ## Local Mailpit: safe test without real delivery
 

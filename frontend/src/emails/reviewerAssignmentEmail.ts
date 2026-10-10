@@ -67,27 +67,3 @@ export function createReviewerAssignmentEmail({
     <p>Viele Grüße<br>Euer Generation-D Team</p>
   `;
 }
-
-export function createMatchingOverviewEmail(
-  phaseLabel: string,
-  results: {
-    recipient: string;
-    status: string;
-    applicationCount: number;
-    html: string;
-  }[],
-) {
-  return `
-    <h1>Matching-Übersicht: ${escapeHtml(phaseLabel)}</h1>
-    <p>Versand am ${escapeHtml(new Date().toLocaleString("de-DE"))}. „Angenommen“ bedeutet SMTP-Annahme, nicht Zustellung oder Lesen. Ausgehende Mails erscheinen je nach SMTP-Anbieter nicht automatisch im Gesendet-Ordner. Die Kopie jeder Nachricht steht unten.</p>
-    ${results
-      .map(
-        ({ recipient, status, applicationCount, html }) => `
-      <hr><h2>${escapeHtml(recipient)} – ${escapeHtml(status)}</h2>
-      <p>${applicationCount} Bewerbungen</p>
-      <blockquote style="border-left:3px solid #ccc;padding-left:12px">${html}</blockquote>
-    `,
-      )
-      .join("")}
-  `;
-}

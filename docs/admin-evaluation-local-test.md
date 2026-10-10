@@ -177,9 +177,8 @@ Sender editing, Mailpit and real SMTP setup are documented in
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
       disabled without one and sends only to the address entered.
-- [ ] The production send creates one matching-overview email addressed to the
-      configured `it@generation-d.org` mailbox. It includes each recipient, SMTP status and
-      a copy of their message. Test mails do not create an overview.
+- [ ] Every production reviewer email has `it@generation-d.org` and
+      `cmd@generation-d.org` in CC. Test mails go only to the entered test address.
 - [ ] In user management, applicant test accounts have no invented person name;
       admin and reviewer test accounts have a visible `Test-` prefix.
 

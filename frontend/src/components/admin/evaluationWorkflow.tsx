@@ -14,7 +14,6 @@ import {
   sendReviewerTestEmail,
 } from "@/actions/evaluation";
 import {
-  reviewEmailOverviewRecipient,
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
@@ -287,10 +286,10 @@ export default function EvaluationWorkflow({
           Änderungen hier gelten nur für diesen Versand.
         </p>
         <p className="mt-1 text-sm text-gray-600">
-          Nach dem Rundversand erhält {reviewEmailOverviewRecipient} eine
-          Matching-Übersicht mit Zustellstatus und Kopien der einzelnen Mails.
-          Dort können fehlgeschlagene Nachrichten manuell erneut verschickt
-          werden. Das Matching bleibt oben im Admin-Bereich sichtbar.
+          Jede produktive Bewerter-Mail geht zusätzlich in CC an{" "}
+          {reviewEmailSender.replyTo.join(" und ")}. So liegen dort Kopien für
+          einen manuellen Nachversand. Die Testmail geht nur an die eingegebene
+          Testadresse. Das Matching bleibt oben im Admin-Bereich sichtbar.
         </p>
         <p className="mt-1 text-sm text-gray-600">
           Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
@@ -428,7 +427,7 @@ export default function EvaluationWorkflow({
                   phaseId,
                   emailSettings,
                 );
-                return `${result.sentEmails} E-Mails wurden versendet. Die Matching-Übersicht ging an ${result.overviewRecipient}.`;
+                return `${result.sentEmails} E-Mails wurden versendet; IT und CMD standen jeweils in CC.`;
               });
             }}
           >
