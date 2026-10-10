@@ -197,7 +197,7 @@ export default function EvaluationWorkflow({
           className="apl-button-fixed mt-4"
           disabled={!csvText || pendingAction !== ""}
           onClick={() =>
-            runAction("preview", async () => {
+            void runAction("preview", async () => {
               const result = await previewReviewerMatching(
                 phaseId,
                 csvText,
@@ -252,7 +252,7 @@ export default function EvaluationWorkflow({
                 ) {
                   return;
                 }
-                runAction("save", async () => {
+                void runAction("save", async () => {
                   const result = await saveReviewerAssignments(
                     phaseId,
                     preview,
@@ -435,7 +435,7 @@ export default function EvaluationWorkflow({
             }
             onClick={() => {
               if (!confirmUnlinkedReferences()) return;
-              runAction("test-email", async () => {
+              void runAction("test-email", async () => {
                 const result = await sendReviewerTestEmail(
                   phaseId,
                   emailSettings,
@@ -468,7 +468,7 @@ export default function EvaluationWorkflow({
               ) {
                 return;
               }
-              runAction("emails", async () => {
+              void runAction("emails", async () => {
                 const result = await sendReviewerAssignmentEmails(
                   phaseId,
                   emailSettings,
@@ -525,7 +525,7 @@ export default function EvaluationWorkflow({
                 ) {
                   return;
                 }
-                runAction("bulk-decisions", async () => {
+                void runAction("bulk-decisions", async () => {
                   const result = await saveBulkPhaseDecisions(
                     phaseId,
                     approvedEmails,
@@ -594,7 +594,7 @@ export default function EvaluationWorkflow({
                       onChange={(event) => {
                         if (!event.target.value) return;
                         const outcome = event.target.value === "passed";
-                        runAction(
+                        void runAction(
                           `decision-${application.applicantUserId}`,
                           async () => {
                             await savePhaseDecision(
@@ -641,7 +641,7 @@ export default function EvaluationWorkflow({
               ) {
                 return;
               }
-              runAction("finish", async () => {
+              void runAction("finish", async () => {
                 await finishPhaseEvaluation(phaseId);
                 router.refresh();
                 return "Ergebnisse veröffentlicht. Die Phase ist abgeschlossen.";
