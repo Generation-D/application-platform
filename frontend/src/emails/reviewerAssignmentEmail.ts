@@ -1,5 +1,6 @@
 export interface ReviewerEmailApplication {
-  teamName: string;
+  label: string;
+  url: string;
 }
 
 export interface ReviewerAssignmentEmailData {
@@ -43,8 +44,11 @@ export function createReviewerAssignmentEmail({
   applications,
 }: ReviewerAssignmentEmailData) {
   const applicationItems = applications
-    .sort((left, right) => left.teamName.localeCompare(right.teamName))
-    .map((application) => `<li>${escapeHtml(application.teamName)}</li>`)
+    .sort((left, right) => left.label.localeCompare(right.label))
+    .map(
+      (application) =>
+        `<li><a href="${safeHttpUrl(application.url)}">${escapeHtml(application.label)}</a></li>`,
+    )
     .join("");
 
   return `
@@ -55,10 +59,35 @@ export function createReviewerAssignmentEmail({
     <p><strong>Bewertungsformular:</strong><br><a href="${safeHttpUrl(ratingUrl)}">${safeHttpUrl(ratingUrl)}</a></p>
     <p><strong>Deine Bewerbungen im Portal:</strong><br><a href="${safeHttpUrl(reviewUrl)}">${safeHttpUrl(reviewUrl)}</a></p>
     <p>Bitte schließe Deine Bewertungen bis <strong>${escapeHtml(ratingDeadline)}</strong> ab.</p>
-    <p><strong>Deine zu bewertenden Teams:</strong></p>
+    <p><strong>Deine zu bewertenden Bewerbungen:</strong></p>
     <ul>${applicationItems}</ul>
+    <p>Bitte melde Dich für die Links im Portal an. Interne Bewerter nutzen ihren Generation-D-Slack-Zugang; die Zustelladresse dieser E-Mail muss nicht identisch sein.</p>
     <p><strong>Hinweis für diese Phase:</strong><br>${escapeHtml(phaseNote)}</p>
     <p>Falls Du Fragen hast oder Probleme auftreten, melde Dich gerne jederzeit bei uns.</p>
     <p>Viele Grüße<br>Euer Generation-D Team</p>
+  `;
+}
+
+export function createMatchingOverviewEmail(
+  phaseLabel: string,
+  results: {
+    recipient: string;
+    status: string;
+    applicationCount: number;
+    html: string;
+  }[],
+) {
+  return `
+    <h1>Matching-Übersicht: ${escapeHtml(phaseLabel)}</h1>
+    <p>Versand am ${escapeHtml(new Date().toLocaleString("de-DE"))}. „Angenommen“ bedeutet SMTP-Annahme, nicht Zustellung oder Lesen. Ausgehende Mails erscheinen je nach SMTP-Anbieter nicht automatisch im Gesendet-Ordner. Die Kopie jeder Nachricht steht unten.</p>
+    ${results
+      .map(
+        ({ recipient, status, applicationCount, html }) => `
+      <hr><h2>${escapeHtml(recipient)} – ${escapeHtml(status)}</h2>
+      <p>${applicationCount} Bewerbungen</p>
+      <blockquote style="border-left:3px solid #ccc;padding-left:12px">${html}</blockquote>
+    `,
+      )
+      .join("")}
   `;
 }

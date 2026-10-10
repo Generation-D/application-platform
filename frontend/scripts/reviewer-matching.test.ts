@@ -24,21 +24,18 @@ const applications: MatchingApplication[] = [
 
 const reviewers: MatchingReviewer[] = [
   {
-    userId: "reviewer-new",
     name: "New Reviewer",
     email: "new@example.org",
     isExperienced: false,
     maxApplications: 2,
   },
   {
-    userId: "reviewer-experienced-2",
     name: "Experienced Reviewer 2",
     email: "experienced2@example.org",
     isExperienced: true,
     maxApplications: 1,
   },
   {
-    userId: "reviewer-experienced-1",
     name: "Experienced Reviewer 1",
     email: "experienced1@example.org",
     isExperienced: true,
