@@ -6,7 +6,6 @@ export interface MatchingApplication {
 }
 
 export interface MatchingReviewer {
-  userId: string;
   name: string;
   email: string;
   isExperienced: boolean;
@@ -18,7 +17,6 @@ export interface ReviewerAssignment {
   applicantUserId: string;
   teamName: string;
   applicantEmail: string;
-  reviewerUserId: string;
   reviewerName: string;
   reviewerEmail: string;
   reviewerIsExperienced: boolean;
@@ -27,8 +25,8 @@ export interface ReviewerAssignment {
 function byCurrentLoad(assignmentsByReviewer: Map<string, string[]>) {
   return (left: MatchingReviewer, right: MatchingReviewer) => {
     return (
-      assignmentsByReviewer.get(left.userId)!.length -
-      assignmentsByReviewer.get(right.userId)!.length
+      assignmentsByReviewer.get(left.email)!.length -
+      assignmentsByReviewer.get(right.email)!.length
     );
   };
 }
@@ -65,7 +63,7 @@ export function assignReviewers(
 
   const reviewerIds = new Set<string>();
   for (const reviewer of reviewers) {
-    if (reviewerIds.has(reviewer.userId)) {
+    if (reviewerIds.has(reviewer.email.toLowerCase())) {
       throw new Error(`Bewerter ${reviewer.email} kommt mehrfach vor.`);
     }
     if (
@@ -74,7 +72,7 @@ export function assignReviewers(
     ) {
       throw new Error(`Die Kapazität von ${reviewer.email} ist ungültig.`);
     }
-    reviewerIds.add(reviewer.userId);
+    reviewerIds.add(reviewer.email.toLowerCase());
   }
 
   const requiredAssignments = applications.length * reviewersPerApplication;
@@ -98,7 +96,7 @@ export function assignReviewers(
   }
 
   const assignmentsByReviewer = new Map(
-    reviewers.map((reviewer) => [reviewer.userId, [] as string[]]),
+    reviewers.map((reviewer) => [reviewer.email, [] as string[]]),
   );
   const reviewersByApplication = new Map(
     applications.map((application) => [
@@ -112,7 +110,7 @@ export function assignReviewers(
       .filter(
         (reviewer) =>
           reviewer.isExperienced &&
-          assignmentsByReviewer.get(reviewer.userId)!.length <
+          assignmentsByReviewer.get(reviewer.email)!.length <
             reviewer.maxApplications,
       )
       .sort(byCurrentLoad(assignmentsByReviewer))[0];
@@ -127,7 +125,7 @@ export function assignReviewers(
       .get(application.applicationId)!
       .push(experiencedReviewer);
     assignmentsByReviewer
-      .get(experiencedReviewer.userId)!
+      .get(experiencedReviewer.email)!
       .push(application.applicationId);
   }
 
@@ -141,9 +139,9 @@ export function assignReviewers(
         .filter(
           (reviewer) =>
             !assignedReviewers.some(
-              (assignedReviewer) => assignedReviewer.userId === reviewer.userId,
+              (assignedReviewer) => assignedReviewer.email === reviewer.email,
             ) &&
-            assignmentsByReviewer.get(reviewer.userId)!.length <
+            assignmentsByReviewer.get(reviewer.email)!.length <
               reviewer.maxApplications,
         )
         .sort(byCurrentLoad(assignmentsByReviewer))[0];
@@ -156,7 +154,7 @@ export function assignReviewers(
 
       assignedReviewers.push(nextReviewer);
       assignmentsByReviewer
-        .get(nextReviewer.userId)!
+        .get(nextReviewer.email)!
         .push(application.applicationId);
     }
   }
@@ -167,7 +165,6 @@ export function assignReviewers(
       applicantUserId: application.applicantUserId,
       teamName: application.teamName,
       applicantEmail: application.email,
-      reviewerUserId: reviewer.userId,
       reviewerName: reviewer.name,
       reviewerEmail: reviewer.email,
       reviewerIsExperienced: reviewer.isExperienced,

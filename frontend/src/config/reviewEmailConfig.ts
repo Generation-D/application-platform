@@ -21,12 +21,10 @@ export const reviewEmailSender = {
  */
 export const reviewEmailDefaults: ReviewEmailDefaults = {
   subject: "[Generation-D] Bewertungsrunde",
-  confirmationDeadline: "26.03.2026, 23:59 Uhr",
-  confirmationUrl:
-    "",
-  ratingDeadline: "07.04.2026, 23:59 Uhr",
-  instructionsUrl:
-    "",
+  confirmationDeadline: "",
+  confirmationUrl: "",
+  ratingDeadline: "",
+  instructionsUrl: "",
   ratingUrl: "",
   phaseNote:
     "Wenn Du Mitglieder eines Teams bereits kennst, melde Dich bitte baldmöglichst bei uns, damit wir das Team neu zuweisen können.",

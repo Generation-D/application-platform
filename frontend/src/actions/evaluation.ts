@@ -10,8 +10,10 @@ import {
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
-import { createReviewerAssignmentEmail } from "@/emails/reviewerAssignmentEmail";
-import { createLogger } from "@/logger/logger";
+import {
+  createMatchingOverviewEmail,
+  createReviewerAssignmentEmail,
+} from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import {
   getSupabaseCookiesUtilClient,
@@ -26,8 +28,6 @@ import {
 } from "@/utils/reviewerMatching";
 import { UserRole } from "@/utils/userRole";
 
-const log = createLogger("actions/evaluation");
-
 interface CsvReviewer {
   name: string;
   email: string;
@@ -36,14 +36,14 @@ interface CsvReviewer {
 }
 
 export interface EvaluationAssignment {
-  assignmentId: string;
   phaseId: string;
   applicantUserId: string;
   applicationId: string;
   teamName: string;
   applicantEmail: string;
-  reviewerUserId: string;
+  reviewerName: string;
   reviewerEmail: string;
+  reviewerIsExperienced: boolean;
 }
 
 export interface EvaluationDashboardData {
@@ -63,8 +63,30 @@ export interface EvaluationDashboardData {
 const assignmentSchema = z.object({
   applicationId: z.string().uuid(),
   applicantUserId: z.string().uuid(),
-  reviewerUserId: z.string().uuid(),
+  teamName: z.string(),
+  applicantEmail: z.email(),
+  reviewerName: z.string().trim().min(1),
+  reviewerEmail: z.email(),
+  reviewerIsExperienced: z.boolean(),
 });
+
+const evaluationBucket = "evaluation-records";
+
+async function readMatching(
+  supabaseAdmin: ReturnType<typeof getSupabaseServiceRoleClient>,
+  phaseId: string,
+): Promise<ReviewerAssignment[]> {
+  const { data: objects, error: listError } = await supabaseAdmin.storage
+    .from(evaluationBucket)
+    .list(phaseId);
+  if (listError) throw listError;
+  if (!objects?.some((object) => object.name === "matching.json")) return [];
+  const { data, error } = await supabaseAdmin.storage
+    .from(evaluationBucket)
+    .download(`${phaseId}/matching.json`);
+  if (error) throw error;
+  return z.array(assignmentSchema).parse(JSON.parse(await data.text()));
+}
 
 const emailSettingsSchema = z.object({
   subject: z.string().trim().min(1),
@@ -120,6 +142,21 @@ async function listAllAuthUsers(
   } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (error) throw error;
   return users;
+}
+
+async function requireOpenPhase(
+  supabaseAdmin: ReturnType<typeof getSupabaseServiceRoleClient>,
+  phaseId: string,
+) {
+  const { data: phase, error } = await supabaseAdmin
+    .from("phase_table")
+    .select("finished_evaluation")
+    .eq("phaseid", z.string().uuid().parse(phaseId))
+    .single();
+  if (error) throw error;
+  if (phase.finished_evaluation !== null) {
+    throw new Error("Diese Phase ist bereits abgeschlossen.");
+  }
 }
 
 async function fetchEligibleApplications(
@@ -192,8 +229,7 @@ async function fetchEligibleApplications(
       applicantUserId: application.userid,
       teamName:
         application.team_name?.trim() ||
-        emailByUserId.get(application.userid) ||
-        application.applicationid,
+        `Bewerbung ${application.applicationid.slice(0, 8)}`,
       email: emailByUserId.get(application.userid) || "",
     }));
 }
@@ -204,7 +240,6 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
     authUsers,
     phasesResult,
     applicationsResult,
-    assignmentsResult,
     outcomesResult,
     profilesResult,
   ] = await Promise.all([
@@ -213,7 +248,6 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
     supabaseAdmin
       .from("application_table")
       .select("applicationid,userid,team_name"),
-    supabaseAdmin.from("phase_assignment_table").select("*"),
     supabaseAdmin.from("phase_outcome_table").select("*"),
     supabaseAdmin
       .from("user_profiles_table")
@@ -223,7 +257,6 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
   for (const result of [
     phasesResult,
     applicationsResult,
-    assignmentsResult,
     outcomesResult,
     profilesResult,
   ]) {
@@ -231,13 +264,6 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
   }
 
   const authUserById = new Map(authUsers.map((user) => [user.id, user]));
-  const applicationByApplicantId = new Map(
-    applicationsResult.data?.map((application) => [
-      application.userid,
-      application,
-    ]),
-  );
-
   const activeApplicantIds = new Set(
     profilesResult.data
       ?.filter(
@@ -254,45 +280,30 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
       applicantUserId: application.userid,
       teamName:
         application.team_name?.trim() ||
-        authUserById.get(application.userid)?.email ||
-        application.applicationid,
+        `Bewerbung ${application.applicationid.slice(0, 8)}`,
       email: authUserById.get(application.userid)?.email || "",
     }));
 
   const eligibleApplicantIdsByPhase: Record<string, string[]> = {};
+  const assignments: EvaluationAssignment[] = [];
   for (const phase of phasesResult.data ?? []) {
     eligibleApplicantIdsByPhase[phase.phaseid] = (
       await fetchEligibleApplications(supabaseAdmin, phase.phaseid)
     ).map((application) => application.applicantUserId);
+    const phaseAssignments = await readMatching(supabaseAdmin, phase.phaseid);
+    assignments.push(
+      ...phaseAssignments.map((assignment) => ({
+        ...assignment,
+        phaseId: phase.phaseid,
+      })),
+    );
   }
 
   return {
     phases: (phasesResult.data ?? []) as PhaseData[],
     applications,
     eligibleApplicantIdsByPhase,
-    assignments: (assignmentsResult.data ?? []).flatMap((assignment) => {
-      const application = applicationByApplicantId.get(
-        assignment.user_role_1_id,
-      );
-      if (!application) return [];
-      return [
-        {
-          assignmentId: assignment.assignment_id,
-          phaseId: assignment.phase_id,
-          applicantUserId: assignment.user_role_1_id,
-          applicationId: application.applicationid,
-          teamName:
-            application.team_name?.trim() ||
-            authUserById.get(assignment.user_role_1_id)?.email ||
-            application.applicationid,
-          applicantEmail:
-            authUserById.get(assignment.user_role_1_id)?.email || "",
-          reviewerUserId: assignment.user_role_2_id,
-          reviewerEmail:
-            authUserById.get(assignment.user_role_2_id)?.email || "",
-        },
-      ];
-    }),
+    assignments,
     outcomes: (outcomesResult.data ?? []).map((outcome) => ({
       outcomeId: outcome.outcome_id,
       phaseId: outcome.phase_id,
@@ -321,26 +332,6 @@ export async function previewReviewerMatching(
     throw new Error("Die Bewerter-CSV ist leer.");
   }
 
-  const authUsers = await listAllAuthUsers(supabaseAdmin);
-  const { data: profiles, error: profileError } = await supabaseAdmin
-    .from("user_profiles_table")
-    .select("userid,userrole,isactive");
-  if (profileError) throw profileError;
-
-  const reviewerProfileById = new Map(
-    profiles
-      ?.filter(
-        (profile) => profile.userrole === UserRole.Reviewer && profile.isactive,
-      )
-      .map((profile) => [profile.userid, profile]),
-  );
-  const authUserByEmail = new Map(
-    authUsers.map((authUser) => [
-      normalizeEmail(authUser.email ?? ""),
-      authUser,
-    ]),
-  );
-
   const reviewers: MatchingReviewer[] = rows.map((row, index) => {
     if (
       !row.name ||
@@ -352,12 +343,7 @@ export async function previewReviewerMatching(
         `Zeile ${index + 2}: Erwartet werden die Spalten name,email,new,max.`,
       );
     }
-    const authUser = authUserByEmail.get(normalizeEmail(row.email));
-    if (!authUser || !reviewerProfileById.has(authUser.id)) {
-      throw new Error(
-        `${row.email} besitzt keinen aktiven Reviewer-Account im Portal.`,
-      );
-    }
+    const email = z.email().parse(normalizeEmail(row.email));
 
     const normalizedNewValue = row.new.trim().toLowerCase();
     if (!["ja", "nein", "yes", "no"].includes(normalizedNewValue)) {
@@ -367,9 +353,8 @@ export async function previewReviewerMatching(
     }
 
     return {
-      userId: authUser.id,
       name: row.name.trim(),
-      email: authUser.email!,
+      email,
       isExperienced: ["nein", "no"].includes(normalizedNewValue),
       maxApplications: Number(row.max),
     };
@@ -381,12 +366,10 @@ export async function previewReviewerMatching(
 
 export async function saveReviewerAssignments(
   phaseId: string,
-  assignmentsInput: Pick<
-    ReviewerAssignment,
-    "applicationId" | "applicantUserId" | "reviewerUserId"
-  >[],
+  assignmentsInput: ReviewerAssignment[],
 ) {
   const { supabaseAdmin } = await requireAdmin();
+  await requireOpenPhase(supabaseAdmin, phaseId);
   const assignments = z.array(assignmentSchema).min(1).parse(assignmentsInput);
   const eligibleApplications = await fetchEligibleApplications(
     supabaseAdmin,
@@ -399,18 +382,6 @@ export async function saveReviewerAssignments(
     ]),
   );
 
-  const { data: profiles, error: profileError } = await supabaseAdmin
-    .from("user_profiles_table")
-    .select("userid,userrole,isactive");
-  if (profileError) throw profileError;
-  const activeReviewerIds = new Set(
-    profiles
-      ?.filter(
-        (profile) => profile.userrole === UserRole.Reviewer && profile.isactive,
-      )
-      .map((profile) => profile.userid),
-  );
-
   const seenPairs = new Set<string>();
   for (const assignment of assignments) {
     const application = eligibleApplicationById.get(assignment.applicationId);
@@ -420,53 +391,23 @@ export async function saveReviewerAssignments(
     ) {
       throw new Error("Das Matching enthält eine ungültige Bewerbung.");
     }
-    if (!activeReviewerIds.has(assignment.reviewerUserId)) {
-      throw new Error("Das Matching enthält einen inaktiven Bewerter.");
-    }
-    const pair = `${assignment.applicantUserId}:${assignment.reviewerUserId}`;
+    const pair = `${assignment.applicantUserId}:${normalizeEmail(assignment.reviewerEmail)}`;
     if (seenPairs.has(pair)) {
       throw new Error("Das Matching enthält eine doppelte Zuweisung.");
     }
     seenPairs.add(pair);
   }
 
-  const { data: previousAssignments, error: previousAssignmentsError } =
-    await supabaseAdmin
-      .from("phase_assignment_table")
-      .select("phase_id,user_role_1_id,user_role_2_id")
-      .eq("phase_id", phaseId);
-  if (previousAssignmentsError) throw previousAssignmentsError;
-
-  const { error: deleteError } = await supabaseAdmin
-    .from("phase_assignment_table")
-    .delete()
-    .eq("phase_id", phaseId);
-  if (deleteError) throw deleteError;
-
-  const { error: insertError } = await supabaseAdmin
-    .from("phase_assignment_table")
-    .insert(
-      assignments.map((assignment) => ({
-        phase_id: phaseId,
-        user_role_1_id: assignment.applicantUserId,
-        user_role_2_id: assignment.reviewerUserId,
-      })),
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from(evaluationBucket)
+    .upload(
+      `${phaseId}/matching.json`,
+      new Blob([JSON.stringify(assignments)], { type: "application/json" }),
+      { contentType: "application/json", upsert: true },
     );
-
-  if (insertError) {
-    log.error(
-      `Could not save reviewer assignments: ${JSON.stringify(insertError)}`,
-    );
-    if (previousAssignments && previousAssignments.length > 0) {
-      await supabaseAdmin
-        .from("phase_assignment_table")
-        .insert(previousAssignments);
-    }
-    throw insertError;
-  }
+  if (uploadError) throw uploadError;
 
   revalidatePath("/admin/evaluation");
-  revalidatePath("/review/applications");
   return { savedAssignments: assignments.length };
 }
 
@@ -474,59 +415,38 @@ async function buildReviewerEmails(
   phaseId: string,
   settingsInput: ReviewEmailDefaults,
 ) {
-  const { user, supabaseAdmin } = await requireAdmin();
+  const { supabaseAdmin } = await requireAdmin();
   const settings = emailSettingsSchema.parse(settingsInput);
-  const [
-    { data: phase, error: phaseError },
-    { data: assignments, error: assignmentError },
-    authUsers,
-    { data: applications, error: applicationError },
-  ] = await Promise.all([
+  await requireOpenPhase(supabaseAdmin, phaseId);
+  const [{ data: phase, error: phaseError }, assignments] = await Promise.all([
     supabaseAdmin
       .from("phase_table")
       .select("phaseid,phaselabel")
       .eq("phaseid", phaseId)
       .single(),
-    supabaseAdmin
-      .from("phase_assignment_table")
-      .select("user_role_1_id,user_role_2_id")
-      .eq("phase_id", phaseId),
-    listAllAuthUsers(supabaseAdmin),
-    supabaseAdmin.from("application_table").select("userid,team_name"),
+    readMatching(supabaseAdmin, phaseId),
   ]);
   if (phaseError) throw phaseError;
-  if (assignmentError) throw assignmentError;
-  if (applicationError) throw applicationError;
-  if (!assignments || assignments.length === 0) {
+  if (assignments.length === 0) {
     throw new Error("Für diese Phase ist noch kein Matching gespeichert.");
   }
 
-  const authUserById = new Map(
-    authUsers.map((authUser) => [authUser.id, authUser]),
-  );
-  const applicationByUserId = new Map(
-    applications?.map((application) => [application.userid, application]),
-  );
-  const applicantIdsByReviewer = new Map<string, Set<string>>();
+  const assignmentsByReviewer = new Map<string, ReviewerAssignment[]>();
   for (const assignment of assignments) {
-    const applicantIds =
-      applicantIdsByReviewer.get(assignment.user_role_2_id) ??
-      new Set<string>();
-    applicantIds.add(assignment.user_role_1_id);
-    applicantIdsByReviewer.set(assignment.user_role_2_id, applicantIds);
+    const reviewerAssignments =
+      assignmentsByReviewer.get(assignment.reviewerEmail) ?? [];
+    reviewerAssignments.push(assignment);
+    assignmentsByReviewer.set(assignment.reviewerEmail, reviewerAssignments);
   }
 
   const reviewUrl = `${getURL()}review/applications`;
-  const messages = [...applicantIdsByReviewer.entries()].map(
-    ([reviewerId, applicantIds]) => {
-      const reviewer = authUserById.get(reviewerId);
-      if (!reviewer?.email) {
-        throw new Error(
-          `Für Reviewer ${reviewerId} wurde keine E-Mail gefunden.`,
-        );
-      }
+  const messages = [...assignmentsByReviewer.entries()].map(
+    ([reviewerEmail, reviewerAssignments]) => {
       return {
-        reviewerEmail: reviewer.email,
+        reviewerEmail,
+        applicationIds: reviewerAssignments.map(
+          (assignment) => assignment.applicationId,
+        ),
         subject: settings.subject,
         html: createReviewerAssignmentEmail({
           phaseLabel: phase.phaselabel,
@@ -537,18 +457,16 @@ async function buildReviewerEmails(
           ratingUrl: settings.ratingUrl,
           reviewUrl,
           phaseNote: settings.phaseNote,
-          applications: [...applicantIds].map((applicantId) => ({
-            teamName:
-              applicationByUserId.get(applicantId)?.team_name?.trim() ||
-              authUserById.get(applicantId)?.email ||
-              applicantId,
+          applications: reviewerAssignments.map((assignment) => ({
+            label: assignment.teamName,
+            url: `${getURL()}review/applications/${assignment.applicationId}`,
           })),
         }),
       };
     },
   );
 
-  return { adminEmail: user.email!, messages };
+  return { phaseLabel: phase.phaselabel, messages };
 }
 
 export async function sendReviewerTestEmail(
@@ -572,10 +490,14 @@ export async function sendReviewerAssignmentEmails(
   phaseId: string,
   settings: ReviewEmailDefaults,
 ) {
-  const { messages } = await buildReviewerEmails(phaseId, settings);
-  const errors: string[] = [];
+  const { phaseLabel, messages } = await buildReviewerEmails(phaseId, settings);
+  const results: {
+    message: (typeof messages)[number];
+    status: "angenommen" | "fehlgeschlagen";
+  }[] = [];
 
   for (const message of messages) {
+    let status: "angenommen" | "fehlgeschlagen" = "angenommen";
     try {
       await sendEmail(
         message.reviewerEmail,
@@ -584,16 +506,43 @@ export async function sendReviewerAssignmentEmails(
         reviewEmailSender,
       );
     } catch {
-      errors.push(message.reviewerEmail);
+      status = "fehlgeschlagen";
     }
+    results.push({ message, status });
   }
 
-  if (errors.length > 0) {
+  const overview = createMatchingOverviewEmail(
+    phaseLabel,
+    results.map(({ message, status }) => ({
+      recipient: message.reviewerEmail,
+      status,
+      applicationCount: message.applicationIds.length,
+      html: message.html,
+    })),
+  );
+  try {
+    await sendEmail(
+      reviewEmailSender.email,
+      `[Matching-Übersicht] ${phaseLabel}`,
+      overview,
+      reviewEmailSender,
+    );
+  } catch {
     throw new Error(
-      `Versand an ${errors.length} Empfänger fehlgeschlagen: ${errors.join(", ")}`,
+      "Die Bewerter-Mails wurden bereits verarbeitet, aber die Übersicht an das no-reply-Postfach ist fehlgeschlagen. Bitte nicht den Rundversand erneut starten.",
     );
   }
-  return { sentEmails: messages.length };
+
+  const failed = results.filter(({ status }) => status === "fehlgeschlagen");
+  if (failed.length > 0) {
+    throw new Error(
+      `Versand an ${failed.length} Empfänger fehlgeschlagen: ${failed.map(({ message }) => message.reviewerEmail).join(", ")}. Details stehen in der Matching-Übersicht im no-reply-Postfach.`,
+    );
+  }
+  return {
+    sentEmails: messages.length,
+    overviewRecipient: reviewEmailSender.email,
+  };
 }
 
 export async function savePhaseDecision(
@@ -604,6 +553,7 @@ export async function savePhaseDecision(
   const { user, supabaseAdmin } = await requireAdmin();
   z.string().uuid().parse(phaseId);
   z.string().uuid().parse(applicantUserId);
+  await requireOpenPhase(supabaseAdmin, phaseId);
 
   const eligibleApplications = await fetchEligibleApplications(
     supabaseAdmin,
@@ -658,6 +608,7 @@ export async function saveBulkPhaseDecisions(
 ) {
   const { user, supabaseAdmin } = await requireAdmin();
   z.string().uuid().parse(phaseId);
+  await requireOpenPhase(supabaseAdmin, phaseId);
   const approvedEmails = new Set(
     approvedEmailsText
       .split(/[\s,;]+/)
@@ -748,7 +699,7 @@ export async function saveBulkPhaseDecisions(
 
 export async function finishPhaseEvaluation(phaseId: string) {
   const { supabaseAdmin } = await requireAdmin();
-  z.string().uuid().parse(phaseId);
+  await requireOpenPhase(supabaseAdmin, phaseId);
   const eligibleApplications = await fetchEligibleApplications(
     supabaseAdmin,
     phaseId,

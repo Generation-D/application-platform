@@ -53,39 +53,7 @@ export async function getApplicationUploadUrl(
 
   let isAllowed =
     profile.userrole === UserRole.Admin || application.userid === user.id;
-  if (profile.userrole === UserRole.Reviewer) {
-    const { data: question, error: questionError } = await supabaseAdmin
-      .from("question_table")
-      .select("phaseid")
-      .eq("questionid", questionId)
-      .single();
-    if (questionError) throw questionError;
-    const { data: answerPhase, error: answerPhaseError } = await supabaseAdmin
-      .from("phase_table")
-      .select("phaseorder")
-      .eq("phaseid", question.phaseid)
-      .single();
-    if (answerPhaseError) throw answerPhaseError;
-    const { data: assignments, error: assignmentError } = await supabaseAdmin
-      .from("phase_assignment_table")
-      .select("phase_id")
-      .eq("user_role_1_id", application.userid)
-      .eq("user_role_2_id", user.id);
-    if (assignmentError) throw assignmentError;
-    const assignmentPhaseIds = assignments?.map((item) => item.phase_id) ?? [];
-    if (assignmentPhaseIds.length > 0) {
-      const { data: assignmentPhases, error: assignmentPhaseError } =
-        await supabaseAdmin
-          .from("phase_table")
-          .select("phaseorder")
-          .in("phaseid", assignmentPhaseIds);
-      if (assignmentPhaseError) throw assignmentPhaseError;
-      isAllowed =
-        assignmentPhases?.some(
-          (phase) => phase.phaseorder >= answerPhase.phaseorder,
-        ) ?? false;
-    }
-  }
+  if (profile.userrole === UserRole.Reviewer) isAllowed = true;
 
   if (!isAllowed) throw new Error("Kein Zugriff auf diese Datei.");
 

@@ -11,10 +11,20 @@ The reviewer email has two separate kinds of settings:
 
 Changing the sender settings requires a frontend restart locally or a new
 deployment. They are deliberately versioned in code, not uploaded as JSON. The
+annual links and deadlines start blank so private addresses are not published
+in the public repository; enter them in the admin form before sending or set
+non-sensitive annual defaults in the configuration file. The
 SMTP login is **not** the displayed sender: your mail provider must permit the
 authenticated account to send as `reviewEmailSender.email`. Otherwise it may
 reject the message or replace the From address. The Reply-To addresses do not
 need SMTP passwords; they only specify where responses go.
+
+After the production round, the portal sends a matching overview to
+`reviewEmailSender.email`. It includes each delivery address, the SMTP result
+and a copy of each reviewer message, so the no-reply address must accept
+incoming mail. SMTP delivery does not itself save outgoing messages in the
+mailbox's Sent folder. If the overview fails, reviewer messages may already
+have been sent; do not click the round-send button again without checking.
 
 ## Local Mailpit: safe test without real delivery
 

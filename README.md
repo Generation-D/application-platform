@@ -11,6 +11,19 @@ Bewertungsprozess-Repositories:
 4. Bestandene E-Mail-Adressen einfügen oder Entscheidungen einzeln setzen.
 5. Phase abschließen.
 
+Die CSV-Adresse ist ausschließlich die Zustelladresse; sie muss nicht mit dem
+Slack-/Portal-Login übereinstimmen. Das gespeicherte Matching ist im Admin-
+Bereich sichtbar. Nach dem Rundversand erhält das konfigurierte no-reply-
+Postfach eine Übersicht mit SMTP-Status und Kopien aller Bewerter-Mails. Es
+muss daher ein empfangendes Postfach sein. Die Portalberechtigung richtet sich
+allein nach einer aktiven Reviewer-Rolle; neue Slack-Konten erhalten diese
+nicht automatisch. Externe Bewerter können sich per E-Mail anmelden und von
+einem Admin als Reviewer freigeschaltet werden.
+
+Das Matching liegt als privates Objekt in Supabase Storage; die neue Migration
+legt nur den Bucket an und ändert Zugriffsregeln, nicht das Tabellenschema.
+Für Bewerbungen ohne Teamnamen erscheint eine kurze Bewerbungs-ID.
+
 Die feste E-Mail-Vorlage liegt in
 `frontend/src/emails/reviewerAssignmentEmail.ts`. Die jährlich anzupassenden
 Fristen und Links stehen gebündelt in

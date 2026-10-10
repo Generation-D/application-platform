@@ -120,14 +120,15 @@ Lukas Hoffmann,user6@test.com,ja,2
 Miriam Schneider,user7@test.com,nein,2
 ```
 
-These five accounts must be active Reviewers. The file supports two reviewers
-per startup for the three seeded applicants. `new=nein` means experienced.
+These addresses are mail delivery addresses; no matching portal accounts are
+required. The file supports two reviewers per startup for the three seeded
+applicants. `new=nein` means experienced.
 
 ### Invalid input
 
 - [ ] Uploading an empty CSV produces a clear validation error.
 - [ ] A CSV without one of `name,email,new,max` is rejected.
-- [ ] An unknown email is rejected because it has no active reviewer account.
+- [ ] An external or private email can be used without a matching portal account.
 - [ ] A value other than `ja`, `nein`, `yes`, or `no` in `new` is rejected.
 - [ ] Capacity below the number of required assignments is rejected.
 - [ ] A matching without enough experienced reviewer capacity is rejected.
@@ -148,13 +149,14 @@ per startup for the three seeded applicants. `new=nein` means experienced.
 ## 7. Reviewer access and RLS
 
 - [ ] Log out and sign in as the seeded Reviewer.
-- [ ] The review overview only lists applications assigned to this reviewer.
-- [ ] An applicant that has no assignment cannot be opened by changing the URL.
-- [ ] Uploaded application files are accessible for an assigned application.
-- [ ] Uploaded files from an unassigned application are not accessible.
+- [ ] The review overview lists all applications for an active Reviewer.
+- [ ] An active Reviewer can open an application even if its delivery address is not in the CSV.
+- [ ] Uploaded application files are accessible to an active Reviewer.
+- [ ] An inactive Reviewer and an Applicant cannot view others' applications or uploads.
 
-The CSV includes five Reviewer accounts, so sign in as at least two of them and
-verify they cannot see each other's unassigned applications.
+Promote a trusted Slack or email-login account to active Reviewer in the admin
+user management, then test with that account. A new Slack login alone must not
+grant Reviewer access.
 
 ## 8. Email template
 
@@ -163,15 +165,18 @@ Sender editing, Mailpit and real SMTP setup are documented in
 
 - [ ] After saving a matching, `Testmail senden` and
       `Produktiv an alle senden` become enabled.
-- [ ] Subject, deadlines, links, and the phase note are prefilled.
+- [ ] Subject and phase note are prefilled; blank annual deadlines and links must be entered before sending.
 - [ ] Changing a field affects the current form without changing the versioned
       defaults in `reviewEmailConfig.ts`.
-- [ ] The automated email test escapes HTML in startup names.
+- [ ] The automated email test escapes HTML in application labels.
 - [ ] The automated email test rejects non-HTTP links.
 - [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
       disabled without one and sends only to the address entered.
+- [ ] The production send creates one matching-overview email addressed to the
+      configured no-reply mailbox. It includes each recipient, SMTP status and
+      a copy of their message. Test mails do not create an overview.
 
 For a safe local delivery test, use these settings in the ignored `frontend/.env`
 and restart the frontend:

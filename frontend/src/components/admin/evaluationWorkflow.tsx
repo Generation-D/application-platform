@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -76,16 +76,6 @@ export default function EvaluationWorkflow({
   const eligibleApplications = data.applications.filter((application) =>
     eligibleApplicantIds.has(application.applicantUserId),
   );
-
-  const currentAssignmentsByApplication = useMemo(() => {
-    const grouped = new Map<string, typeof currentAssignments>();
-    for (const assignment of currentAssignments) {
-      const assignments = grouped.get(assignment.applicationId) ?? [];
-      assignments.push(assignment);
-      grouped.set(assignment.applicationId, assignments);
-    }
-    return grouped;
-  }, [currentAssignments]);
 
   async function runAction(name: string, action: () => Promise<string>) {
     setPendingAction(name);
@@ -217,7 +207,7 @@ export default function EvaluationWorkflow({
               <tbody className="divide-y divide-gray-100">
                 {preview.map((assignment) => (
                   <tr
-                    key={`${assignment.applicationId}-${assignment.reviewerUserId}`}
+                    key={`${assignment.applicationId}-${assignment.reviewerEmail}`}
                   >
                     <td className="px-3 py-2">{assignment.teamName}</td>
                     <td className="px-3 py-2">
@@ -261,22 +251,30 @@ export default function EvaluationWorkflow({
         )}
 
         {currentAssignments.length > 0 && preview.length === 0 && (
-          <div className="mt-5">
+          <div className="mt-5 overflow-x-auto">
             <h3 className="font-semibold">
               Gespeichertes Matching ({currentAssignments.length} Zuweisungen)
             </h3>
-            <ul className="mt-2 space-y-1 text-sm">
-              {[...currentAssignmentsByApplication.values()].map(
-                (assignments) => (
-                  <li key={assignments[0].applicationId}>
-                    <strong>{assignments[0].teamName}:</strong>{" "}
-                    {assignments
-                      .map((assignment) => assignment.reviewerEmail)
-                      .join(", ")}
-                  </li>
-                ),
-              )}
-            </ul>
+            <table className="mt-2 min-w-full divide-y divide-gray-200 text-sm">
+              <thead>
+                <tr>
+                  <th className="px-3 py-2 text-left">Bewerbung</th>
+                  <th className="px-3 py-2 text-left">Bewerter</th>
+                  <th className="px-3 py-2 text-left">Zustelladresse</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {currentAssignments.map((assignment) => (
+                  <tr
+                    key={`${assignment.applicationId}-${assignment.reviewerEmail}`}
+                  >
+                    <td className="px-3 py-2">{assignment.teamName}</td>
+                    <td className="px-3 py-2">{assignment.reviewerName}</td>
+                    <td className="px-3 py-2">{assignment.reviewerEmail}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
@@ -286,6 +284,12 @@ export default function EvaluationWorkflow({
         <p className="mt-2 text-sm text-gray-600">
           Die dauerhaften Standardwerte stehen in reviewEmailConfig.ts.
           Änderungen hier gelten nur für diesen Versand.
+        </p>
+        <p className="mt-1 text-sm text-gray-600">
+          Nach dem Rundversand erhält das no-reply-Postfach eine
+          Matching-Übersicht mit Zustellstatus und Kopien der einzelnen Mails.
+          Dort können fehlgeschlagene Nachrichten manuell erneut verschickt
+          werden. Das Matching bleibt oben im Admin-Bereich sichtbar.
         </p>
         <p className="mt-1 text-sm text-gray-600">
           Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
@@ -423,7 +427,7 @@ export default function EvaluationWorkflow({
                   phaseId,
                   emailSettings,
                 );
-                return `${result.sentEmails} E-Mails wurden versendet.`;
+                return `${result.sentEmails} E-Mails wurden versendet. Die Matching-Übersicht ging an ${result.overviewRecipient}.`;
               });
             }}
           >
