@@ -3,41 +3,22 @@
 ## Admin-Bewertungsprozess
 
 Der Ablauf unter `/admin/evaluation` ersetzt die Schritte 3 bis 5 des früheren
-Bewertungsprozess-Repositories:
+Bewertungsprozess-Repositories: Matching speichern, Bewerter per E-Mail
+informieren, Entscheidungen setzen und Ergebnisse veröffentlichen. Beim
+Veröffentlichen wird die Phase abgeschlossen; danach erscheinen die
+Ergebnis-Texte im Bewerberportal.
 
-1. Phase auswählen und Bewerter-CSV mit `name,email,new,max` hochladen.
-2. Matching prüfen und verbindlich speichern.
-3. Testmail senden und anschließend den produktiven Versand bestätigen.
-4. Bestandene E-Mail-Adressen einfügen oder Entscheidungen einzeln setzen.
-5. Phase abschließen.
+Die Bewerter-CSV verwendet `name,email,new,max`. Die E-Mail-Adresse dient
+nur zur Zustellung; der Portal-Login darf eine andere Adresse haben. Aktive
+Bewerter können alle Bewerbungen einsehen. Beim Rundversand erhalten IT und
+CMD Kopien in CC, damit sie einzelne Nachrichten bei Bedarf weiterleiten
+können. Das Matching liegt als privates Objekt in Supabase Storage; ein
+separates Mailarchiv wird nicht angelegt.
 
-Für einen sicheren Durchlauf mit genau einer privaten Testadresse siehe
-[End-to-End-Test](docs/admin-evaluation-e2e.md).
-
-Die CSV-Adresse ist ausschließlich die Zustelladresse; sie muss nicht mit dem
-Slack-/Portal-Login übereinstimmen. Das gespeicherte Matching ist im Admin-
-Bereich sichtbar. Jede produktive Bewerter-Mail setzt `it@generation-d.org`
-und `cmd@generation-d.org` in CC, damit beide Postfächer eine Kopie für einen
-gegebenenfalls nötigen manuellen Nachversand erhalten. Die Bewerter-Mails
-kommen weiterhin von `no-reply@generation-d.org`. Die Portalberechtigung richtet sich
-allein nach einer aktiven Reviewer-Rolle; neue Slack-Konten erhalten diese
-nicht automatisch. Externe Bewerter können sich per E-Mail anmelden und von
-einem Admin als Reviewer freigeschaltet werden.
-
-Das Matching liegt als privates Objekt in Supabase Storage; die neue Migration
-legt nur den Bucket an und ändert Zugriffsregeln, nicht das Tabellenschema.
-Für Bewerbungen ohne Teamnamen erscheint eine kurze Bewerbungs-ID.
-
-Die feste E-Mail-Vorlage liegt in
-`frontend/src/emails/reviewerAssignmentEmail.ts`. Die jährlich anzupassenden
-Fristen und Links stehen gebündelt in
-`frontend/src/config/reviewEmailConfig.ts`. Für eine dauerhafte Anpassung muss
-nur diese Konfigurationsdatei geändert und die Anwendung neu deployed werden.
-Die Werte können vor einem einzelnen Versand zusätzlich auf der Admin-Seite
-überschrieben werden.
-
-The complete local test procedure and manual acceptance checklist are documented
-in [`docs/admin-evaluation-local-test.md`](docs/admin-evaluation-local-test.md).
+Die [lokale Testanleitung](docs/admin-evaluation-local-test.md) beschreibt
+einen sicheren Durchlauf mit Mailpit; die
+[E-Mail-Konfiguration](docs/reviewer-email-configuration.md) erklärt Vorlage,
+Jahreswerte und SMTP.
 
 ## Local Testing
 

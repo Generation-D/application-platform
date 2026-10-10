@@ -1,5 +1,7 @@
--- Reviewers may only access applications assigned to them. This migration
--- intentionally reuses the existing tables and does not add schema fields.
+-- Initial reviewer access hardening. The later
+-- 20261010000000_reviewer_access_and_evaluation_records.sql migration lets
+-- active reviewers read all applications; the detailed-answer and upload
+-- protections below still apply. No schema fields are added.
 
 drop policy if exists "select_reviewer_application_table" on public.application_table;
 drop policy if exists "select_reviewer_answer_table" on public.answer_table;

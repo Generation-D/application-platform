@@ -1,5 +1,5 @@
--- Matching and mail logs are private Storage objects. No application table or
--- column is added. Only server actions with the service role can read them.
+-- The saved matching is a private Storage object. CC copies in IT and CMD
+-- serve as the mail archive; no separate mail log is stored here.
 insert into storage.buckets (id, name, public)
 values ('evaluation-records', 'evaluation-records', false)
 on conflict (id) do nothing;

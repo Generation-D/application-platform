@@ -1,117 +1,59 @@
-# Admin evaluation workflow: local test checklist
+# Bewertungsprozess lokal testen
 
-This checklist covers the admin workflow under `/admin/evaluation`. It uses only
-the local Supabase Docker stack and the accounts from `supabase/seed.sql`.
+Dieser Test nutzt **nur die lokale Supabase-Instanz**. Kein `db push`,
+`--linked` oder `--db-url`. Die vorhandenen lokalen Daten bleiben erhalten,
+solange du keinen Reset ausführst. Echte E-Mails sind für den Test nicht nötig;
+Mailpit fängt sie lokal ab.
 
-## 1. Safety preflight
+## Start und Kontrolle
 
-- [ ] Docker is running.
-- [ ] The current branch is `codex/admin-evaluation-workflow`.
-- [ ] The active URL in `frontend/.env` is exactly:
+1. Im Repository-Root `npx supabase start` und `npx supabase status` ausführen.
+   Die API muss unter `http://127.0.0.1:54321` erreichbar sein.
+2. In der ignorierten `frontend/.env` prüfen:
 
-  ```dotenv
-  NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-  NEXT_PUBLIC_SITE_URL=http://localhost:3000
-  ```
+   ```dotenv
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   SMTP_HOST=127.0.0.1
+   SMTP_PORT=54325
+   ```
 
-- [ ] No command in this checklist contains `--linked`, `--db-url`, or
-      `db push`.
-- [ ] Another local Supabase project is not occupying ports `54321` through
-      `54325`. If necessary, stop that project without `--no-backup` first.
+3. Im Verzeichnis `frontend` bei Bedarf `npm install` und `npm run dev`
+   ausführen. Das Portal ist unter <http://localhost:3000>, Supabase Studio
+   unter <http://127.0.0.1:54323> und Mailpit unter
+   <http://127.0.0.1:54324> erreichbar.
+4. Nur falls Phasen fehlen, im Verzeichnis `frontend` ausführen:
 
-## 2. Create the local test state
+   ```bash
+   npm run process:config -- ../apl_configs/apl_config_gend_all_phases.yml
+   npm run sync:texts -- ../texts
+   ```
 
-From the repository root:
+   Die Testkonten stehen in `supabase/seed.sql`. Admin: `admin@test.com`,
+   Bewerbungen: `user1@test.com` (GreenHarbor), `user2@test.com` (SolarNest),
+   `user3@test.com` (CareBridge). Das Seed-Passwort steht ebenfalls dort.
 
-```bash
-npx supabase start
-npx supabase db reset --local
-npx supabase status
-```
+## Checkliste
 
-The reset applies the migrations and creates the seeded users and applications.
-It does not create phases. Import them from the versioned YAML configuration:
+### 1. Nutzer und Zugriffe
 
-```bash
-cd frontend
-npm install
-npm run process:config -- ../apl_configs/apl_config_gend_all_phases.yml
-npm run sync:texts -- ../texts
-```
+- [ ] Als Admin zeigt `/admin` E-Mail, ID, Rolle und Aktivstatus, aber keine
+      Namensspalte. Suche nach E-Mail und nach der vollständigen ID.
+- [ ] Ein Doppelklick auf die ID markiert sie vollständig; Kopieren liefert
+      den kompletten Wert.
+- [ ] Rollen- und Aktivschalter bleiben nach einem Reload gespeichert. Der
+      eigene Admin-Zugang kann nicht deaktiviert oder herabgestuft werden.
+- [ ] Ohne Login führt `/admin/evaluation` zur Anmeldung; Bewerber können
+      diesen Bereich nicht öffnen.
+- [ ] Ein aktiver Bewerter sieht alle Bewerbungen und deren Uploads, ein
+      Bewerber oder inaktiver Bewerter nicht. Ein neues Slack-Konto braucht
+      dafür zunächst die aktive Bewerterrolle.
 
-- [ ] Both import commands finish without an error.
-- [ ] `phase_table` contains `phase-1` and `phase-2` in local Supabase Studio.
-- [ ] Opening `/admin/evaluation` no longer displays
-      `Es wurden keine Phasen gefunden`.
+### 2. Matching
 
-Start the frontend:
-
-```bash
-npm run dev
-```
-
-Open <http://localhost:3000>.
-
-## 3. Automated checks
-
-Run these from `frontend`:
-
-```bash
-npm run test:scripts
-npm run lint
-npx tsc --noEmit
-npm run build
-```
-
-- [ ] All script tests pass.
-- [ ] ESLint reports no errors.
-- [ ] TypeScript reports no errors.
-- [ ] The production build succeeds and lists `/admin/evaluation`.
-
-## 4. Test accounts
-
-Use the local-only accounts defined in `supabase/seed.sql`. Read the current
-passwords from that file so this checklist does not duplicate credentials.
-The seeded accounts and roles are:
-
-| Login | Role |
-| --- | --- |
-| `admin@test.com` | Admin |
-| `viewer@test.com` | Reviewer |
-| `user1@test.com` | Applicant |
-| `user2@test.com` | Applicant |
-| `user3@test.com` | Applicant |
-| `user4@test.com` | Reviewer |
-| `user5@test.com` | Reviewer |
-| `user6@test.com` | Reviewer |
-| `user7@test.com` | Reviewer |
-
-The admin landing page `/admin` is for access/role management; matching,
-reviewer mail and phase decisions are on `/admin/evaluation`.
-
-- [ ] `/admin` shows E-Mail, role and active status, but no name column or
-      unexpected `Unknown` roles.
-- [ ] Search for `user5@test.com` and the same user's Supabase Auth ID; both
-      find the account.
-- [ ] Deactivate and reactivate a reviewer; the status persists after refresh.
-- [ ] Change a reviewer's role and change it back; both persist after refresh.
-- [ ] The current admin cannot deactivate or demote their own account.
-
-## 5. Access control
-
-- [ ] While logged out, opening `/admin/evaluation` redirects to `/login`.
-- [ ] An applicant cannot open the admin workflow.
-- [ ] The seeded Admin can open the workflow from the admin dashboard.
-- [ ] The phase selector contains `1. Kurzbewerbung` and
-      `2. Read-Deck`.
-
-Use `phase-1` for the remaining tests. Later phases only contain applicants who
-passed the preceding phase.
-
-## 6. Matching validation
-
-Use `~/Downloads/reviewers.csv` (five named reviewers). The file has this
-format:
+Für `1. Kurzbewerbung` eine CSV mit den Spalten `name,email,new,max` nutzen.
+`new=nein` bedeutet erfahren. Die Adresse ist nur die **Zustelladresse**;
+der Portal-Login darf eine andere Adresse haben.
 
 ```csv
 name,email,new,max
@@ -122,194 +64,89 @@ Lukas Hoffmann,user6@test.com,ja,2
 Miriam Schneider,user7@test.com,nein,2
 ```
 
-These addresses are mail delivery addresses; no matching portal accounts are
-required. The file supports two reviewers per startup for the three seeded
-applicants. `new=nein` means experienced.
+- [ ] Leere CSV, fehlende Spalten, ungültiges `new`, zu wenig Kapazität oder
+      zu wenig erfahrene Bewerter ergeben eine verständliche Fehlermeldung.
+- [ ] Mit zwei Bewertern pro Startup erzeugt „Matching prüfen“ sechs
+      Zuweisungen für drei Startups. Jedes Startup erhält mindestens einen
+      erfahrenen Bewerter. Erneutes Prüfen ergibt dasselbe Matching.
+- [ ] „Matching verbindlich speichern“ verlangt eine Bestätigung; nach einem
+      Reload ist das Matching noch sichtbar. Ein neues Matching ersetzt das
+      bisherige nur nach Bestätigung.
 
-### Invalid input
+### 3. E-Mail-Versand
 
-- [ ] Uploading an empty CSV produces a clear validation error.
-- [ ] A CSV without one of `name,email,new,max` is rejected.
-- [ ] An external or private email can be used without a matching portal account.
-- [ ] A value other than `ja`, `nein`, `yes`, or `no` in `new` is rejected.
-- [ ] Capacity below the number of required assignments is rejected.
-- [ ] A matching without enough experienced reviewer capacity is rejected.
+- [ ] Betreff und Mail nennen die Rundennummer und „Kurzbewerbung“. Jedes
+      zugewiesene Team hat genau einen anklickbaren Bewerbungslink.
+- [ ] Die Felder „Bestätigung (Link)“, „Anleitung (Link)“ und
+      „Bewertungsformular (Link)“ akzeptieren auch Freitext; dann erscheint
+      eine Warnung und der Text wird nicht als Link gerendert.
+- [ ] Eine Testmail an eine eigene Adresse erscheint in Mailpit mit `[TEST]`
+      im Betreff. IT und CMD können dabei unabhängig in CC gewählt werden.
+- [ ] Für den Rundversand sind **beide** CC-Häkchen Pflicht. Mit einer CSV,
+      die nur deine Testadresse enthält, entsteht genau eine Bewerter-Mail;
+      IT und CMD erhalten je eine Kopie. Nicht mit einer echten Bewerterliste
+      testen.
 
-### Successful preview and persistence
+Mailpit stellt nicht an echte Postfächer zu. Für einen echten Test oder die
+SMTP-Zugangsdaten siehe [E-Mail-Konfiguration](reviewer-email-configuration.md).
+Das private Supabase-Storage-Objekt enthält nur das Matching, keine Mailkopien.
 
-- [ ] Upload `reviewers.csv`.
-- [ ] Set `Bewerter pro Startup` to `2`.
-- [ ] Click `Matching prüfen`.
-- [ ] The number of preview rows equals the number of eligible startups.
-- [ ] Every row contains the expected reviewer and experience flag.
-- [ ] Running the preview again produces the same assignments.
-- [ ] Click `Matching verbindlich speichern` and confirm the dialog.
-- [ ] A success message reports the saved assignment count.
-- [ ] Refreshing the page still shows `Gespeichertes Matching`.
-- [ ] Saving a new matching asks before replacing the existing assignments.
+### 4. Entscheidungen und Abschluss
 
-## 7. Reviewer access and RLS
+Der folgende Test verändert nur die lokale Runde. Ist sie bereits
+abgeschlossen, diesen Abschnitt nicht erneut ausführen; ein Reset würde alle
+lokalen Testdaten löschen.
 
-- [ ] Log out and sign in as the seeded Reviewer.
-- [ ] The review overview lists all applications for an active Reviewer.
-- [ ] The overview shows rows as well as the correct count (an RPC error must not appear as an empty list).
-- [ ] A direct link opens the matching application and its phases in read-only mode, even after the application deadline.
-- [ ] An active Reviewer can open an application even if its delivery address is not in the CSV.
-- [ ] Uploaded application files are accessible to an active Reviewer.
-- [ ] An inactive Reviewer and an Applicant cannot view others' applications or uploads.
+- [ ] Bei einer offenen Runde mit noch fehlenden Entscheidungen verhindert
+      „Ergebnisse veröffentlichen“ den Abschluss und nennt die Anzahl.
+- [ ] `user1@test.com` zusammen mit `nicht-vorhanden@example.invalid` in die
+      Liste der bestandenen Adressen einfügen. „Liste auf alle anwenden“ muss
+      die unbekannte Adresse ablehnen, ohne eine Entscheidung zu ändern.
+- [ ] Danach **nur** diese beiden Adressen einfügen und anwenden:
 
-Promote a trusted Slack or email-login account to active Reviewer in the admin
-user management, then test with that account. A new Slack login alone must not
-grant Reviewer access.
+  ```text
+  user1@test.com
+  user3@test.com
+  ```
 
-## 8. Email template
+- [ ] Ergebnis: GreenHarbor und CareBridge „Bestanden“, SolarNest „Nicht
+      bestanden“; Meldung `2 bestanden, 1 nicht bestanden`. Reload und
+      Supabase Studio zeigen dieselben Werte.
+- [ ] SolarNest einzeln auf „Bestanden“ und wieder auf „Nicht bestanden“
+      setzen. Beide Änderungen bleiben nach einem Reload erhalten.
+- [ ] Erst jetzt „Ergebnisse veröffentlichen“ bestätigen. Danach ist
+      `phase_table.finished_evaluation` für `phase-1` gesetzt, die Runde
+      abgeschlossen und die Entscheidung nicht mehr editierbar.
+- [ ] Ein gescheitertes oder wirkungsloses Abschluss-Update darf keinen
+      Erfolg melden. Für `phase-2` sind nun nur GreenHarbor und CareBridge
+      teilnahmeberechtigt.
 
-Sender editing, Mailpit and real SMTP setup are documented in
-[reviewer-email-configuration.md](reviewer-email-configuration.md).
-
-- [ ] After saving a matching, `Testmail senden` and
-      `Produktiv an alle senden` become enabled.
-- [ ] The subject comes from versioned configuration and automatically includes the round number and phase name. The phase note is prefilled; deadlines must be entered before sending.
-- [ ] Confirmation, instructions and rating fields accept HTTP(S) links or plain text. Plain text shows a warning and is not rendered as a link.
-- [ ] Changing a field affects the current form without changing the versioned
-      defaults in `reviewEmailConfig.ts`.
-- [ ] The automated email test escapes HTML in application labels.
-- [ ] Each assigned team has one explicit `Bewerbung öffnen` link, without a second raw URL or a link to all applications.
-- [ ] The mail body names the numbered round and ends with `Euer CMD & IT Team`.
-- [ ] The automated email test rejects non-HTTP application links and safely renders free-text references.
-- [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
-      `it@generation-d.org` and `cmd@generation-d.org`.
-- [ ] Enter an email address in `Empfänger der Testmail`; the test button is
-      disabled without one. IT and CMD can each be selected for the test CC.
-- [ ] Every production reviewer email has `it@generation-d.org` and
-      `cmd@generation-d.org` in CC. The production button is disabled if either
-      checkbox is off, and the server action rejects an incomplete selection.
-- [ ] User management has no name column; email addresses identify accounts.
-
-For a safe local delivery test, use these settings in the ignored `frontend/.env`
-and restart the frontend:
-
-```dotenv
-SMTP_HOST=127.0.0.1
-SMTP_PORT=54325
-```
-
-Local Mailpit does not use mailbox authentication, even when `EMAIL` and
-`EMAIL_PASSWORD` are set. Send a test mail
-to any syntactically valid address, then inspect it at
-<http://127.0.0.1:54324>. Mailpit catches it locally; it does **not** deliver
-to a real inbox. Check the From and Reply-To headers there.
-
-An earlier portal-button check on 2026-09-19 used the previous mail headers.
-For the current behavior, test IT-only, CMD-only, both and neither; Mailpit
-must show exactly the selected CC and Reply-To addresses.
-
-To receive it in a real inbox through Hetzner Managed Mail, use
-`SMTP_HOST=mail.your-server.de` and `SMTP_PORT=587` with the existing `EMAIL`
-and `EMAIL_PASSWORD` in the ignored `frontend/.env`, restart the frontend, and enter
-your own inbox address in `Empfänger der Testmail`. The server must authorize
-`no-reply@generation-d.org` as sender. First check the subject has `[TEST]`;
-do not click `Produktiv an alle senden` for this test. Never commit SMTP secrets.
-
-## 9. Decisions and completion
-
-Use the local Supabase project only. At preparation time, `phase-1`
-(`Kurzbewerbung`) is open and all three seeded startups have a saved
-`Nicht bestanden` decision. Do **not** reset the local database just to run
-this section. Log in as `admin@test.com`, open
-<http://localhost:3000/admin/evaluation>, and select `1. Kurzbewerbung`.
-The accounts and password are defined in `supabase/seed.sql`.
-
-### Validation before changing decisions
-
-- [ ] Confirm that GreenHarbor (`user1@test.com`), SolarNest
-      (`user2@test.com`) and CareBridge (`user3@test.com`) are listed.
-- [ ] Paste `user1@test.com` and `nicht-vorhanden@example.invalid` into the
-      bulk field, then confirm `Liste auf alle anwenden`. The unknown address
-      must produce an error; after refresh, all three decisions must remain
-      unchanged. This test must not partially save the valid address.
-
-### Bulk decision path
-
-Replace the bulk field with the contents of
-[`docs/test-data/approved-applicants-part-3.txt`](test-data/approved-applicants-part-3.txt):
-
-```text
-user1@test.com
-user3@test.com
-```
-
-- [ ] Confirm `Liste auf alle anwenden`. The success message says
-      `2 bestanden, 1 nicht bestanden`.
-- [ ] GreenHarbor and CareBridge now show `Bestanden`; SolarNest shows
-      `Nicht bestanden`.
-- [ ] Refresh the page. All three decisions persist.
-- [ ] In local Supabase Studio, verify `phase_outcome_table` has exactly one
-      outcome per applicant for `phase-1`: two `true`, one `false`.
-
-In Supabase Studio (<http://127.0.0.1:54323>), the following read-only SQL
-shows the saved decisions without needing to copy UUIDs:
+Diese Leseabfrage zeigt die Entscheidungen in Supabase Studio:
 
 ```sql
-select u.email, o.outcome, o.review_date
-from public.phase_outcome_table as o
-join public.phase_table as p on p.phaseid = o.phase_id
-join auth.users as u on u.id = o.user_id
+select u.email, o.outcome, o.review_date, p.finished_evaluation
+from public.phase_outcome_table o
+join public.phase_table p on p.phaseid = o.phase_id
+join auth.users u on u.id = o.user_id
 where p.phasename = 'phase-1'
 order by u.email;
 ```
 
-### Individual decision path
+Die Portaltexte folgen der **aktuell datierten Runde**. Da die Termine der
+lokalen Testkonfiguration für 2026 bereits abgelaufen sind, sehen bestandene
+Teams nach Abschluss von Runde 1 den Bewertungstext von Runde 2. Nicht
+bestandene Teams sehen den Ablehnungstext von Runde 1. Der direkte Wechsel
+von `evaluating.md` zu `passed.md`/`failed.md` lässt sich für Runde 2 prüfen,
+wenn deren Entscheidungen veröffentlicht werden.
 
-- [ ] Set SolarNest to `Bestanden`. A success message names SolarNest.
-- [ ] Refresh: all three now show `Bestanden`.
-- [ ] Set SolarNest back to `Nicht bestanden` and refresh. This leaves the
-      intended final result at two passed and one failed.
+## Automatische Prüfungen
 
-### Final completion
+Im Verzeichnis `frontend`: `npm run test:scripts`, `npm run lint`,
+`npm run format`, `npx tsc --noEmit` und `npm run build`. Die Tests prüfen
+Matching, E-Mail-Vorlage, Konfigurationsimport und die Textauswahl nach dem
+Phasenabschluss. Der [Matching-Vergleich](reviewer-matching-parity.md)
+dokumentiert zusätzlich die Übereinstimmung mit dem früheren Skript.
 
-Only perform this step when you want to finish the local test phase: the portal
-has no undo button for a completed phase. Before completion, confirm the two
-passed / one failed result in the UI and in local Supabase Studio.
-
-- [ ] Click `Ergebnisse veröffentlichen` and confirm the dialog.
-- [ ] The phase selector marks `Kurzbewerbung` as `abgeschlossen` and a
-      completion timestamp appears.
-- [ ] Decision controls are disabled; a new save attempt is rejected.
-- [ ] In local Supabase Studio, `phase_table.finished_evaluation` is non-null
-      for `phase-1` and still null for `phase-2`.
-- [ ] Log in as `user1@test.com` and `user3@test.com`: neither is blocked from
-      the next-phase overview. As `user2@test.com`, the next phase says
-      `Vorherige Phase leider nicht bestanden!`. Since the configured 2026
-      application dates have passed, the next phase is read-only even for
-      passed applicants.
-- [ ] On returning as Admin, `phase-2` has exactly GreenHarbor and CareBridge
-      as eligible startups.
-
-The missing-decision guard (`Für ... Startups fehlt noch eine Entscheidung`)
-cannot be exercised with the current local state because all three decisions
-already exist. Test it on a fresh *local* reset before applying a bulk list;
-do not remove existing outcomes merely for this check. The reset procedure is
-in section 10 below.
-
-The portal's overview text follows the current competition phase. Closing
-`phase-1` during its normal timetable changes `phase-1/evaluating.md` to
-`phase-1/passed.md` or `phase-1/failed.md`. In this historical local fixture,
-the configured `phase-2` deadline has already passed: successful first-round
-applicants therefore see the *second* round's evaluation text until that round
-is completed. To verify the direct evaluating-to-passed/failed text switch in
-this fixture, complete `phase-2` after setting its eligible decisions.
-
-## 10. Clean rerun
-
-To discard the local test results and repeat from a clean state:
-
-```bash
-cd ..
-npx supabase db reset --local
-cd frontend
-npm run process:config -- ../apl_configs/apl_config_gend_all_phases.yml
-npm run sync:texts -- ../texts
-```
-
-Never add `--linked` while following this checklist.
+Ein kompletter Neuanfang ist nur mit `npx supabase db reset --local` möglich;
+das löscht die bisherigen **lokalen** Testdaten. Anschließend Phase und Texte
+wie oben neu importieren.
