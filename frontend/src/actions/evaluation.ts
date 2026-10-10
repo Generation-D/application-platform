@@ -684,6 +684,11 @@ export async function finishPhaseEvaluation(phaseId: string) {
     supabaseAdmin,
     phaseId,
   );
+  if (eligibleApplications.length === 0) {
+    throw new Error(
+      "Für diese Phase gibt es keine teilnahmeberechtigten Startups.",
+    );
+  }
   const { data: outcomes, error: outcomeError } = await supabaseAdmin
     .from("phase_outcome_table")
     .select("user_id,outcome")
@@ -716,15 +721,17 @@ export async function finishPhaseEvaluation(phaseId: string) {
   }
 
   const finishedAt = new Date().toISOString();
-  const { error: finishError } = await supabaseAdmin
+  const { data: finishedPhase, error: finishError } = await supabaseAdmin
     .from("phase_table")
     .update({ finished_evaluation: finishedAt })
     .eq("phaseid", phaseId)
-    .is("finished_evaluation", null);
+    .is("finished_evaluation", null)
+    .select("finished_evaluation")
+    .single();
   if (finishError) throw finishError;
 
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/evaluation");
-  return { finishedAt };
+  return { finishedAt: finishedPhase.finished_evaluation };
 }

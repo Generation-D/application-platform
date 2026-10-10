@@ -17,8 +17,8 @@ export default async function Page() {
       </Link>
       <h2 className="text-xl font-bold mb-2">Nutzerverwaltung</h2>
       <p className="mb-4 text-sm text-gray-600">
-        Hier verwaltest du Zugänge und Rollen für Bewerber, Bewerter und Admins.
-        Das Matching und der Phasenabschluss liegen im Bewertungsprozess.
+        Zugänge und Rollen verwalten. Matching und Entscheidungen findest du im
+        Bewertungsprozess.
       </p>
       <UserList users={users} />
     </div>

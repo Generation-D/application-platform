@@ -17,10 +17,9 @@ export default function UserList({ users }: { users: userData[] }) {
   const [search, setSearch] = useState("");
   const [pendingUserId, setPendingUserId] = useState("");
   const [error, setError] = useState("");
+  const query = search.toLowerCase().trim();
   const filteredUsers = currentUsers.filter((user) =>
-    `${user.name} ${user.email}`
-      .toLowerCase()
-      .includes(search.toLowerCase().trim()),
+    `${user.email ?? ""} ${user.id}`.toLowerCase().includes(query),
   );
 
   async function updateUser(
@@ -54,7 +53,7 @@ export default function UserList({ users }: { users: userData[] }) {
         <input
           className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
           type="search"
-          placeholder="Name oder E-Mail"
+          placeholder="E-Mail oder ID"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -72,9 +71,6 @@ export default function UserList({ users }: { users: userData[] }) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 E-Mail
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -88,9 +84,6 @@ export default function UserList({ users }: { users: userData[] }) {
           <tbody className="divide-y divide-gray-200 bg-white">
             {filteredUsers.map((user) => (
               <tr key={user.id}>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {user.name || "—"}
-                </td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   {user.email}
                 </td>

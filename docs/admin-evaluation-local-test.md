@@ -72,25 +72,27 @@ npm run build
 
 Use the local-only accounts defined in `supabase/seed.sql`. Read the current
 passwords from that file so this checklist does not duplicate credentials.
-The seeded roles and names are:
+The seeded accounts and roles are:
 
-| Login | Name | Role |
-| --- | --- | --- |
-| `admin@test.com` | Test-Admin | Admin |
-| `viewer@test.com` | Test-Bewerterin Anna Weber | Reviewer |
-| `user1@test.com` | Kein Personenname | Applicant |
-| `user2@test.com` | Kein Personenname | Applicant |
-| `user3@test.com` | Kein Personenname | Applicant |
-| `user4@test.com` | Test-Bewerter Jonas Keller | Reviewer |
-| `user5@test.com` | Test-Bewerterin Sophie Nguyen | Reviewer |
-| `user6@test.com` | Test-Bewerter Lukas Hoffmann | Reviewer |
-| `user7@test.com` | Test-Bewerterin Miriam Schneider | Reviewer |
+| Login | Role |
+| --- | --- |
+| `admin@test.com` | Admin |
+| `viewer@test.com` | Reviewer |
+| `user1@test.com` | Applicant |
+| `user2@test.com` | Applicant |
+| `user3@test.com` | Applicant |
+| `user4@test.com` | Reviewer |
+| `user5@test.com` | Reviewer |
+| `user6@test.com` | Reviewer |
+| `user7@test.com` | Reviewer |
 
 The admin landing page `/admin` is for access/role management; matching,
 reviewer mail and phase decisions are on `/admin/evaluation`.
 
-- [ ] `/admin` shows these names and roles, with no unexpected `Unknown` roles.
-- [ ] Search for `Sophie` and `user5@test.com`; both find the same account.
+- [ ] `/admin` shows E-Mail, role and active status, but no name column or
+      unexpected `Unknown` roles.
+- [ ] Search for `user5@test.com` and the same user's Supabase Auth ID; both
+      find the account.
 - [ ] Deactivate and reactivate a reviewer; the status persists after refresh.
 - [ ] Change a reviewer's role and change it back; both persist after refresh.
 - [ ] The current admin cannot deactivate or demote their own account.
@@ -182,8 +184,7 @@ Sender editing, Mailpit and real SMTP setup are documented in
 - [ ] Every production reviewer email has `it@generation-d.org` and
       `cmd@generation-d.org` in CC. The production button is disabled if either
       checkbox is off, and the server action rejects an incomplete selection.
-- [ ] In user management, applicant test accounts have no invented person name;
-      admin and reviewer test accounts have a visible `Test-` prefix.
+- [ ] User management has no name column; email addresses identify accounts.
 
 For a safe local delivery test, use these settings in the ignored `frontend/.env`
 and restart the frontend:
@@ -271,7 +272,7 @@ Only perform this step when you want to finish the local test phase: the portal
 has no undo button for a completed phase. Before completion, confirm the two
 passed / one failed result in the UI and in local Supabase Studio.
 
-- [ ] Click `Phase verbindlich abschließen` and confirm the dialog.
+- [ ] Click `Ergebnisse veröffentlichen` and confirm the dialog.
 - [ ] The phase selector marks `Kurzbewerbung` as `abgeschlossen` and a
       completion timestamp appears.
 - [ ] Decision controls are disabled; a new save attempt is rejected.
@@ -290,6 +291,14 @@ cannot be exercised with the current local state because all three decisions
 already exist. Test it on a fresh *local* reset before applying a bulk list;
 do not remove existing outcomes merely for this check. The reset procedure is
 in section 10 below.
+
+The portal's overview text follows the current competition phase. Closing
+`phase-1` during its normal timetable changes `phase-1/evaluating.md` to
+`phase-1/passed.md` or `phase-1/failed.md`. In this historical local fixture,
+the configured `phase-2` deadline has already passed: successful first-round
+applicants therefore see the *second* round's evaluation text until that round
+is completed. To verify the direct evaluating-to-passed/failed text switch in
+this fixture, complete `phase-2` after setting its eligible decisions.
 
 ## 10. Clean rerun
 
