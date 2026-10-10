@@ -71,10 +71,10 @@ export default function UserList({ users }: { users: userData[] }) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                E-Mail
+                ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                ID
+                E-Mail
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Rolle
@@ -88,9 +88,6 @@ export default function UserList({ users }: { users: userData[] }) {
             {filteredUsers.map((user) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 text-sm text-gray-700">
-                  {user.email}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700">
                   <input
                     aria-label={`ID von ${user.email}`}
                     className="w-[38ch] cursor-text bg-transparent font-mono text-xs text-gray-600"
@@ -99,6 +96,9 @@ export default function UserList({ users }: { users: userData[] }) {
                     value={user.id}
                     onDoubleClick={(event) => event.currentTarget.select()}
                   />
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  {user.email}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   <UserSpecificRoleDropdown

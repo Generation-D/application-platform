@@ -16,6 +16,7 @@ import {
 import {
   createReviewerAssignmentEmail,
   createReviewerSubject,
+  escapeHtml,
 } from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import {
@@ -485,7 +486,7 @@ export async function sendReviewerTestEmail(
   await sendEmail(
     testRecipient,
     `[TEST] ${example.subject}`,
-    `<p><strong>Testmail für ${example.reviewerEmail}</strong></p>${example.html}`,
+    `<p><strong>Testmail für ${escapeHtml(example.reviewerEmail)}</strong></p>${example.html}`,
     testSender,
     ccRecipients,
   );
