@@ -15,7 +15,6 @@ export interface ReviewerAssignmentEmailData {
   ratingDeadline: string;
   instructionsUrl: string;
   ratingUrl: string;
-  reviewUrl: string;
   phaseNote: string;
   applications: ReviewerEmailApplication[];
 }
@@ -60,7 +59,6 @@ export function createReviewerAssignmentEmail({
   ratingDeadline,
   instructionsUrl,
   ratingUrl,
-  reviewUrl,
   phaseNote,
   applications,
 }: ReviewerAssignmentEmailData) {
@@ -84,7 +82,6 @@ export function createReviewerAssignmentEmail({
     <p><strong>Bewertungsformular:</strong><br>${renderLinkOrText(ratingUrl, ratingUrl)}</p>
     <p><strong>Hinweis für diese Phase:</strong><br>${escapeHtml(phaseNote)}</p>
     <p>Falls Du Fragen hast oder Probleme auftreten, melde Dich gerne jederzeit bei uns.</p>
-    <p><small>Optional: <a href="${safeHttpUrl(reviewUrl)}">Alle Bewerbungen im Portal ansehen</a></small></p>
     <p>Viele Grüße<br>Euer CMD &amp; IT Team</p>
   `;
 }

@@ -17,10 +17,7 @@ import {
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
-import {
-  createReviewerSubject,
-  isHttpUrl,
-} from "@/emails/reviewerAssignmentEmail";
+import { isHttpUrl } from "@/emails/reviewerAssignmentEmail";
 import { ReviewerAssignment } from "@/utils/reviewerMatching";
 
 function errorMessage(error: unknown) {
@@ -55,7 +52,6 @@ export default function EvaluationWorkflow({
     data.emailDefaults,
   );
   const [testEmail, setTestEmail] = useState("");
-  const [copyTestToIt, setCopyTestToIt] = useState(false);
   const [approvedEmails, setApprovedEmails] = useState("");
   const [decisions, setDecisions] = useState<
     Record<string, boolean | undefined>
@@ -303,38 +299,12 @@ export default function EvaluationWorkflow({
       <section className="rounded-lg border border-gray-200 p-5">
         <h2 className="text-xl font-bold">2. E-Mail-Versand</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Die dauerhaften Standardwerte stehen in reviewEmailConfig.ts.
-          Änderungen hier gelten nur für diesen Versand.
-        </p>
-        <p className="mt-1 text-sm text-gray-600">
           Jede produktive Bewerter-Mail geht zusätzlich in CC an{" "}
           {reviewEmailSender.replyTo.join(" und ")}. So liegen dort Kopien für
-          einen manuellen Nachversand. Die Testmail geht nur an die eingegebene
-          Testadresse (optional mit IT in CC). Das Matching bleibt oben im
-          Admin-Bereich sichtbar.
-        </p>
-        <p className="mt-1 text-sm text-gray-600">
-          Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
-          Antwort an: {reviewEmailSender.replyTo.join(", ")}
+          einen manuellen Nachversand. Das Matching bleibt oben im Admin-Bereich
+          sichtbar.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="block text-sm font-medium md:col-span-2">
-            Betreff-Präfix
-            <input
-              className={fieldClass}
-              value={emailSettings.subject}
-              onChange={(event) =>
-                updateEmailSetting("subject", event.target.value)
-              }
-            />
-            <span className="mt-1 block text-xs font-normal text-gray-600">
-              Tatsächlicher Betreff:{" "}
-              {createReviewerSubject(
-                emailSettings.subject,
-                `${selectedPhase.phaseorder + 1}. ${selectedPhase.phaselabel}`,
-              )}
-            </span>
-          </label>
           <label className="block text-sm font-medium">
             Bestätigungsfrist
             <input
@@ -421,19 +391,6 @@ export default function EvaluationWorkflow({
             onChange={(event) => setTestEmail(event.target.value)}
           />
         </label>
-        <p className="mt-1 text-sm text-gray-600">
-          Die Testmail geht an diese Adresse, nicht an die Bewerterliste.
-          Lokales SMTP landet in Mailpit; für dein echtes Postfach muss ein
-          echter SMTP-Server konfiguriert sein.
-        </p>
-        <label className="mt-3 flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={copyTestToIt}
-            onChange={(event) => setCopyTestToIt(event.target.checked)}
-          />
-          IT bei dieser Testmail in CC setzen (CMD erhält keine Testmail)
-        </label>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
@@ -450,9 +407,8 @@ export default function EvaluationWorkflow({
                   phaseId,
                   emailSettings,
                   testEmail,
-                  copyTestToIt,
                 );
-                return `Testmail wurde an ${result.recipient} gesendet${result.copiedToIt ? "; IT stand in CC" : ""}.`;
+                return `Testmail wurde an ${result.recipient} gesendet; IT stand in CC.`;
               });
             }}
           >
@@ -487,6 +443,13 @@ export default function EvaluationWorkflow({
               : "Produktiv an alle senden"}
           </button>
         </div>
+        <p className="mt-4 text-xs text-gray-500">
+          Anmerkung: Die dauerhaften Standardwerte stehen in
+          reviewEmailConfig.ts. Änderungen hier gelten nur für diesen Versand.
+          <br />
+          Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
+          Antwort an: {reviewEmailSender.replyTo.join(", ")}
+        </p>
       </section>
 
       <section className="rounded-lg border border-gray-200 p-5">

@@ -167,21 +167,20 @@ Sender editing, Mailpit and real SMTP setup are documented in
 
 - [ ] After saving a matching, `Testmail senden` and
       `Produktiv an alle senden` become enabled.
-- [ ] Subject prefix and phase note are prefilled; the subject preview includes the round number and phase name. Deadlines must be entered before sending.
+- [ ] The subject comes from versioned configuration and automatically includes the round number and phase name. The phase note is prefilled; deadlines must be entered before sending.
 - [ ] Confirmation, instructions and rating fields accept HTTP(S) links or plain text. Plain text shows a warning and is not rendered as a link.
 - [ ] Changing a field affects the current form without changing the versioned
       defaults in `reviewEmailConfig.ts`.
 - [ ] The automated email test escapes HTML in application labels.
-- [ ] Each assigned team has one explicit `Bewerbung öffnen` link, without a second raw URL; the optional link to all applications is below the tasks.
+- [ ] Each assigned team has one explicit `Bewerbung öffnen` link, without a second raw URL or a link to all applications.
 - [ ] The mail body names the numbered round and ends with `Euer CMD & IT Team`.
 - [ ] The automated email test rejects non-HTTP application links and safely renders free-text references.
 - [ ] The page shows `no-reply@generation-d.org` and Reply-To addresses
       `it@generation-d.org` and `cmd@generation-d.org`.
 - [ ] Enter an email address in `Empfänger der Testmail`; the test button is
-      disabled without one and sends only to the address entered.
+      disabled without one and sends to that address with IT in CC.
 - [ ] Every production reviewer email has `it@generation-d.org` and
-      `cmd@generation-d.org` in CC. Test mails go to the entered test address;
-      optionally IT can be CC'd, but never CMD.
+      `cmd@generation-d.org` in CC. Test mails copy IT, but never CMD.
 - [ ] In user management, applicant test accounts have no invented person name;
       admin and reviewer test accounts have a visible `Test-` prefix.
 
@@ -198,9 +197,9 @@ to any syntactically valid address, then inspect it at
 <http://127.0.0.1:54324>. Mailpit catches it locally; it does **not** deliver
 to a real inbox. Check the From and Reply-To headers there.
 
-Verified through the portal button on 2026-09-19: the page reported
-`Testmail wurde an mailpit-ui-test@example.invalid gesendet.`, and Mailpit
-received the message with the configured sender and both Reply-To addresses.
+An earlier portal-button check on 2026-09-19 used the previous mail headers.
+For the current behavior, confirm Mailpit shows IT in CC and Reply-To, and
+CMD in neither header.
 
 To receive it in a real inbox, replace the local SMTP host and port with your
 organization's SMTP server (usually port `465` or `587`), set `SMTP_USER` and
