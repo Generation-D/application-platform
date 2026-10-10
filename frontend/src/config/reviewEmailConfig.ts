@@ -15,6 +15,9 @@ export const reviewEmailSender = {
   replyTo: ["it@generation-d.org", "cmd@generation-d.org"],
 };
 
+/** Internal inbox for the matching overview after the production send. */
+export const reviewEmailOverviewRecipient = "it@generation-d.org";
+
 /**
  * Adjust these defaults once per competition year. Admins can still change
  * them for a single send on the preview page.

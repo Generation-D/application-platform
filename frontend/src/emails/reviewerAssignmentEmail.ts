@@ -47,7 +47,7 @@ export function createReviewerAssignmentEmail({
     .sort((left, right) => left.label.localeCompare(right.label))
     .map(
       (application) =>
-        `<li><a href="${safeHttpUrl(application.url)}">${escapeHtml(application.label)}</a></li>`,
+        `<li><strong>${escapeHtml(application.label)}</strong>: <a href="${safeHttpUrl(application.url)}">Bewerbung öffnen</a><br><small>${safeHttpUrl(application.url)}</small></li>`,
     )
     .join("");
 
@@ -55,15 +55,15 @@ export function createReviewerAssignmentEmail({
     <p>Hallo,</p>
     <p>danke, dass Du Generation-D bei der Bewertungsrunde <strong>${escapeHtml(phaseLabel)}</strong> unterstützt!</p>
     <p>Bitte bestätige den Erhalt dieser Nachricht bis <strong>${escapeHtml(confirmationDeadline)}</strong>:<br><a href="${safeHttpUrl(confirmationUrl)}">Empfang bestätigen</a></p>
-    <p><strong>Anleitung:</strong><br><a href="${safeHttpUrl(instructionsUrl)}">${safeHttpUrl(instructionsUrl)}</a></p>
-    <p><strong>Bewertungsformular:</strong><br><a href="${safeHttpUrl(ratingUrl)}">${safeHttpUrl(ratingUrl)}</a></p>
-    <p><strong>Deine Bewerbungen im Portal:</strong><br><a href="${safeHttpUrl(reviewUrl)}">${safeHttpUrl(reviewUrl)}</a></p>
     <p>Bitte schließe Deine Bewertungen bis <strong>${escapeHtml(ratingDeadline)}</strong> ab.</p>
-    <p><strong>Deine zu bewertenden Bewerbungen:</strong></p>
+    <p><strong>Deine zu bewertenden Teams:</strong></p>
     <ul>${applicationItems}</ul>
     <p>Bitte melde Dich für die Links im Portal an. Interne Bewerter nutzen ihren Generation-D-Slack-Zugang; die Zustelladresse dieser E-Mail muss nicht identisch sein.</p>
+    <p><strong>Anleitung:</strong><br><a href="${safeHttpUrl(instructionsUrl)}">${safeHttpUrl(instructionsUrl)}</a></p>
+    <p><strong>Bewertungsformular:</strong><br><a href="${safeHttpUrl(ratingUrl)}">${safeHttpUrl(ratingUrl)}</a></p>
     <p><strong>Hinweis für diese Phase:</strong><br>${escapeHtml(phaseNote)}</p>
     <p>Falls Du Fragen hast oder Probleme auftreten, melde Dich gerne jederzeit bei uns.</p>
+    <p><small>Optional: <a href="${safeHttpUrl(reviewUrl)}">Alle Bewerbungen im Portal ansehen</a></small></p>
     <p>Viele Grüße<br>Euer Generation-D Team</p>
   `;
 }

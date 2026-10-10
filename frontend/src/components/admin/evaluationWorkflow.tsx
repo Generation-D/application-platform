@@ -14,6 +14,7 @@ import {
   sendReviewerTestEmail,
 } from "@/actions/evaluation";
 import {
+  reviewEmailOverviewRecipient,
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
@@ -286,7 +287,7 @@ export default function EvaluationWorkflow({
           Änderungen hier gelten nur für diesen Versand.
         </p>
         <p className="mt-1 text-sm text-gray-600">
-          Nach dem Rundversand erhält das no-reply-Postfach eine
+          Nach dem Rundversand erhält {reviewEmailOverviewRecipient} eine
           Matching-Übersicht mit Zustellstatus und Kopien der einzelnen Mails.
           Dort können fehlgeschlagene Nachrichten manuell erneut verschickt
           werden. Das Matching bleibt oben im Admin-Bereich sichtbar.

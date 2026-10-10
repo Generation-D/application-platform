@@ -1,7 +1,7 @@
-import { RedirectType, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
-import { fetch_phases_status, fetch_sections_by_phase } from "@/actions/phase";
+import { fetch_sections_by_phase } from "@/actions/phase";
 import Apl_Header from "@/components/layout/header";
 import {
   SectionQuestionsMap,
@@ -12,11 +12,11 @@ import OverviewButton from "@/components/overviewButton";
 import { ProgressBar } from "@/components/progressbar";
 import Questionnaire, { Question } from "@/components/questions";
 import { SectionData } from "@/store/slices/phaseSlice";
+import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import {
   cached_fetch_phase_by_name,
   cached_fetch_phase_questions,
 } from "@/utils/cached";
-import { createCurrentTimestamp } from "@/utils/helpers";
 
 export default async function Application({
   params,
@@ -25,28 +25,15 @@ export default async function Application({
 }>) {
   const { application_id, phase_name } = await params;
 
-  const phaseData = await cached_fetch_phase_by_name(phase_name);
-  const phasesOutcome = await fetch_phases_status();
-  let failedPhase: boolean = false;
-  phasesOutcome.forEach((thisPhase) => {
-    if (thisPhase.phase.phaseorder < phaseData.phaseorder) {
-      if (!thisPhase.outcome) {
-        failedPhase = true;
-      }
-    }
-  });
-  const phaseOutcome = phasesOutcome.find(
-    (thisPhase) => thisPhase.phase.phaseid == phaseData.phaseid,
-  );
-  if (phaseOutcome == undefined && failedPhase) {
-    return redirect("/", RedirectType.replace);
-  }
-  const currentDate = new Date(createCurrentTimestamp());
-  const startDate = new Date(phaseData.startdate);
+  const supabase = await getSupabaseCookiesUtilClient();
+  const { data: application, error: applicationError } = await supabase
+    .from("application_table")
+    .select("applicationid")
+    .eq("applicationid", application_id)
+    .single();
+  if (applicationError || !application) notFound();
 
-  if (currentDate < startDate) {
-    return redirect("/", RedirectType.replace);
-  }
+  const phaseData = await cached_fetch_phase_by_name(phase_name);
 
   const isEditable = false;
 

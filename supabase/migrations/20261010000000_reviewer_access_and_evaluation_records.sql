@@ -48,13 +48,13 @@ language plpgsql security definer set search_path = public
 as $$
 declare
   offset_val int := (page_number - 1) * page_size;
-  current_role int;
+  profile_role int;
 begin
-  select userrole into current_role
+  select userrole into profile_role
   from public.user_profiles_table
   where userid = auth.uid() and isactive = true;
 
-  if current_role is null or current_role not in (2, 3) then
+  if profile_role is null or profile_role not in (2, 3) then
     raise exception 'Access Denied';
   end if;
 
@@ -62,8 +62,34 @@ begin
   select application.applicationid, application.team_name, users.email
   from public.users users
   join public.application_table application on users.id = application.userid
+  join public.user_profiles_table applicant on applicant.userid = application.userid
+  where applicant.userrole = 1 and applicant.isactive = true
   order by application.applicationid
   limit page_size offset offset_val;
+end;
+$$;
+
+create or replace function public.count_reviewable_applications()
+returns bigint
+language plpgsql security definer set search_path = public
+as $$
+declare
+  profile_role int;
+  application_count bigint;
+begin
+  select userrole into profile_role
+  from public.user_profiles_table
+  where userid = auth.uid() and isactive = true;
+
+  if profile_role is null or profile_role not in (2, 3) then
+    raise exception 'Access Denied';
+  end if;
+
+  select count(*) into application_count
+  from public.application_table application
+  join public.user_profiles_table applicant on applicant.userid = application.userid
+  where applicant.userrole = 1 and applicant.isactive = true;
+  return application_count;
 end;
 $$;
 
