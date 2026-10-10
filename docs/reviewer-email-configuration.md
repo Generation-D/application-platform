@@ -5,7 +5,7 @@ The reviewer email has two separate kinds of settings:
 | Setting | Where to change it | What it controls |
 | --- | --- | --- |
 | `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` headers; `replyTo` addresses also receive every production reviewer mail in CC |
-| `reviewEmailDefaults` | The same file | Annual subject, deadlines, links and phase note |
+| `reviewEmailDefaults` | The same file | Annual subject prefix, deadlines, links or text, and phase note; round number and phase name are appended automatically |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Server environment | Which SMTP server actually sends the email and how the portal authenticates |
 | `NEXT_PUBLIC_SITE_URL` | Server environment | Base URL for the review link in the message |
 
@@ -25,7 +25,9 @@ message and can forward it manually if needed. There is no separate overview
 mail. SMTP acceptance does not guarantee final inbox delivery, and SMTP does
 not itself save outgoing messages in the sender's Sent folder. If a send
 partially fails, some reviewer mails may already have been accepted; check
-the CC inboxes before repeating the round-send action. Test mails have no CC.
+the CC inboxes before repeating the round-send action. Test mails have no CC
+by default; the admin can explicitly include only IT in CC for a test. Test
+mails also use only IT as Reply-To, while production mails retain both addresses.
 
 ## Local Mailpit: safe test without real delivery
 
@@ -46,6 +48,8 @@ the environment file. On `/admin/evaluation`, enter an address in **Empfänger
 der Testmail** and click **Testmail senden**. The message appears in Mailpit,
 regardless of the address entered; it does **not** reach that address's real
 inbox. Inspect the From, Reply-To, subject, body and review link in Mailpit.
+The three reference fields also accept plain text. A warning appears before
+sending; only HTTP(S) entries become clickable links in the message.
 
 ## Real inbox: authenticated SMTP
 
@@ -67,8 +71,10 @@ and STARTTLS when offered on other ports such as `587`, with normal certificate
 validation. Make sure the SMTP account may send as the configured From address.
 Restart the frontend, confirm you are using the intended Supabase environment,
 then enter **your own real inbox address** in **Empfänger der Testmail** and
-click **Testmail senden**. This sends one sample message only to that address;
-it does not send to the reviewers. Check delivery, spam folder and headers.
+click **Testmail senden**. This sends one sample message to that address, not
+to the reviewers. To test a real copy to IT, select **IT bei dieser Testmail
+in CC setzen** first; CMD is never CC'd on a test mail. Check delivery, spam
+folder and headers.
 Do not click **Produktiv an alle senden** for a test.
 
 For a deployed portal, set the same four `SMTP_*` values and

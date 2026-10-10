@@ -7,10 +7,14 @@ import { z } from "zod";
 import { sendEmail } from "@/actions/smtp";
 import {
   reviewEmailDefaults,
+  reviewEmailItAddress,
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
-import { createReviewerAssignmentEmail } from "@/emails/reviewerAssignmentEmail";
+import {
+  createReviewerAssignmentEmail,
+  createReviewerSubject,
+} from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import {
   getSupabaseCookiesUtilClient,
@@ -88,10 +92,10 @@ async function readMatching(
 const emailSettingsSchema = z.object({
   subject: z.string().trim().min(1),
   confirmationDeadline: z.string().trim().min(1),
-  confirmationUrl: z.url(),
+  confirmationUrl: z.string().trim(),
   ratingDeadline: z.string().trim().min(1),
-  instructionsUrl: z.url(),
-  ratingUrl: z.url(),
+  instructionsUrl: z.string().trim(),
+  ratingUrl: z.string().trim(),
   phaseNote: z.string().trim().min(1),
 });
 
@@ -418,7 +422,7 @@ async function buildReviewerEmails(
   const [{ data: phase, error: phaseError }, assignments] = await Promise.all([
     supabaseAdmin
       .from("phase_table")
-      .select("phaseid,phaselabel")
+      .select("phaseid,phaseorder,phaselabel")
       .eq("phaseid", phaseId)
       .single(),
     readMatching(supabaseAdmin, phaseId),
@@ -437,13 +441,14 @@ async function buildReviewerEmails(
   }
 
   const reviewUrl = `${getURL()}review/applications`;
+  const roundLabel = `${phase.phaseorder + 1}. ${phase.phaselabel}`;
   const messages = [...assignmentsByReviewer.entries()].map(
     ([reviewerEmail, reviewerAssignments]) => {
       return {
         reviewerEmail,
-        subject: settings.subject,
+        subject: createReviewerSubject(settings.subject, roundLabel),
         html: createReviewerAssignmentEmail({
-          phaseLabel: phase.phaselabel,
+          phaseLabel: roundLabel,
           confirmationDeadline: settings.confirmationDeadline,
           confirmationUrl: settings.confirmationUrl,
           ratingDeadline: settings.ratingDeadline,
@@ -467,17 +472,20 @@ export async function sendReviewerTestEmail(
   phaseId: string,
   settings: ReviewEmailDefaults,
   recipient: string,
+  copyToIt = false,
 ) {
   const { messages } = await buildReviewerEmails(phaseId, settings);
   const testRecipient = z.email().parse(recipient.trim());
   const example = messages[0];
+  const testSender = { ...reviewEmailSender, replyTo: [reviewEmailItAddress] };
   await sendEmail(
     testRecipient,
     `[TEST] ${example.subject}`,
     `<p><strong>Testmail für ${example.reviewerEmail}</strong></p>${example.html}`,
-    reviewEmailSender,
+    testSender,
+    copyToIt ? [reviewEmailItAddress] : undefined,
   );
-  return { recipient: testRecipient };
+  return { recipient: testRecipient, copiedToIt: copyToIt };
 }
 
 export async function sendReviewerAssignmentEmails(

@@ -9,10 +9,12 @@ export interface ReviewEmailDefaults {
 }
 
 /** Edit these mail headers here. Production reviewer mails also CC the Reply-To addresses. */
+export const reviewEmailItAddress = "it@generation-d.org";
+
 export const reviewEmailSender = {
   name: "no-reply",
   email: "no-reply@generation-d.org",
-  replyTo: ["it@generation-d.org", "cmd@generation-d.org"],
+  replyTo: [reviewEmailItAddress, "cmd@generation-d.org"],
 };
 
 /**
@@ -20,7 +22,7 @@ export const reviewEmailSender = {
  * them for a single send on the preview page.
  */
 export const reviewEmailDefaults: ReviewEmailDefaults = {
-  subject: "[Generation-D] Bewertungsrunde",
+  subject: "[Generation-D]",
   confirmationDeadline: "",
   confirmationUrl: "",
   ratingDeadline: "",

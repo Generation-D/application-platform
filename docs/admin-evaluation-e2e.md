@@ -39,14 +39,21 @@ die CC-Kopien an IT und CMD. **Nicht** mit einer echten Bewerterliste testen.
 3. „Matching verbindlich speichern“ und nach einem Reload prüfen, ob es
    erhalten bleibt. Das ersetzt ein eventuell bereits vorhandenes **lokales**
    Matching dieser Phase.
-4. Betreff mit `[E2E-TEST]` beginnen, die Pflichtfelder für Fristen und Links
-   mit gültigen `http://`- oder `https://`-Werten füllen. Für einen lokalen
-   Linktest muss `NEXT_PUBLIC_SITE_URL=http://localhost:3000` bleiben.
+4. Betreff-Präfix auf `[E2E-TEST]` setzen und Fristen eintragen. Die konkrete
+   Runde wird automatisch ergänzt, z. B. `[E2E-TEST] Bewertungsrunde 1.
+   Kurzbewerbung`. Die drei Felder
+   für Bestätigung, Anleitung und Bewertungsformular akzeptieren entweder
+   HTTP(S)-Links oder Freitext. Bei Freitext erscheint eine Warnung; in der
+   Mail wird er nicht anklickbar. Für einen lokalen Linktest muss
+   `NEXT_PUBLIC_SITE_URL=http://localhost:3000` bleiben.
 5. Als Testempfänger dieselbe private Adresse eintragen und „Testmail senden“.
    Erwartung in Mailpit: genau eine neue Nachricht mit Absender
    `no-reply@generation-d.org` und der privaten Testadresse als Empfänger,
-   `Reply-To: it@generation-d.org, cmd@generation-d.org`, **kein CC**,
-   `[TEST]` im Betreff und anklickbare Teamlinks.
+   `Reply-To: it@generation-d.org`, **kein CC** solange
+   „IT bei dieser Testmail in CC setzen“ nicht aktiviert ist,
+   `[TEST]` im Betreff und anklickbare Teamlinks, ohne darunter wiederholte
+   rohe URLs. Der Text nennt „Bewertungsrunde 1. Kurzbewerbung“ und endet mit
+   „Euer CMD & IT Team“.
 6. Mit dem lokalen Reviewer-Konto im Portal anmelden und die Links aus der
    Mail öffnen. Die private Zustelladresse muss dafür **nicht** als Login
    existieren. Nach Rückkehr als Admin den produktiven Versand bestätigen.
@@ -78,13 +85,15 @@ Deployment-Variablen, niemals in Git oder einen PR-Kommentar. Benötigt werden
 der als `no-reply@generation-d.org` senden darf. Die Werte und die Einrichtung
 sind in [der SMTP-Anleitung](reviewer-email-configuration.md) beschrieben.
 
-Nach Umstellung auf echten SMTP und Neustart des Portals zunächst **nur** die
-Testmail an die private Testadresse schicken: Eingang, Spam-Ordner, Absender,
-Reply-To und Teamlinks prüfen. Die Testmail hat absichtlich **kein CC**.
-Um auch CC real zu prüfen, das gespeicherte Ein-Personen-Matching kontrollieren
-und dann **einmal** „Produktiv an alle senden“. Erwartung: eine Nachricht an
-die private Testadresse sowie je eine CC-Kopie in `it@generation-d.org` und
-`cmd@generation-d.org`. Danach `SMTP_HOST`/`SMTP_PORT` wieder auf Mailpit
-stellen und das Portal neu starten, damit weitere lokale Tests nicht
-versehentlich echte Mails verschicken. Ein SMTP-Erfolg bestätigt die Annahme
-durch den Server, nicht die endgültige Zustellung an jedes Postfach.
+Nach Umstellung auf echten SMTP und Neustart des Portals zunächst nur die
+Testmail an die private Testadresse schicken. Für den gewünschten Test die
+Option **„IT bei dieser Testmail in CC setzen“** aktivieren. Erwartung: eine
+Nachricht an die private Testadresse und eine Kopie an
+`it@generation-d.org`; **CMD erhält keine Testmail und steht auch nicht im
+Reply-To der Testmail**. Eingang, Spam-Ordner,
+Absender, Reply-To und Teamlinks prüfen. Den produktiven Rundversand für
+diesen Echtmail-Test nicht verwenden: Dort stünden IT **und** CMD in CC.
+Danach `SMTP_HOST`/`SMTP_PORT` wieder auf Mailpit stellen und das Portal neu
+starten, damit weitere lokale Tests nicht versehentlich echte Mails
+verschicken. Ein SMTP-Erfolg bestätigt die Annahme durch den Server, nicht
+die endgültige Zustellung an jedes Postfach.

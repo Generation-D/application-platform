@@ -3,6 +3,11 @@ export interface ReviewerEmailApplication {
   url: string;
 }
 
+export function createReviewerSubject(prefix: string, roundLabel: string) {
+  const cleanPrefix = prefix.trim().replace(/\s+Bewertungsrunde$/i, "");
+  return `${cleanPrefix} Bewertungsrunde ${roundLabel}`;
+}
+
 export interface ReviewerAssignmentEmailData {
   phaseLabel: string;
   confirmationDeadline: string;
@@ -32,6 +37,22 @@ function safeHttpUrl(value: string) {
   return escapeHtml(url.toString());
 }
 
+export function isHttpUrl(value: string) {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function renderLinkOrText(value: string, linkLabel: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "Keine Angabe";
+  if (!isHttpUrl(trimmed)) return escapeHtml(trimmed);
+  return `<a href="${safeHttpUrl(trimmed)}">${escapeHtml(linkLabel)}</a>`;
+}
+
 export function createReviewerAssignmentEmail({
   phaseLabel,
   confirmationDeadline,
@@ -47,23 +68,23 @@ export function createReviewerAssignmentEmail({
     .sort((left, right) => left.label.localeCompare(right.label))
     .map(
       (application) =>
-        `<li><strong>${escapeHtml(application.label)}</strong>: <a href="${safeHttpUrl(application.url)}">Bewerbung öffnen</a><br><small>${safeHttpUrl(application.url)}</small></li>`,
+        `<li><strong>${escapeHtml(application.label)}</strong>: <a href="${safeHttpUrl(application.url)}">Bewerbung öffnen</a></li>`,
     )
     .join("");
 
   return `
     <p>Hallo,</p>
     <p>danke, dass Du Generation-D bei der Bewertungsrunde <strong>${escapeHtml(phaseLabel)}</strong> unterstützt!</p>
-    <p>Bitte bestätige den Erhalt dieser Nachricht bis <strong>${escapeHtml(confirmationDeadline)}</strong>:<br><a href="${safeHttpUrl(confirmationUrl)}">Empfang bestätigen</a></p>
+    <p>Bitte bestätige den Erhalt dieser Nachricht bis <strong>${escapeHtml(confirmationDeadline)}</strong>:<br>${renderLinkOrText(confirmationUrl, "Empfang bestätigen")}</p>
     <p>Bitte schließe Deine Bewertungen bis <strong>${escapeHtml(ratingDeadline)}</strong> ab.</p>
     <p><strong>Deine zu bewertenden Teams:</strong></p>
     <ul>${applicationItems}</ul>
     <p>Bitte melde Dich für die Links im Portal an. Interne Bewerter nutzen ihren Generation-D-Slack-Zugang; die Zustelladresse dieser E-Mail muss nicht identisch sein.</p>
-    <p><strong>Anleitung:</strong><br><a href="${safeHttpUrl(instructionsUrl)}">${safeHttpUrl(instructionsUrl)}</a></p>
-    <p><strong>Bewertungsformular:</strong><br><a href="${safeHttpUrl(ratingUrl)}">${safeHttpUrl(ratingUrl)}</a></p>
+    <p><strong>Anleitung:</strong><br>${renderLinkOrText(instructionsUrl, instructionsUrl)}</p>
+    <p><strong>Bewertungsformular:</strong><br>${renderLinkOrText(ratingUrl, ratingUrl)}</p>
     <p><strong>Hinweis für diese Phase:</strong><br>${escapeHtml(phaseNote)}</p>
     <p>Falls Du Fragen hast oder Probleme auftreten, melde Dich gerne jederzeit bei uns.</p>
     <p><small>Optional: <a href="${safeHttpUrl(reviewUrl)}">Alle Bewerbungen im Portal ansehen</a></small></p>
-    <p>Viele Grüße<br>Euer Generation-D Team</p>
+    <p>Viele Grüße<br>Euer CMD &amp; IT Team</p>
   `;
 }

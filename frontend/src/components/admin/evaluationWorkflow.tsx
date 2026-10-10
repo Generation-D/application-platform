@@ -17,6 +17,10 @@ import {
   reviewEmailSender,
   ReviewEmailDefaults,
 } from "@/config/reviewEmailConfig";
+import {
+  createReviewerSubject,
+  isHttpUrl,
+} from "@/emails/reviewerAssignmentEmail";
 import { ReviewerAssignment } from "@/utils/reviewerMatching";
 
 function errorMessage(error: unknown) {
@@ -51,6 +55,7 @@ export default function EvaluationWorkflow({
     data.emailDefaults,
   );
   const [testEmail, setTestEmail] = useState("");
+  const [copyTestToIt, setCopyTestToIt] = useState(false);
   const [approvedEmails, setApprovedEmails] = useState("");
   const [decisions, setDecisions] = useState<
     Record<string, boolean | undefined>
@@ -76,6 +81,22 @@ export default function EvaluationWorkflow({
   const eligibleApplications = data.applications.filter((application) =>
     eligibleApplicantIds.has(application.applicantUserId),
   );
+  const unlinkedReferences = [
+    ["Bestätigung", emailSettings.confirmationUrl],
+    ["Anleitung", emailSettings.instructionsUrl],
+    ["Bewertungsformular", emailSettings.ratingUrl],
+  ]
+    .filter(([, value]) => !isHttpUrl(value))
+    .map(([label]) => label);
+
+  function confirmUnlinkedReferences() {
+    return (
+      unlinkedReferences.length === 0 ||
+      window.confirm(
+        `Diese Angaben werden in der E-Mail nur als Text angezeigt, nicht als anklickbare Links: ${unlinkedReferences.join(", ")}. Trotzdem senden?`,
+      )
+    );
+  }
 
   async function runAction(name: string, action: () => Promise<string>) {
     setPendingAction(name);
@@ -289,7 +310,8 @@ export default function EvaluationWorkflow({
           Jede produktive Bewerter-Mail geht zusätzlich in CC an{" "}
           {reviewEmailSender.replyTo.join(" und ")}. So liegen dort Kopien für
           einen manuellen Nachversand. Die Testmail geht nur an die eingegebene
-          Testadresse. Das Matching bleibt oben im Admin-Bereich sichtbar.
+          Testadresse (optional mit IT in CC). Das Matching bleibt oben im
+          Admin-Bereich sichtbar.
         </p>
         <p className="mt-1 text-sm text-gray-600">
           Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
@@ -297,7 +319,7 @@ export default function EvaluationWorkflow({
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium md:col-span-2">
-            Betreff
+            Betreff-Präfix
             <input
               className={fieldClass}
               value={emailSettings.subject}
@@ -305,6 +327,13 @@ export default function EvaluationWorkflow({
                 updateEmailSetting("subject", event.target.value)
               }
             />
+            <span className="mt-1 block text-xs font-normal text-gray-600">
+              Tatsächlicher Betreff:{" "}
+              {createReviewerSubject(
+                emailSettings.subject,
+                `${selectedPhase.phaseorder + 1}. ${selectedPhase.phaselabel}`,
+              )}
+            </span>
           </label>
           <label className="block text-sm font-medium">
             Bestätigungsfrist
@@ -317,10 +346,10 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bestätigungsformular
+            Bestätigung (Link oder Hinweis)
             <input
               className={fieldClass}
-              type="url"
+              type="text"
               value={emailSettings.confirmationUrl}
               onChange={(event) =>
                 updateEmailSetting("confirmationUrl", event.target.value)
@@ -338,10 +367,10 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Anleitung
+            Anleitung (Link oder Hinweis)
             <input
               className={fieldClass}
-              type="url"
+              type="text"
               value={emailSettings.instructionsUrl}
               onChange={(event) =>
                 updateEmailSetting("instructionsUrl", event.target.value)
@@ -349,10 +378,10 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bewertungsformular
+            Bewertungsformular (Link oder Hinweis)
             <input
               className={fieldClass}
-              type="url"
+              type="text"
               value={emailSettings.ratingUrl}
               onChange={(event) =>
                 updateEmailSetting("ratingUrl", event.target.value)
@@ -371,6 +400,17 @@ export default function EvaluationWorkflow({
             />
           </label>
         </div>
+        {unlinkedReferences.length > 0 && (
+          <p
+            className="mt-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+            role="alert"
+          >
+            Hinweis: {unlinkedReferences.join(", ")}{" "}
+            {unlinkedReferences.length === 1 ? "ist" : "sind"} keine
+            HTTP(S)-Adresse. Diese Angaben erscheinen in der Mail als Text statt
+            als anklickbare Links.
+          </p>
+        )}
         <label className="mt-4 block max-w-md text-sm font-medium">
           Empfänger der Testmail
           <input
@@ -382,10 +422,18 @@ export default function EvaluationWorkflow({
           />
         </label>
         <p className="mt-1 text-sm text-gray-600">
-          Nur die Testmail geht an diese Adresse. Lokales SMTP landet in
-          Mailpit; für dein echtes Postfach muss ein echter SMTP-Server
-          konfiguriert sein.
+          Die Testmail geht an diese Adresse, nicht an die Bewerterliste.
+          Lokales SMTP landet in Mailpit; für dein echtes Postfach muss ein
+          echter SMTP-Server konfiguriert sein.
         </p>
+        <label className="mt-3 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={copyTestToIt}
+            onChange={(event) => setCopyTestToIt(event.target.checked)}
+          />
+          IT bei dieser Testmail in CC setzen (CMD erhält keine Testmail)
+        </label>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
@@ -395,16 +443,18 @@ export default function EvaluationWorkflow({
               pendingAction !== "" ||
               !testEmail.trim()
             }
-            onClick={() =>
+            onClick={() => {
+              if (!confirmUnlinkedReferences()) return;
               runAction("test-email", async () => {
                 const result = await sendReviewerTestEmail(
                   phaseId,
                   emailSettings,
                   testEmail,
+                  copyTestToIt,
                 );
-                return `Testmail wurde an ${result.recipient} gesendet.`;
-              })
-            }
+                return `Testmail wurde an ${result.recipient} gesendet${result.copiedToIt ? "; IT stand in CC" : ""}.`;
+              });
+            }}
           >
             {pendingAction === "test-email"
               ? "Wird gesendet..."
@@ -415,6 +465,7 @@ export default function EvaluationWorkflow({
             className="apl-alert-button-fixed"
             disabled={currentAssignments.length === 0 || pendingAction !== ""}
             onClick={() => {
+              if (!confirmUnlinkedReferences()) return;
               if (
                 !window.confirm(
                   "Die Zuweisungen werden jetzt produktiv an alle Bewerter dieser Phase versendet. Fortfahren?",
