@@ -74,6 +74,9 @@ export default function UserList({ users }: { users: userData[] }) {
                 E-Mail
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Rolle
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -86,6 +89,16 @@ export default function UserList({ users }: { users: userData[] }) {
               <tr key={user.id}>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   {user.email}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  <input
+                    aria-label={`ID von ${user.email}`}
+                    className="w-40 cursor-text bg-transparent font-mono text-xs text-gray-600"
+                    readOnly
+                    title="Doppelklick markiert die vollständige ID"
+                    value={user.id}
+                    onDoubleClick={(event) => event.currentTarget.select()}
+                  />
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   <UserSpecificRoleDropdown

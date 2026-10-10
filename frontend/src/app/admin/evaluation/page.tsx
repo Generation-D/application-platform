@@ -12,7 +12,7 @@ export default async function EvaluationPage() {
       <OverviewButton slug="admin" text="<- Admin-Übersicht" />
       <h1 className="mt-6 text-2xl font-bold">Bewertungsprozess</h1>
       <p className="mt-2 text-sm text-gray-600">
-        Matching erstellen, Bewerter informieren und die Phase abschließen.
+        Matching erstellen, Bewerter informieren und Ergebnisse veröffentlichen.
       </p>
       <EvaluationWorkflow data={data} />
     </div>

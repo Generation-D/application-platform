@@ -89,13 +89,12 @@ export default function EvaluationWorkflow({
   ]
     .filter(([, value]) => !isHttpUrl(value))
     .map(([label]) => label);
+  const unlinkedWarning = `${unlinkedReferences.join(", ")}: ${unlinkedReferences.length === 1 ? "kein anklickbarer Link" : "keine anklickbaren Links"}. Diese Angaben erscheinen in der E-Mail nur als Text.`;
 
   function confirmUnlinkedReferences() {
     return (
       unlinkedReferences.length === 0 ||
-      window.confirm(
-        `${unlinkedReferences.join(", ")} ${unlinkedReferences.length === 1 ? "ist kein anklickbarer Link" : "sind keine anklickbaren Links"} und erscheint nur als Text in der E-Mail. Trotzdem senden?`,
-      )
+      window.confirm(`${unlinkedWarning} Trotzdem senden?`)
     );
   }
 
@@ -318,7 +317,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bestätigung
+            Bestätigung (Link)
             <input
               className={fieldClass}
               type="text"
@@ -339,7 +338,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Anleitung
+            Anleitung (Link)
             <input
               className={fieldClass}
               type="text"
@@ -350,7 +349,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bewertungsformular
+            Bewertungsformular (Link)
             <input
               className={fieldClass}
               type="text"
@@ -377,11 +376,7 @@ export default function EvaluationWorkflow({
             className="mt-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
             role="alert"
           >
-            {unlinkedReferences.join(", ")}{" "}
-            {unlinkedReferences.length === 1
-              ? "ist kein anklickbarer Link"
-              : "sind keine anklickbaren Links"}
-            . Der Inhalt erscheint in der E-Mail nur als Text.
+            {unlinkedWarning}
           </p>
         )}
         <label className="mt-4 block max-w-md text-sm font-medium">
