@@ -11,6 +11,9 @@ Bewertungsprozess-Repositories:
 4. Bestandene E-Mail-Adressen einfügen oder Entscheidungen einzeln setzen.
 5. Phase abschließen.
 
+Für einen sicheren Durchlauf mit genau einer privaten Testadresse siehe
+[End-to-End-Test](docs/admin-evaluation-e2e.md).
+
 Die CSV-Adresse ist ausschließlich die Zustelladresse; sie muss nicht mit dem
 Slack-/Portal-Login übereinstimmen. Das gespeicherte Matching ist im Admin-
 Bereich sichtbar. Jede produktive Bewerter-Mail setzt `it@generation-d.org`
