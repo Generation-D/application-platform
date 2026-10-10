@@ -14,7 +14,6 @@ const log = createLogger("actions/admin");
 
 export interface userData {
   id: string;
-  name: string;
   email: string | undefined;
   last_sign_in_at: string | undefined;
   provider: string | undefined;
@@ -41,10 +40,6 @@ function mergeUserDatas(
 
     return {
       id: user.id,
-      name:
-        typeof user.user_metadata?.full_name === "string"
-          ? user.user_metadata.full_name
-          : "",
       email: user.email!,
       last_sign_in_at: user.last_sign_in_at,
       provider: user.app_metadata?.provider,

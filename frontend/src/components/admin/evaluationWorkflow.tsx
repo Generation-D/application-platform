@@ -94,7 +94,7 @@ export default function EvaluationWorkflow({
     return (
       unlinkedReferences.length === 0 ||
       window.confirm(
-        `Diese Angaben werden in der E-Mail nur als Text angezeigt, nicht als anklickbare Links: ${unlinkedReferences.join(", ")}. Trotzdem senden?`,
+        `${unlinkedReferences.join(", ")} ${unlinkedReferences.length === 1 ? "ist kein anklickbarer Link" : "sind keine anklickbaren Links"} und erscheint nur als Text in der E-Mail. Trotzdem senden?`,
       )
     );
   }
@@ -166,9 +166,8 @@ export default function EvaluationWorkflow({
       <section className="rounded-lg border border-gray-200 p-5">
         <h2 className="text-xl font-bold">1. Matching</h2>
         <p className="mt-2 text-sm text-gray-600">
-          {eligibleApplications.length} Startups sind für diese Phase
-          teilnahmeberechtigt. Die CSV benötigt die Spalten name, email, new und
-          max.
+          {eligibleApplications.length} teilnahmeberechtigte Startups. Die
+          Bewerter-CSV benötigt die Spalten name, email, new und max.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium">
@@ -206,7 +205,7 @@ export default function EvaluationWorkflow({
                 reviewersPerApplication,
               );
               setPreview(result);
-              return `${result.length} Zuweisungen wurden erfolgreich berechnet.`;
+              return `${result.length} Zuweisungen in der Vorschau.`;
             })
           }
         >
@@ -261,7 +260,7 @@ export default function EvaluationWorkflow({
                   );
                   setPreview([]);
                   router.refresh();
-                  return `${result.savedAssignments} Zuweisungen wurden gespeichert.`;
+                  return `${result.savedAssignments} Zuweisungen gespeichert.`;
                 });
               }}
             >
@@ -304,10 +303,8 @@ export default function EvaluationWorkflow({
       <section className="rounded-lg border border-gray-200 p-5">
         <h2 className="text-xl font-bold">2. E-Mail-Versand</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Jede produktive Bewerter-Mail geht zusätzlich in CC an{" "}
-          {reviewEmailSender.replyTo.join(" und ")}. So liegen dort Kopien für
-          einen manuellen Nachversand. Das Matching bleibt oben im Admin-Bereich
-          sichtbar.
+          IT und CMD erhalten beim Rundversand Kopien für einen möglichen
+          Nachversand.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium">
@@ -321,7 +318,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bestätigung (Link oder Hinweis)
+            Bestätigung
             <input
               className={fieldClass}
               type="text"
@@ -342,7 +339,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Anleitung (Link oder Hinweis)
+            Anleitung
             <input
               className={fieldClass}
               type="text"
@@ -353,7 +350,7 @@ export default function EvaluationWorkflow({
             />
           </label>
           <label className="block text-sm font-medium">
-            Bewertungsformular (Link oder Hinweis)
+            Bewertungsformular
             <input
               className={fieldClass}
               type="text"
@@ -380,10 +377,11 @@ export default function EvaluationWorkflow({
             className="mt-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
             role="alert"
           >
-            Hinweis: {unlinkedReferences.join(", ")}{" "}
-            {unlinkedReferences.length === 1 ? "ist" : "sind"} keine
-            HTTP(S)-Adresse. Diese Angaben erscheinen in der Mail als Text statt
-            als anklickbare Links.
+            {unlinkedReferences.join(", ")}{" "}
+            {unlinkedReferences.length === 1
+              ? "ist kein anklickbarer Link"
+              : "sind keine anklickbaren Links"}
+            . Der Inhalt erscheint in der E-Mail nur als Text.
           </p>
         )}
         <label className="mt-4 block max-w-md text-sm font-medium">
@@ -427,8 +425,8 @@ export default function EvaluationWorkflow({
             </label>
           </div>
           <p className="mt-1 text-xs text-gray-600">
-            Für Testmails frei wählbar. Beim produktiven Versand sind beide
-            Kopien erforderlich.
+            Bei Testmails frei wählbar; für den Rundversand sind beide Kopien
+            Pflicht.
           </p>
         </fieldset>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -491,8 +489,8 @@ export default function EvaluationWorkflow({
           </button>
         </div>
         <p className="mt-4 text-xs text-gray-500">
-          Anmerkung: Die dauerhaften Standardwerte stehen in
-          reviewEmailConfig.ts. Änderungen hier gelten nur für diesen Versand.
+          Änderungen hier gelten nur für diesen Versand. Dauerhafte
+          Standardwerte: reviewEmailConfig.ts.
           <br />
           Absender: {reviewEmailSender.name} &lt;{reviewEmailSender.email}&gt; ·
           Antwort an: {reviewEmailSender.replyTo.join(", ")}
@@ -502,8 +500,8 @@ export default function EvaluationWorkflow({
       <section className="rounded-lg border border-gray-200 p-5">
         <h2 className="text-xl font-bold">3. Entscheidungen und Abschluss</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Jede Entscheidung wird sofort gespeichert. Eine Phase kann erst
-          abgeschlossen werden, wenn alle Startups entschieden sind.
+          Entscheidungen werden sofort gespeichert. Erst wenn alle Startups
+          entschieden sind, kannst du die Ergebnisse veröffentlichen.
         </p>
         {selectedPhase.finished_evaluation === null && (
           <div className="mt-4 rounded bg-gray-50 p-4">
@@ -518,9 +516,7 @@ export default function EvaluationWorkflow({
               />
             </label>
             <p className="mt-2 text-xs text-gray-600">
-              Beim Anwenden werden alle aufgeführten Startups als bestanden und
-              alle übrigen teilnahmeberechtigten Startups als nicht bestanden
-              gespeichert.
+              Aufgeführte Startups: bestanden. Alle übrigen: nicht bestanden.
             </p>
             <button
               type="button"
@@ -529,7 +525,7 @@ export default function EvaluationWorkflow({
               onClick={() => {
                 if (
                   !window.confirm(
-                    `Die Liste setzt die Entscheidung für alle ${eligibleApplications.length} Startups. Fortfahren?`,
+                    `Entscheidungen für alle ${eligibleApplications.length} Startups setzen?`,
                   )
                 ) {
                   return;
@@ -635,7 +631,7 @@ export default function EvaluationWorkflow({
         </div>
         {selectedPhase.finished_evaluation ? (
           <p className="mt-4 font-semibold text-green-700">
-            Phase abgeschlossen am {selectedPhase.finished_evaluation}
+            Ergebnisse veröffentlicht am {selectedPhase.finished_evaluation}
           </p>
         ) : (
           <button
@@ -645,7 +641,7 @@ export default function EvaluationWorkflow({
             onClick={() => {
               if (
                 !window.confirm(
-                  "Nach dem Abschluss werden die Ergebnisse für Bewerber sichtbar. Phase wirklich abschließen?",
+                  "Ergebnisse jetzt veröffentlichen? Danach sind die Entscheidungen für Bewerber sichtbar und können hier nicht mehr geändert werden.",
                 )
               ) {
                 return;
@@ -653,13 +649,13 @@ export default function EvaluationWorkflow({
               runAction("finish", async () => {
                 await finishPhaseEvaluation(phaseId);
                 router.refresh();
-                return "Die Phase wurde abgeschlossen.";
+                return "Ergebnisse veröffentlicht. Die Phase ist abgeschlossen.";
               });
             }}
           >
             {pendingAction === "finish"
               ? "Phase wird abgeschlossen..."
-              : "Phase verbindlich abschließen"}
+              : "Ergebnisse veröffentlichen"}
           </button>
         )}
       </section>
