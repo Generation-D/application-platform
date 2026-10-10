@@ -11,6 +11,7 @@ import {
 import {
   createReviewerAssignmentEmail,
   createReviewerSubject,
+  escapeHtml,
   isHttpUrl,
 } from "../src/emails/reviewerAssignmentEmail";
 
@@ -84,6 +85,13 @@ test("rejects non-http application links", () => {
       phaseNote: "Hinweis",
       applications: [{ label: "Bewerbung", url: "javascript:alert(1)" }],
     }),
+  );
+});
+
+test("escapes the reviewer address in the test email heading", () => {
+  assert.equal(
+    escapeHtml('reviewer@example.org"><img src=x onerror=alert(1)>'),
+    "reviewer@example.org&quot;&gt;&lt;img src=x onerror=alert(1)&gt;",
   );
 });
 
