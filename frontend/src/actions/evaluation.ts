@@ -440,7 +440,6 @@ async function buildReviewerEmails(
     assignmentsByReviewer.set(assignment.reviewerEmail, reviewerAssignments);
   }
 
-  const reviewUrl = `${getURL()}review/applications`;
   const roundLabel = `${phase.phaseorder + 1}. ${phase.phaselabel}`;
   const messages = [...assignmentsByReviewer.entries()].map(
     ([reviewerEmail, reviewerAssignments]) => {
@@ -454,7 +453,6 @@ async function buildReviewerEmails(
           ratingDeadline: settings.ratingDeadline,
           instructionsUrl: settings.instructionsUrl,
           ratingUrl: settings.ratingUrl,
-          reviewUrl,
           phaseNote: settings.phaseNote,
           applications: reviewerAssignments.map((assignment) => ({
             label: assignment.teamName,
@@ -472,7 +470,6 @@ export async function sendReviewerTestEmail(
   phaseId: string,
   settings: ReviewEmailDefaults,
   recipient: string,
-  copyToIt = false,
 ) {
   const { messages } = await buildReviewerEmails(phaseId, settings);
   const testRecipient = z.email().parse(recipient.trim());
@@ -483,9 +480,9 @@ export async function sendReviewerTestEmail(
     `[TEST] ${example.subject}`,
     `<p><strong>Testmail für ${example.reviewerEmail}</strong></p>${example.html}`,
     testSender,
-    copyToIt ? [reviewEmailItAddress] : undefined,
+    [reviewEmailItAddress],
   );
-  return { recipient: testRecipient, copiedToIt: copyToIt };
+  return { recipient: testRecipient };
 }
 
 export async function sendReviewerAssignmentEmails(

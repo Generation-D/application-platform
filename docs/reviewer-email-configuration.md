@@ -25,9 +25,8 @@ message and can forward it manually if needed. There is no separate overview
 mail. SMTP acceptance does not guarantee final inbox delivery, and SMTP does
 not itself save outgoing messages in the sender's Sent folder. If a send
 partially fails, some reviewer mails may already have been accepted; check
-the CC inboxes before repeating the round-send action. Test mails have no CC
-by default; the admin can explicitly include only IT in CC for a test. Test
-mails also use only IT as Reply-To, while production mails retain both addresses.
+the CC inboxes before repeating the round-send action. Test mails go to the
+entered address with IT in CC and Reply-To; CMD receives no test mail.
 
 ## Local Mailpit: safe test without real delivery
 
@@ -71,10 +70,13 @@ and STARTTLS when offered on other ports such as `587`, with normal certificate
 validation. Make sure the SMTP account may send as the configured From address.
 Restart the frontend, confirm you are using the intended Supabase environment,
 then enter **your own real inbox address** in **Empfänger der Testmail** and
-click **Testmail senden**. This sends one sample message to that address, not
-to the reviewers. To test a real copy to IT, select **IT bei dieser Testmail
-in CC setzen** first; CMD is never CC'd on a test mail. Check delivery, spam
-folder and headers.
+click **Testmail senden**. This sends one sample message to that address with
+IT in CC, not to the reviewer list or CMD. Check delivery, spam folder and
+headers.
+The currently ignored `frontend/.env` uses `EMAIL` and `EMAIL_PASSWORD`, but
+the portal SMTP action reads `SMTP_USER` and `SMTP_PASSWORD`; it also requires
+a real provider's `SMTP_HOST` and `SMTP_PORT` rather than local Mailpit before
+any message can reach a real inbox.
 Do not click **Produktiv an alle senden** for a test.
 
 For a deployed portal, set the same four `SMTP_*` values and

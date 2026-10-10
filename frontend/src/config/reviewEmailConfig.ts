@@ -18,8 +18,8 @@ export const reviewEmailSender = {
 };
 
 /**
- * Adjust these defaults once per competition year. Admins can still change
- * them for a single send on the preview page.
+ * Adjust these defaults once per competition year. Admins can change the
+ * deadlines, references and phase note for a single send on the admin page.
  */
 export const reviewEmailDefaults: ReviewEmailDefaults = {
   subject: "[Generation-D]",

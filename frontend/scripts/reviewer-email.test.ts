@@ -19,7 +19,6 @@ test("renders reviewer assignments and escapes application labels", () => {
     ratingDeadline: "02.01.2027",
     instructionsUrl: "https://example.org/instructions",
     ratingUrl: "https://example.org/rating",
-    reviewUrl: "https://example.org/review",
     phaseNote: "Bitte Interessenkonflikte melden.",
     applications: [
       { label: "Bewerbung <script>", url: "https://example.org/review/123" },
@@ -33,10 +32,7 @@ test("renders reviewer assignments and escapes application labels", () => {
     html,
     /href="https:\/\/example\.org\/review\/123">Bewerbung öffnen<\/a>/,
   );
-  assert.ok(
-    html.indexOf("Deine zu bewertenden Teams") <
-      html.indexOf("Alle Bewerbungen im Portal ansehen"),
-  );
+  assert.doesNotMatch(html, /Alle Bewerbungen im Portal ansehen/);
   assert.equal(
     (html.match(/https:\/\/example\.org\/review\/123/g) ?? []).length,
     1,
@@ -60,7 +56,6 @@ test("renders free-text references safely instead of creating unsafe links", () 
     ratingDeadline: "02.01.2027",
     instructionsUrl: "Siehe Slack-Kanal #review",
     ratingUrl: "javascript:alert(1)",
-    reviewUrl: "https://example.org/review",
     phaseNote: "Hinweis",
     applications: [
       { label: "Bewerbung", url: "https://example.org/review/123" },
@@ -83,7 +78,6 @@ test("rejects non-http application links", () => {
       ratingDeadline: "02.01.2027",
       instructionsUrl: "https://example.org/instructions",
       ratingUrl: "https://example.org/rating",
-      reviewUrl: "https://example.org/review",
       phaseNote: "Hinweis",
       applications: [{ label: "Bewerbung", url: "javascript:alert(1)" }],
     }),
