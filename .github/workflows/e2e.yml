@@ -41,20 +41,13 @@ jobs:
           echo "  Service Role Key: ${SUPABASE_SERVICE_ROLE_KEY:0:20}..."
       - run: supabase db lint
       - run: supabase test db
-      - run: cp .env ./frontend/
       - run: npm ci
-        working-directory: ./e2e
-      - run: npm ci --ignore-scripts
-        working-directory: ./frontend
       - name: Rebuild required frontend tooling
         run: npm rebuild esbuild
-        working-directory: ./frontend
       - name: Process application configuration
-        run: npm run  process:config ../e2e/cypress/e2e/supabase/apl_config_e2e.yml
-        working-directory: ./frontend
+        run: npm run  process:config ./cypress/e2e/supabase/apl_config_e2e.yml
       - name: Sync application texts
-        run: npm run sync:texts ../texts/
-        working-directory: ./frontend
+        run: npm run sync:texts ./texts/
       - name: Create additional env variables
         run: |
           echo "NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321" >> ./.env
@@ -66,7 +59,6 @@ jobs:
           timeout 60 bash -c 'until curl -s http://localhost > /dev/null; do sleep 2; done'
           echo "Server is ready!"
       - name: run e2e tests
-        working-directory: ./e2e
         run: npm run test:e2e
 
       - name: Upload Cypress Screenshots

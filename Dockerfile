@@ -13,7 +13,7 @@ COPY frontend/package*.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY frontend/ .
+COPY . .
 
 RUN npm run build
 

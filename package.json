@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "application-platform",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,9 @@
     "update:team-names": "tsx scripts/update-team-names.ts",
     "gen:types": "npx supabase gen types typescript --local > src/types/database.types.ts",
     "sync:texts": "tsx scripts/sync-texts.ts",
-    "process:config": "tsx scripts/process-config.ts"
+    "process:config": "tsx scripts/process-config.ts",
+    "test:e2e:local": "npm run test:e2e",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -47,6 +49,8 @@
     "@types/nodemailer": "^8.0.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "cypress": "^16.2.1",
+    "cypress-file-upload": "^5.0.8",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.0.1",
