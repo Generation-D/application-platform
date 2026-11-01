@@ -1,5 +1,5 @@
 describe('login', () => {
-  it('passes', () => {
+  it('logs out and requires authentication again', () => {
     cy.visit('/')
     cy.url().should('contain', 'login')
 
@@ -9,6 +9,12 @@ describe('login', () => {
 
     cy.contains('Willkommen!')
 
-    cy.get('.apl-button-fixed').click();
+    cy.contains('button', 'Ausloggen').click();
+    cy.location('pathname').should('eq', '/login');
+    cy.get('#email').should('be.visible');
+
+    cy.visit('/');
+    cy.location('pathname').should('eq', '/login');
+    cy.get('#email').should('be.visible');
   })
 })
