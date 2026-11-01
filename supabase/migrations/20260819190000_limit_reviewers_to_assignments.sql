@@ -1,4 +1,4 @@
--- Initial reviewer access hardening. The later
+-- Historical assignment-based access rules. The later
 -- 20261010000000_reviewer_access_and_evaluation_records.sql migration lets
 -- active reviewers read all applications; the detailed-answer and upload
 -- protections below still apply. No schema fields are added.
@@ -60,8 +60,8 @@ using (
   )
 );
 
--- An assignment for a later phase includes the material from earlier phases,
--- matching the previous PDF-based process.
+-- Historical rule: later-phase assignments also granted access to earlier phases.
+-- Superseded by the all-application reviewer access migration noted above.
 create policy "select_assigned_answer_for_reviewer"
 on public.answer_table
 as permissive

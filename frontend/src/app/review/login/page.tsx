@@ -32,10 +32,7 @@ export default function Home() {
       <h1 className="text-4xl text-secondary md:text-5xl text-center">
         Generation-D Internal Login
       </h1>
-      {/* <form action={"/auth/slack"} method="GET"> */}
-      {/* <form> */}
       <button
-        // type="submit"
         onClick={signInWithSlack}
         className="apl-button-fixed-big flex items-center"
       >
@@ -59,22 +56,6 @@ export default function Home() {
           </Link>
         </p>
       </div>
-      {/* </form> */}
-      {/*<form action={formAction}>
-        <input
-          type="text"
-          name="magicLinkEmail"
-          id="magicLinkEmail"
-          className="shadow appearance-none border rounded-md w-full py-2 px-3 text-secondary leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-primary focus:border-primary transition duration-150 ease-in-out"
-          required={true}
-        />
-        <button
-          type="submit"
-          className="apl-button-fixed-big flex items-center"
-        >
-          <strong className="ml-2">Login mit Magic Link</strong>
-        </button>
-  </form>*/}
     </main>
   );
 }

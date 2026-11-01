@@ -4,6 +4,8 @@ insert into storage.buckets (id, name, public)
 values ('evaluation-records', 'evaluation-records', false)
 on conflict (id) do nothing;
 
+-- Matching distributes review tasks; it does not restrict access.
+-- Active reviewers may read all applications and answers.
 drop policy if exists "select_assigned_application_for_reviewer" on public.application_table;
 drop policy if exists "select_assigned_answer_for_reviewer" on public.answer_table;
 
