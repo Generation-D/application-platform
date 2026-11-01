@@ -7,7 +7,7 @@ describe('login', () => {
     cy.get('#password').type('password123');
     cy.get('.apl-button-expanded').click();
 
-    cy.contains('Willkommen!')
+    cy.location('pathname').should('eq', '/');
 
     cy.contains('button', 'Ausloggen').click();
     cy.location('pathname').should('eq', '/login');
