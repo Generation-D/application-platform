@@ -308,7 +308,8 @@ export function createDataQuestionTypeTable(
     if (param !== "Answers" && !(param.toLowerCase() in DEFAULT_PARAMS)) {
       const key = param as keyof typeof question;
       const value = question[key];
-      dataQuestionTypeTable[param.toLowerCase()] = String(value);
+      dataQuestionTypeTable[param.toLowerCase()] =
+        value instanceof Date ? value.toISOString() : String(value);
     }
   }
 
