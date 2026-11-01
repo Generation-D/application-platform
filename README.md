@@ -1,5 +1,25 @@
 # application-platform
 
+## Admin-Bewertungsprozess
+
+Der Ablauf unter `/admin/evaluation` ersetzt die Schritte 3 bis 5 des früheren
+Bewertungsprozess-Repositories: Matching speichern, Bewerter per E-Mail
+informieren, Entscheidungen setzen und Ergebnisse veröffentlichen. Beim
+Veröffentlichen wird die Phase abgeschlossen; danach erscheinen die
+Ergebnis-Texte im Bewerberportal.
+
+Die Bewerter-CSV verwendet `name,email,new,max`. Die E-Mail-Adresse dient
+nur zur Zustellung; der Portal-Login darf eine andere Adresse haben. Aktive
+Bewerter können alle Bewerbungen einsehen. Beim Rundversand erhalten IT und
+CMD Kopien in CC, damit sie einzelne Nachrichten bei Bedarf weiterleiten
+können. Das Matching liegt als privates Objekt in Supabase Storage; ein
+separates Mailarchiv wird nicht angelegt.
+
+Die [lokale Testanleitung](docs/admin-evaluation-local-test.md) beschreibt
+einen sicheren Durchlauf mit Mailpit; die
+[E-Mail-Konfiguration](docs/reviewer-email-configuration.md) erklärt Vorlage,
+Jahreswerte und SMTP.
+
 ## Local Testing
 
 ### 1. Prerequisites
@@ -9,13 +29,13 @@
 ### 2. Startup & Reset Supabase
 To start the local database, auth, and storage services:
 ```bash
-supabase start
+npx supabase start
 ```
 *Note: This automatically provisions your database, applies all schema migrations (under `supabase/migrations/`), and loads seed data from `supabase/seed.sql`.*
 
 Once started, you can check the status of your local services and get your API keys at any time by running:
 ```bash
-supabase status
+npx supabase status
 ```
 
 **💡 Quick Links:**
@@ -24,18 +44,24 @@ supabase status
 
 If you ever want to reset your local database to a clean seed state:
 ```bash
-supabase db reset
+npx supabase db reset --local
 ```
-*(If you need to stop services and delete the local docker volumes entirely, run `supabase stop --no-backup` followed by `supabase start`)*
+*(If you need to stop services and delete the local docker volumes entirely, run `npx supabase stop --no-backup` followed by `npx supabase start`)*
 
 ### 3. Load Phase Configurations and Texts
-To populate your local database with phase questions and localized texts, run the following from the project root:
+`db reset` only loads the SQL seed. Phase definitions and localized texts must
+be imported separately. First verify that `frontend/.env` points to
+`http://127.0.0.1:54321`, then run:
 ```bash
-cd backend
-poetry install
-poetry run python backend/process_config.py --config apl_config_gend_all_phases.yml --env_file ../frontend/.env 
-poetry run python backend/sync_texts.py --md_path ./texts/ --env_file ../frontend/.env
+cd frontend
+npm install
+npm run process:config -- ../apl_configs/apl_config_gend_all_phases.yml
+npm run sync:texts -- ../texts
 ```
+
+If `/admin/evaluation` displays `Es wurden keine Phasen gefunden`, this import
+has not completed successfully. Check the command output and rerun it before
+testing the admin workflow.
 
 ### 4. Startup Frontend
 To launch the Next.js development server:
@@ -84,7 +110,8 @@ supabase link
 ### 2. Reset the Linked Remote DB
 > [!IMPORTANT]
 > **Do NOT reset the database after the start of the competition year!**
-*This will not delete the database, but will only reset the schema data.*
+> This command drops user-created entities and data in the linked remote database
+> before replaying the migrations. Never run it against production.
 ```bash
 supabase db reset --linked --no-seed
 ```
@@ -354,4 +381,3 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
     - HTTP/2 Support: On
     - HSTS Enabled: On
     - Agree to Terms of Service
-

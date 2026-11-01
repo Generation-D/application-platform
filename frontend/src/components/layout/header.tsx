@@ -16,9 +16,9 @@ const Apl_Header: React.FC = () => {
   const isMenuOpen = useAppSelector((state) => state.menuReducer.isOpen);
   const dispatch = useAppDispatch();
 
-  function handleSubmit(): void {
+  async function handleSubmit(): Promise<void> {
     dispatch({ type: RESET_STATE });
-    logoutAction();
+    await logoutAction();
   }
 
   return (

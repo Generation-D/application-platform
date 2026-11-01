@@ -43,6 +43,7 @@ jspm_packages
 # ignore env files
 *.env*
 *.env.local
+/frontend/.local-test/
 
 # pycache
 *__pycache__

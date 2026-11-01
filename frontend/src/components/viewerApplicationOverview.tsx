@@ -3,17 +3,11 @@
 import React, { useCallback } from "react";
 
 import { ExtendedAnswerType } from "@/actions/answers/answers";
-import { PhaseOutcome } from "@/actions/phase";
 import { UpdateAnswer, INIT_PLACEHOLDER } from "@/store/slices/answerSlice";
 import { PhaseData } from "@/store/slices/phaseSlice";
 import { useAppDispatch } from "@/store/store";
+import { calcPhaseStatus, transformReadableDateTime } from "@/utils/helpers";
 import {
-  calcPhaseStatus,
-  transformReadableDateTime,
-  transformReadableDate,
-} from "@/utils/helpers";
-import {
-  NoSymbolIcon,
   CalendarDaysIcon,
   DocumentCheckIcon,
   PencilSquareIcon,
@@ -28,15 +22,8 @@ const ViewerApplicationOverview: React.FC<{
   phasesData: PhaseData[];
   phasesQuestions: Record<string, Question[]>;
   phaseAnswers: ExtendedAnswerType[];
-  phasesOutcome: PhaseOutcome[];
   applicationid: string;
-}> = ({
-  phasesData,
-  phasesQuestions,
-  phaseAnswers,
-  phasesOutcome,
-  applicationid,
-}) => {
+}> = ({ phasesData, phasesQuestions, phaseAnswers, applicationid }) => {
   const dispatch = useAppDispatch();
 
   const updateAnswerState = useCallback(
@@ -65,19 +52,13 @@ const ViewerApplicationOverview: React.FC<{
   const phaseOverviewData = createPhaseOverviewData(
     phasesData,
     phasesQuestions,
-    phasesOutcome,
+    [],
   );
 
   return (
     <>
       {phaseOverviewData.map(
-        ({
-          phase,
-          mandatoryPhaseQuestionIds,
-          phaseQuestions,
-          phaseOutcome,
-          failedPhase,
-        }) => {
+        ({ phase, mandatoryPhaseQuestionIds, phaseQuestions }) => {
           return (
             <PhaseOverview
               key={phase.phaseid}
@@ -89,8 +70,6 @@ const ViewerApplicationOverview: React.FC<{
               phaseEnd={phase.enddate}
               mandatoryQuestionIds={mandatoryPhaseQuestionIds}
               phaseQuestions={phaseQuestions}
-              phaseOutcome={phaseOutcome}
-              failedPhase={failedPhase}
               applicationid={applicationid}
             />
           );
@@ -109,8 +88,6 @@ const PhaseOverview: React.FC<{
   phaseEnd: string;
   mandatoryQuestionIds: string[];
   phaseQuestions: Question[];
-  phaseOutcome: PhaseOutcome | undefined;
-  failedPhase: boolean;
   applicationid: string;
 }> = ({
   phaseId,
@@ -121,8 +98,6 @@ const PhaseOverview: React.FC<{
   phaseEnd,
   mandatoryQuestionIds,
   phaseQuestions,
-  phaseOutcome,
-  failedPhase,
   applicationid,
 }) => {
   const router = useRouter();
@@ -130,11 +105,8 @@ const PhaseOverview: React.FC<{
     router.push(`/review/applications/${applicationid}/${phaseName}`);
   };
   const phaseStatus = calcPhaseStatus(phaseStart, phaseEnd);
-  const previousFailed = phaseOutcome == undefined && failedPhase;
-  const statusIcon = (previousFailed: boolean = false) => {
-    switch (previousFailed ? "STOP" : phaseStatus) {
-      case "STOP":
-        return <NoSymbolIcon className="h-6 w-6 text-secondary" />;
+  const statusIcon = () => {
+    switch (phaseStatus) {
       case "UPCOMING":
         return <CalendarDaysIcon className="h-6 w-6 text-secondary" />;
       case "ENDED":
@@ -153,7 +125,7 @@ const PhaseOverview: React.FC<{
       <div className="grid grid-rows-3 md:grid-rows-1 md:grid-cols-3 gap-4">
         <div className="flex flex-col justify-start gap-1">
           <div className="flex items-center">
-            {statusIcon(previousFailed)}
+            {statusIcon()}
             <h2 className="rounded font-bold ml-2">
               Phase {phaseOrder + 1}: {phaseLabel}
             </h2>
@@ -166,36 +138,20 @@ const PhaseOverview: React.FC<{
           </h4>
         </div>
         <div className="p-4 rounded">
-          {phaseStatus != "UPCOMING" && !previousFailed ? (
-            <ProgressBar
-              progressbarId={`${phaseId}-overview`}
-              mandatoryQuestionIds={mandatoryQuestionIds}
-              phaseQuestions={phaseQuestions}
-              endDate={phaseEnd}
-            />
-          ) : phaseStatus == "UPCOMING" ? (
-            `Phase startet am ${transformReadableDate(phaseStart)}`
-          ) : (
-            previousFailed && "Vorherige Phase leider nicht bestanden!"
-          )}
+          <ProgressBar
+            progressbarId={`${phaseId}-overview`}
+            mandatoryQuestionIds={mandatoryQuestionIds}
+            phaseQuestions={phaseQuestions}
+            endDate={phaseEnd}
+          />
         </div>
-        {phaseStatus == "UPCOMING" ? (
-          <button
-            type="button"
-            className="rounded px-1 py-2 text-[#B8B8B8] max-h-14 bg-[#4D4D4D] cursor-default"
-          >
-            Phase bevorstehend
-          </button>
-        ) : (
-          <button
-            type="button"
-            aria-disabled={true}
-            className="apl-button-fixed-short"
-            onClick={() => handleRedirect()}
-          >
-            Phase einsehen
-          </button>
-        )}
+        <button
+          type="button"
+          className="apl-button-fixed-short"
+          onClick={handleRedirect}
+        >
+          Phase einsehen
+        </button>
       </div>
     </div>
   );

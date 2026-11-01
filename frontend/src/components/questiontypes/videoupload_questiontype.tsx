@@ -5,12 +5,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import { createLogger } from "@/logger/logger";
 import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
-import { downloadFile, storageSaveName } from "@/utils/helpers";
+import { storageSaveName } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
-import { fetchUploadAnswer, saveUploadAnswer } from "@/utils/uploadHelpers";
+import {
+  downloadApplicationFile,
+  fetchUploadAnswer,
+  saveUploadAnswer,
+} from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
 
 const log = createLogger("components/questiontypes/videoupload_questiontype");
@@ -105,11 +109,12 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
           applicationid,
         );
         if (savedAnswer && savedAnswer?.videoname != "") {
-          const VideoUploadBucketData = await downloadFile(
-            `video-${questionid}`,
-            `${savedAnswer!.userid}_${savedAnswer!.videoname}`,
+          const file = await downloadApplicationFile(
+            applicationid,
+            questionid,
+            "video",
           );
-          const url = URL.createObjectURL(VideoUploadBucketData!);
+          const url = URL.createObjectURL(file);
           updateAnswerState(url || "");
           setWasUploaded(true);
         } else {

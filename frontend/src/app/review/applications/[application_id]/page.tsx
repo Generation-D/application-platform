@@ -1,5 +1,5 @@
 import { fetchAllAnswersOfApplication } from "@/actions/answers/answers";
-import { fetch_all_phases, fetch_phases_status } from "@/actions/phase";
+import { fetch_all_phases } from "@/actions/phase";
 import Apl_Header from "@/components/layout/header";
 import OverviewButton from "@/components/overviewButton";
 import { Question } from "@/components/questions";
@@ -18,7 +18,7 @@ export default async function Application({
 
   const { data, error } = await supabase
     .from("application_table")
-    .select("userid, team_name")
+    .select("team_name")
     .eq("applicationid", application_id)
     .single();
   if (error) {
@@ -26,7 +26,6 @@ export default async function Application({
   }
 
   const phasesData = await fetch_all_phases();
-  const phasesOutcome = await fetch_phases_status(data.userid);
   const phasesQuestions: Record<string, Question[]> = {};
   for (const phase of phasesData) {
     phasesQuestions[phase.phaseid] = await cached_fetch_phase_questions(
@@ -52,7 +51,6 @@ export default async function Application({
             phasesData={phasesData}
             phasesQuestions={phasesQuestions}
             phaseAnswers={phaseAnswers}
-            phasesOutcome={phasesOutcome}
             applicationid={application_id}
           />
         </div>

@@ -64,9 +64,30 @@ INSERT INTO
             auth.users
     );
 
-UPDATE user_profiles_table SET userrole = 2 FROM auth.users WHERE email = 'viewer@test.com' AND userid = id;
+UPDATE user_profiles_table SET userrole = 2 FROM auth.users
+WHERE email IN ('viewer@test.com', 'user4@test.com', 'user5@test.com', 'user6@test.com', 'user7@test.com')
+AND userid = id;
 
 UPDATE user_profiles_table SET userrole = 3 FROM auth.users WHERE email = 'admin@test.com' AND userid = id;
+
+UPDATE auth.users SET raw_user_meta_data = raw_user_meta_data || jsonb_build_object(
+    'full_name', CASE email
+        WHEN 'admin@test.com' THEN 'Test-Admin'
+        WHEN 'viewer@test.com' THEN 'Test-Bewerterin Anna Weber'
+        WHEN 'user4@test.com' THEN 'Test-Bewerter Jonas Keller'
+        WHEN 'user5@test.com' THEN 'Test-Bewerterin Sophie Nguyen'
+        WHEN 'user6@test.com' THEN 'Test-Bewerter Lukas Hoffmann'
+        WHEN 'user7@test.com' THEN 'Test-Bewerterin Miriam Schneider'
+    END
+) WHERE email IN (
+    'admin@test.com', 'viewer@test.com', 'user4@test.com',
+    'user5@test.com', 'user6@test.com', 'user7@test.com'
+);
+
+-- Startups do not supply personal names. Do not invent them in test data.
+UPDATE auth.users
+SET raw_user_meta_data = raw_user_meta_data - 'full_name'
+WHERE email IN ('user1@test.com', 'user2@test.com', 'user3@test.com');
 
 INSERT INTO application_table (
     applicationid,
@@ -78,5 +99,11 @@ SELECT
 FROM
     auth.users
 WHERE
-    email LIKE 'user%@test.com';
-    
+    email IN ('user1@test.com', 'user2@test.com', 'user3@test.com');
+
+UPDATE application_table SET team_name = CASE users.email
+    WHEN 'user1@test.com' THEN 'GreenHarbor'
+    WHEN 'user2@test.com' THEN 'SolarNest'
+    WHEN 'user3@test.com' THEN 'CareBridge'
+    ELSE team_name
+END FROM auth.users AS users WHERE application_table.userid = users.id;
