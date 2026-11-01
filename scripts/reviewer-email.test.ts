@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { it, expect } from "vitest";
 
 import {
   reviewEmailCmdAddress,
@@ -15,7 +14,7 @@ import {
   isHttpUrl,
 } from "../src/emails/reviewerAssignmentEmail";
 
-test("renders reviewer assignments and escapes application labels", () => {
+it("renders reviewer assignments and escapes application labels", () => {
   const html = createReviewerAssignmentEmail({
     phaseLabel: "1. Kurzbewerbung",
     confirmationDeadline: "01.01.2027",
@@ -29,30 +28,26 @@ test("renders reviewer assignments and escapes application labels", () => {
     ],
   });
 
-  assert.match(html, /Bewerbung &lt;script&gt;/);
-  assert.match(html, /Bewertungsrunde <strong>1\. Kurzbewerbung<\/strong>/);
-  assert.doesNotMatch(html, /Bewerbung <script>/);
-  assert.match(
-    html,
+  expect(html).toMatch(/Bewerbung &lt;script&gt;/);
+  expect(html).toMatch(/Bewertungsrunde <strong>1\. Kurzbewerbung<\/strong>/);
+  expect(html).not.toMatch(/Bewerbung <script>/);
+  expect(html).toMatch(
     /href="https:\/\/example\.org\/review\/123">Bewerbung öffnen<\/a>/,
   );
-  assert.doesNotMatch(html, /Alle Bewerbungen im Portal ansehen/);
-  assert.equal(
+  expect(html).not.toMatch(/Alle Bewerbungen im Portal ansehen/);
+  expect(
     (html.match(/https:\/\/example\.org\/review\/123/g) ?? []).length,
-    1,
-  );
-  assert.match(html, /Euer CMD &amp; IT Team/);
-  assert.equal(
-    createReviewerSubject("[Generation-D]", "1. Kurzbewerbung"),
+  ).toBe(1);
+  expect(html).toMatch(/Euer CMD &amp; IT Team/);
+  expect(createReviewerSubject("[Generation-D]", "1. Kurzbewerbung")).toBe(
     "[Generation-D] Bewertungsrunde 1. Kurzbewerbung",
   );
-  assert.equal(
+  expect(
     createReviewerSubject("[Generation-D] Bewertungsrunde", "1. Kurzbewerbung"),
-    "[Generation-D] Bewertungsrunde 1. Kurzbewerbung",
-  );
+  ).toBe("[Generation-D] Bewertungsrunde 1. Kurzbewerbung");
 });
 
-test("renders free-text references safely instead of creating unsafe links", () => {
+it("renders free-text references safely instead of creating unsafe links", () => {
   const html = createReviewerAssignmentEmail({
     phaseLabel: "Phase 1",
     confirmationDeadline: "01.01.2027",
@@ -65,16 +60,16 @@ test("renders free-text references safely instead of creating unsafe links", () 
       { label: "Bewerbung", url: "https://example.org/review/123" },
     ],
   });
-  assert.match(html, /Bitte per Antwort bestätigen &lt;script&gt;/);
-  assert.match(html, /Siehe Slack-Kanal #review/);
-  assert.match(html, /javascript:alert\(1\)/);
-  assert.doesNotMatch(html, /href="javascript:/);
-  assert.ok(!isHttpUrl("per E-Mail antworten"));
-  assert.ok(isHttpUrl("https://example.org/confirm"));
+  expect(html).toMatch(/Bitte per Antwort bestätigen &lt;script&gt;/);
+  expect(html).toMatch(/Siehe Slack-Kanal #review/);
+  expect(html).toMatch(/javascript:alert\(1\)/);
+  expect(html).not.toMatch(/href="javascript:/);
+  expect(isHttpUrl("per E-Mail antworten")).toBe(false);
+  expect(isHttpUrl("https://example.org/confirm")).toBe(true);
 });
 
-test("rejects non-http application links", () => {
-  assert.throws(() =>
+it("rejects non-http application links", () => {
+  expect(() =>
     createReviewerAssignmentEmail({
       phaseLabel: "Phase 1",
       confirmationDeadline: "01.01.2027",
@@ -85,37 +80,36 @@ test("rejects non-http application links", () => {
       phaseNote: "Hinweis",
       applications: [{ label: "Bewerbung", url: "javascript:alert(1)" }],
     }),
-  );
+  ).toThrow();
 });
 
-test("escapes the reviewer address in the test email heading", () => {
-  assert.equal(
-    escapeHtml('reviewer@example.org"><img src=x onerror=alert(1)>'),
+it("escapes the reviewer address in the test email heading", () => {
+  expect(escapeHtml('reviewer@example.org"><img src=x onerror=alert(1)>')).toBe(
     "reviewer@example.org&quot;&gt;&lt;img src=x onerror=alert(1)&gt;",
   );
 });
 
-test("production copies go to both IT and CMD inboxes", () => {
-  assert.equal(reviewEmailItAddress, "it@generation-d.org");
-  assert.equal(reviewEmailCmdAddress, "cmd@generation-d.org");
-  assert.deepEqual(reviewEmailSender.replyTo, [
+it("production copies go to both IT and CMD inboxes", () => {
+  expect(reviewEmailItAddress).toBe("it@generation-d.org");
+  expect(reviewEmailCmdAddress).toBe("cmd@generation-d.org");
+  expect(reviewEmailSender.replyTo).toEqual([
     reviewEmailItAddress,
     reviewEmailCmdAddress,
   ]);
-  assert.deepEqual(selectedReviewEmailCc({ it: true, cmd: false }), [
+  expect(selectedReviewEmailCc({ it: true, cmd: false })).toEqual([
     reviewEmailItAddress,
   ]);
-  assert.deepEqual(selectedReviewEmailCc({ it: false, cmd: true }), [
+  expect(selectedReviewEmailCc({ it: false, cmd: true })).toEqual([
     reviewEmailCmdAddress,
   ]);
-  assert.deepEqual(selectedReviewEmailCc({ it: false, cmd: false }), []);
-  assert.deepEqual(selectedReviewEmailCc({ it: true, cmd: true }), [
+  expect(selectedReviewEmailCc({ it: false, cmd: false })).toEqual([]);
+  expect(selectedReviewEmailCc({ it: true, cmd: true })).toEqual([
     reviewEmailItAddress,
     reviewEmailCmdAddress,
   ]);
-  assert.throws(() => requiredProductionReviewCc({ it: true, cmd: false }));
-  assert.throws(() => requiredProductionReviewCc({ it: false, cmd: true }));
-  assert.deepEqual(requiredProductionReviewCc({ it: true, cmd: true }), [
+  expect(() => requiredProductionReviewCc({ it: true, cmd: false })).toThrow();
+  expect(() => requiredProductionReviewCc({ it: false, cmd: true })).toThrow();
+  expect(requiredProductionReviewCc({ it: true, cmd: true })).toEqual([
     reviewEmailItAddress,
     reviewEmailCmdAddress,
   ]);

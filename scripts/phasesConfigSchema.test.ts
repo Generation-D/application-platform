@@ -1,6 +1,5 @@
-import assert from "node:assert/strict";
+import { test, expect } from "vitest";
 import * as fs from "node:fs";
-import test from "node:test";
 import YAML from "yaml";
 import { PhasesConfigSchema } from "./phasesConfigSchema";
 
@@ -12,9 +11,9 @@ test("validates config correct", () => {
 
   const rawData = YAML.parse(fileContent);
 
-  assert.doesNotThrow(() => {
+  expect(() => {
     PhasesConfigSchema.parse(rawData);
-  });
+  }).not.toThrow();
 });
 
 test("validates config2 correct", () => {
@@ -22,7 +21,7 @@ test("validates config2 correct", () => {
 
   const rawData = YAML.parse(fileContent);
 
-  assert.doesNotThrow(() => {
+  expect(() => {
     PhasesConfigSchema.parse(rawData);
-  });
+  }).not.toThrow();
 });

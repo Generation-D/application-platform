@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { it, expect } from "vitest";
 
 import {
   assignReviewers,
@@ -43,48 +42,44 @@ const reviewers: MatchingReviewer[] = [
   },
 ];
 
-test("assigns the requested number and one experienced reviewer per application", () => {
+it("assigns the requested number and one experienced reviewer per application", () => {
   const assignments = assignReviewers(applications, reviewers, 2);
 
-  assert.equal(assignments.length, 4);
+  expect(assignments.length).toBe(4);
   for (const application of applications) {
     const applicationAssignments = assignments.filter(
       (assignment) => assignment.applicationId === application.applicationId,
     );
-    assert.equal(applicationAssignments.length, 2);
-    assert.equal(
+    expect(applicationAssignments.length).toBe(2);
+    expect(
       applicationAssignments.some(
         (assignment) => assignment.reviewerIsExperienced,
       ),
-      true,
-    );
+    ).toBe(true);
   }
 });
 
-test("preserves the former script's input-order tie breaking", () => {
+it("preserves the former script's input-order tie breaking", () => {
   const assignments = assignReviewers(applications, reviewers, 2);
-  assert.deepEqual(
+  expect(
     assignments.map((assignment) => [
       assignment.applicationId,
       assignment.reviewerEmail,
     ]),
-    [
-      ["application-2", "experienced2@example.org"],
-      ["application-2", "new@example.org"],
-      ["application-1", "experienced1@example.org"],
-      ["application-1", "new@example.org"],
-    ],
-  );
+  ).toEqual([
+    ["application-2", "experienced2@example.org"],
+    ["application-2", "new@example.org"],
+    ["application-1", "experienced1@example.org"],
+    ["application-1", "new@example.org"],
+  ]);
 });
 
-test("rejects insufficient experienced capacity", () => {
-  assert.throws(
-    () =>
-      assignReviewers(
-        applications,
-        reviewers.map((reviewer) => ({ ...reviewer, isExperienced: false })),
-        2,
-      ),
-    /erfahrene Bewerter/,
-  );
+it("rejects insufficient experienced capacity", () => {
+  expect(() =>
+    assignReviewers(
+      applications,
+      reviewers.map((reviewer) => ({ ...reviewer, isExperienced: false })),
+      2,
+    ),
+  ).toThrow(/erfahrene Bewerter/);
 });

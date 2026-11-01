@@ -98,3 +98,6 @@ supabase/.temp
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
+
+# Vitest reports and artifacts
+.vitest/

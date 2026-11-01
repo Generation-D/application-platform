@@ -1,12 +1,11 @@
-import assert from "node:assert/strict";
+import { it, expect } from "vitest";
 import * as fs from "node:fs";
 import path from "node:path";
-import test from "node:test";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 import { PhasesConfigSchema } from "./phasesConfigSchema";
 
-test("the current Generation-D phase configuration is importable", () => {
+it("the current Generation-D phase configuration is importable", () => {
   const configPath = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "../apl_configs/apl_config_gend_all_phases.yml",
@@ -15,6 +14,6 @@ test("the current Generation-D phase configuration is importable", () => {
     YAML.parse(fs.readFileSync(configPath, "utf-8")),
   );
 
-  assert.equal(config.questions["phase-1"].phaseLabel, "Kurzbewerbung");
-  assert.equal(config.questions["phase-2"].phaseLabel, "Read-Deck");
+  expect(config.questions["phase-1"].phaseLabel).toBe("Kurzbewerbung");
+  expect(config.questions["phase-2"].phaseLabel).toBe("Read-Deck");
 });

@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { it, expect } from "vitest";
 
 import { overviewTextPath } from "../src/utils/overviewTextPath";
 
@@ -12,42 +11,38 @@ const phase = {
 };
 const afterDeadline = new Date("2026-03-23T12:00:00Z");
 
-test("publishing a completed phase replaces evaluation text with the saved decision", () => {
+it("publishing a completed phase replaces evaluation text with the saved decision", () => {
   const passed = { outcome: true, phase };
   const failed = { outcome: false, phase };
-  assert.equal(
-    overviewTextPath(phase, [passed], afterDeadline),
+  expect(overviewTextPath(phase, [passed], afterDeadline)).toBe(
     "phase-1/evaluating.md",
   );
 
   const completed = { ...phase, finished_evaluation: "2026-03-23T12:00:00Z" };
-  assert.equal(
+  expect(
     overviewTextPath(
       completed,
       [{ ...passed, phase: completed }],
       afterDeadline,
     ),
-    "phase-1/passed.md",
-  );
-  assert.equal(
+  ).toBe("phase-1/passed.md");
+  expect(
     overviewTextPath(
       completed,
       [{ ...failed, phase: completed }],
       afterDeadline,
     ),
-    "phase-1/failed.md",
-  );
-  assert.equal(
+  ).toBe("phase-1/failed.md");
+  expect(
     overviewTextPath(
       completed,
       [{ ...passed, phase: completed }],
       new Date("2026-03-20T12:00:00Z"),
     ),
-    "phase-1/passed.md",
-  );
+  ).toBe("phase-1/passed.md");
 });
 
-test("a failed earlier round stays visible in the next round", () => {
+it("a failed earlier round stays visible in the next round", () => {
   const nextPhase = {
     ...phase,
     phaseid: "phase-2-id",
@@ -55,12 +50,11 @@ test("a failed earlier round stays visible in the next round", () => {
     phaseorder: 1,
   };
   const completed = { ...phase, finished_evaluation: "2026-03-23T12:00:00Z" };
-  assert.equal(
+  expect(
     overviewTextPath(
       nextPhase,
       [{ outcome: false, phase: completed }],
       afterDeadline,
     ),
-    "phase-1/failed.md",
-  );
+  ).toBe("phase-1/failed.md");
 });
