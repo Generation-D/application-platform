@@ -307,8 +307,9 @@ export function createDataQuestionTypeTable(
   for (const param of Object.keys(mandatoryMap)) {
     if (param !== "Answers" && !(param.toLowerCase() in DEFAULT_PARAMS)) {
       const key = param as keyof typeof question;
-      const value = question[key];
-      dataQuestionTypeTable[param.toLowerCase()] = String(value);
+      const value = question[key] as unknown;
+      dataQuestionTypeTable[param.toLowerCase()] =
+        value instanceof Date ? value.toISOString() : String(value);
     }
   }
 
