@@ -225,7 +225,7 @@ export async function processConfig(
       phaseorder: phaseCounter,
       startdate: convertToTimezone(phase.startDate),
       enddate: convertToTimezone(phase.endDate, { endOfDay: true }),
-      sectionsenabled: "sections" in phase,
+      sectionsenabled: phase.sections.length > 0,
       phaseid: phaseId,
     };
 
