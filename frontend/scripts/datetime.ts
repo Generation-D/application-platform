@@ -23,9 +23,9 @@ export function convertToTimezone(
   const { endOfDay = false } = options;
   const timeZone = "Europe/Berlin";
 
-  const year = date.getFullYear();
-  const month = date.getMonth(); // 0-indexed in JS/TS
-  const day = date.getDate();
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
   const hours = endOfDay ? 23 : 0;
   const minutes = endOfDay ? 59 : 0;
   const seconds = 0;
