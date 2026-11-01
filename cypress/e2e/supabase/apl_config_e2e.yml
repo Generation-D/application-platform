@@ -1,4 +1,3 @@
-
 ### Uncomment to configure additional attributes of Application
 # application:
 #   timezone: Europe/Berlin  #default
@@ -9,8 +8,8 @@
 questions:
   phase-1:
     phaseLabel: "Fundamental Test"
-    startDate: 2025-01-01  # format: %Y-%m-%d
-    endDate: 2050-12-31  # format: %Y-%m-%d
+    startDate: 2025-01-01 # format: %Y-%m-%d
+    endDate: 2050-12-31 # format: %Y-%m-%d
     sections:
       - name: General
         description: "General tests"
@@ -76,20 +75,20 @@ questions:
       - questionType: imageUpload
         order: 5
         question: "Upload an image (max. 2MB)"
-        maxFileSizeInMB: 2.0  # in Mega Byte
+        maxFileSizeInMB: 2.0 # in Mega Byte
         sectionNumber: 1
         mandatory: true
 
       - questionType: pdfUpload
         order: 6
         question: "Upload a pdf (max. 25MB)"
-        maxFileSizeInMB: 25.0  # in Mega Byte
+        maxFileSizeInMB: 25.0 # in Mega Byte
         sectionNumber: 1
         mandatory: true
 
       - questionType: videoUpload
         order: 7
         question: "Uplaod a video (max. 50MB)"
-        maxFileSizeInMB: 50.0  # in Mega Byte
+        maxFileSizeInMB: 50.0 # in Mega Byte
         sectionNumber: 1
         mandatory: true

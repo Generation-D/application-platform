@@ -1,7 +1,10 @@
 **/.env
-./frontend/node_modules
+./node_modules
 supabase
 .github
 .git
-backend
-./frontend/.next
+./.next
+./apl_configs
+./docs
+./texts
+shell.nix

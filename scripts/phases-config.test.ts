@@ -9,7 +9,7 @@ import { PhasesConfigSchema } from "./phasesConfigSchema";
 test("the current Generation-D phase configuration is importable", () => {
   const configPath = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
-    "../../apl_configs/apl_config_gend_all_phases.yml",
+    "../apl_configs/apl_config_gend_all_phases.yml",
   );
   const config = PhasesConfigSchema.parse(
     YAML.parse(fs.readFileSync(configPath, "utf-8")),

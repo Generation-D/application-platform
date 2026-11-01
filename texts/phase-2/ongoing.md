@@ -50,4 +50,3 @@ Weiterhin ist Eure Teilnahme an der 2. Phase von Generation-D auch mit der freiw
 Wie immer, meldet Euch bei Fragen jederzeit gerne unter [startups@generation-d.org](mailto:startups@generation-d.org).
 
 Viel Erfolg!
-

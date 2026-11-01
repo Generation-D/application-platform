@@ -32,5 +32,3 @@ Seid Euch bewusst, dass Generation-D Eure Bewerbung nicht akzeptieren kann, fall
 Weitere Details zum Ablauf und der Bewertung könnt Ihr auch nochmal in unseren [Bedingungen zum Wettbewerbsablauf](https://generation-d.org/wp-content/uploads/2026/02/Ablauf_des_Bewerbungsprozesses_2026.docx.pdf) oder [FAQ](https://generation-d.org/faq/) nachlesen. Hier findet Ihr zudem die [Einverständniserklärung](https://generation-d.org/wp-content/uploads/2026/02/GenD_Einverstaendniserklaerung_2026.docx.pdf) zur Teilnahme am Wettbewerb.
 
 Sollten danach noch Fragen offen bleiben, meldet Euch einfach per Mail an [startups@generation-d.org](mailto:startups@generation-d.org).
-
-

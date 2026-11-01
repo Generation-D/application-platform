@@ -8,8 +8,8 @@
 questions:
   phase-1:
     phaseLabel: "Kurzbewerbung"
-    startDate: 2026-03-02  # format: %Y-%m-%d
-    endDate: 2026-03-22  # format: %Y-%m-%d
+    startDate: 2026-03-02 # format: %Y-%m-%d
+    endDate: 2026-03-22 # format: %Y-%m-%d
     sections:
       - name: Allgemein
         description: "Bitte beantwortet folgende Fragen so ausführlich, dass wir Euer Projekt bestmöglich nachvollziehen können, achtet dabei jedoch bitte auf die Zeichenbegrenzungen:"
@@ -31,7 +31,7 @@ questions:
         question: "Was ist das gesellschaftliche Problem, das Ihr lösen möchtet? Warum ist es besonders wichtig genau dieses Problem zu lösen?"
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Wir möchten die hohe Plastikverschmutzung der Ozeane reduzieren, da dies eine akute Bedrohung für die Meeresbewohner und das globale Ökosystem darstellt…\""
+        note: 'Beispiel: "Wir möchten die hohe Plastikverschmutzung der Ozeane reduzieren, da dies eine akute Bedrohung für die Meeresbewohner und das globale Ökosystem darstellt…"'
         sectionNumber: 1
 
       - questionType: longText
@@ -39,7 +39,7 @@ questions:
         question: "Was ist Eure Idee, um dieses Problem ganz oder teilweise zu lösen? Wo befindet Ihr Euch gerade in der Projektumsetzung?"
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Unsere Idee ist die Entwicklung biologisch abbaubarer Verpackungen und die Implementierung eines Recycling-Netzwerks für Küstenregionen. Wir haben vor 2 Monaten unsere GmbH gegründet und erste Interviews mit Stakeholdern geführt…\""
+        note: 'Beispiel: "Unsere Idee ist die Entwicklung biologisch abbaubarer Verpackungen und die Implementierung eines Recycling-Netzwerks für Küstenregionen. Wir haben vor 2 Monaten unsere GmbH gegründet und erste Interviews mit Stakeholdern geführt…"'
         sectionNumber: 1
 
       - questionType: multipleChoice
@@ -75,7 +75,7 @@ questions:
         question: "Inwiefern erfüllt Ihr die ausgewählten SDGs?"
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Durch die Reduzierung von Plastikverpackungen tragen wir zum Wohl der Lebewesen unter und im Wasser bei, was zur Erreichung des SDGs 17 beiträgt. Darüber hinaus…\""
+        note: 'Beispiel: "Durch die Reduzierung von Plastikverpackungen tragen wir zum Wohl der Lebewesen unter und im Wasser bei, was zur Erreichung des SDGs 17 beiträgt. Darüber hinaus…"'
         sectionNumber: 1
 
       - questionType: longText
@@ -83,7 +83,7 @@ questions:
         question: "Was ist Euer persönlicher Bezug zu diesem Problem und wie seid Ihr zu diesem Projekt gekommen?"
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Als passionierte Taucher haben wir die Umweltauswirkungen hautnah erlebt und beschlossen, aktiv zur Lösung beizutragen…\""
+        note: 'Beispiel: "Als passionierte Taucher haben wir die Umweltauswirkungen hautnah erlebt und beschlossen, aktiv zur Lösung beizutragen…"'
         sectionNumber: 1
 
       - questionType: longText
@@ -91,7 +91,7 @@ questions:
         question: "Bitte erläutert Euer Geschäftsmodell bzw. wie Ihr Einnahmen generieren möchtet. Es geht hierbei besonders um das Konzept, Ihr müsst noch keine genauen Zahlen nennen."
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Unser Geschäftsmodell basiert auf dem Verkauf der nachhaltigen Verpackungen an Unternehmen sowie auf Partnerschaften mit Recyclingunternehmen…\""
+        note: 'Beispiel: "Unser Geschäftsmodell basiert auf dem Verkauf der nachhaltigen Verpackungen an Unternehmen sowie auf Partnerschaften mit Recyclingunternehmen…"'
         sectionNumber: 1
 
       - questionType: longText
@@ -99,7 +99,7 @@ questions:
         question: "Wie hebt Ihr Euch als Team ab und was ist das Besondere an Eurer Idee?"
         mandatory: true
         maxTextLength: 500
-        note: "Beispiel: \"Unser interdisziplinäres Team vereint Expertise in Umweltwissenschaften, Ingenieurwesen und Unternehmensführung. Die Integration von Technologie in unsere Lösung macht uns einzigartig….\""
+        note: 'Beispiel: "Unser interdisziplinäres Team vereint Expertise in Umweltwissenschaften, Ingenieurwesen und Unternehmensführung. Die Integration von Technologie in unsere Lösung macht uns einzigartig…."'
         sectionNumber: 1
 
       - questionType: imageUpload
@@ -162,7 +162,7 @@ questions:
               - questionType: pdfUpload
                 order: 2
                 question: "Bitte ladet ein Dokument hoch, in dem erkennbar ist, dass Eure Handelsregistereintragung nicht vor 2020 geschehen ist (max. 5 Jahre)"
-                maxFileSizeInMB: 5.0  # in Mega Byte
+                maxFileSizeInMB: 5.0 # in Mega Byte
                 mandatory: true
                 note: "[Dokument hochladen: Handelsregistereintragung]"
           - value: "Nein"
@@ -189,7 +189,7 @@ questions:
         question: "In welcher Stadt lokalisiert Ihr Euch hauptsächlich?"
         mandatory: true
         maxTextLength: 60
-        note: "Beispiel: \"München\"."
+        note: 'Beispiel: "München".'
         sectionNumber: 2
 
       - questionType: conditional
@@ -205,7 +205,7 @@ questions:
                 question: "In welchem Jahr?"
                 mandatory: true
                 maxTextLength: 60
-                note: "Beispiel: \"2022\""
+                note: 'Beispiel: "2022"'
               - questionType: multipleChoice
                 order: 2
                 question: "Wart Ihr schon einmal im Finale von Generation-D?"
@@ -283,7 +283,7 @@ questions:
         question: "Bitte gebt hier, im Format <i>Vorname</i> <i>Nachname</i>, durch Kommas getrennt, die Namen Eures Gründungs- oder Kernteams an."
         mandatory: true
         maxTextLength: 300
-        note: "Beispiel: \"Marie Müller, Max Mustermann\""
+        note: 'Beispiel: "Marie Müller, Max Mustermann"'
 
       - questionType: longText
         order: 2
@@ -294,6 +294,6 @@ questions:
       - questionType: pdfUpload
         order: 3
         question: "Bitte ladet hier Euer Read-Deck im PDF-Format hoch."
-        maxFileSizeInMB: 25.0  # in Mega Byte
+        maxFileSizeInMB: 25.0 # in Mega Byte
         mandatory: true
         note: "[Dokument hochladen: Read-Deck]"

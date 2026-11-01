@@ -9,11 +9,11 @@ ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 WORKDIR /app
 
-COPY frontend/package*.json ./
+COPY ./package*.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY frontend/ .
+COPY . .
 
 RUN npm run build
 

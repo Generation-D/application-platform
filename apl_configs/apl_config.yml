@@ -1,4 +1,3 @@
-
 ### Uncomment to configure additional attributes of Application
 # application:
 #   timezone: Europe/Berlin  #default
@@ -9,8 +8,8 @@
 questions:
   phase-1:
     phaseLabel: "Test Phase 1"
-    startDate: 2023-12-01  # format: %Y-%m-%d
-    endDate: 2024-12-10  # format: %Y-%m-%d
+    startDate: 2023-12-01 # format: %Y-%m-%d
+    endDate: 2024-12-10 # format: %Y-%m-%d
     sections:
       - name: Allgemein
         description: Wir benötigen diese Informationen um ABC auszuwerten
@@ -22,7 +21,7 @@ questions:
         question: What's your name?
         mandatory: true
         maxTextLength: 20
-        formattingRegex: PHONE_NUMBER  # optional; Other predefined values: "EMAIL", "NUMBERS", "LETTERS", any JS Regex
+        formattingRegex: PHONE_NUMBER # optional; Other predefined values: "EMAIL", "NUMBERS", "LETTERS", any JS Regex
         #formattingDescription: Telefonnummer # if formattinRegex not set or Predefined Value => ignored; else => mandatory
         note: e.g. Max Mustermann
         preInformationBox: We need your Email Address so we can contact you! # optional
@@ -51,20 +50,20 @@ questions:
         order: 3
         question: Please Upload this Video
         mandatory: false
-        maxFileSizeInMB: 2.0  # in Mega Byte
+        maxFileSizeInMB: 2.0 # in Mega Byte
         sectionNumber: 1
       - questionType: datePicker
         order: 5
         question: When do you have birthday?
-        minDate: 1993-06-21  # format: %Y-%m-%d
-        maxDate: 2023-06-21  # format: %Y-%m-%d
+        minDate: 1993-06-21 # format: %Y-%m-%d
+        maxDate: 2023-06-21 # format: %Y-%m-%d
         mandatory: false
         sectionNumber: 2
       - questionType: datetimePicker
         order: 6
         question: When were you born?
-        minDatetime: 1993-06-21T00:00:00  # format: %Y-%m-%dT%H:%M:%S
-        maxDatetime: 2023-06-21T23:59:59  # format: %Y-%m-%dT%H:%M:%S
+        minDatetime: 1993-06-21T00:00:00 # format: %Y-%m-%dT%H:%M:%S
+        maxDatetime: 2023-06-21T23:59:59 # format: %Y-%m-%dT%H:%M:%S
         mandatory: false
         sectionNumber: 2
       - questionType: numberPicker
@@ -77,13 +76,13 @@ questions:
       - questionType: pdfUpload
         order: 8
         question: Please upload your CV
-        maxFileSizeInMB: 2.0  # in Mega Byte
+        maxFileSizeInMB: 2.0 # in Mega Byte
         mandatory: false
         sectionNumber: 2
       - questionType: imageUpload
         order: 9
         question: Please upload your Profile picture
-        maxFileSizeInMB: 2.0  # in Mega Byte
+        maxFileSizeInMB: 2.0 # in Mega Byte
         mandatory: false
         sectionNumber: 2
       - questionType: dropdown
@@ -170,4 +169,4 @@ questions:
         order: 3
         question: Please Upload this Video
         mandatory: false
-        maxFileSizeInMB: 10.0  # in Mega Byte
+        maxFileSizeInMB: 10.0 # in Mega Byte

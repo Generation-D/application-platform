@@ -6,9 +6,6 @@ jobs:
   lint:
     name: Lint frontend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout Repository
@@ -17,25 +14,22 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Run Eslint
         run: npm run lint
-      
+
       - name: Run Prettier
         run: npm run format
 
   test:
     name: Test frontend
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout Repository
@@ -44,9 +38,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
 
       - name: Install Dependencies
         run: npm ci
