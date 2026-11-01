@@ -1,9 +1,10 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  resolve: {tsconfigPaths: true},
+  resolve: { tsconfigPaths: true },
   test: {
-     coverage: {
-      reporter: ['text', 'json-summary', 'json']
-    }
-}});
+    coverage: {
+      reporter: ["text", "json-summary", "json"],
+    },
+  },
+});

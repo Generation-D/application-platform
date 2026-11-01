@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 
 import {
   reviewEmailCmdAddress,
@@ -39,9 +39,9 @@ it("renders reviewer assignments and escapes application labels", () => {
     (html.match(/https:\/\/example\.org\/review\/123/g) ?? []).length,
   ).toBe(1);
   expect(html).toMatch(/Euer CMD &amp; IT Team/);
-  expect(
-    createReviewerSubject("[Generation-D]", "1. Kurzbewerbung"),
-  ).toBe("[Generation-D] Bewertungsrunde 1. Kurzbewerbung");
+  expect(createReviewerSubject("[Generation-D]", "1. Kurzbewerbung")).toBe(
+    "[Generation-D] Bewertungsrunde 1. Kurzbewerbung",
+  );
   expect(
     createReviewerSubject("[Generation-D] Bewertungsrunde", "1. Kurzbewerbung"),
   ).toBe("[Generation-D] Bewertungsrunde 1. Kurzbewerbung");
@@ -84,9 +84,9 @@ it("rejects non-http application links", () => {
 });
 
 it("escapes the reviewer address in the test email heading", () => {
-  expect(
-    escapeHtml('reviewer@example.org"><img src=x onerror=alert(1)>'),
-  ).toBe("reviewer@example.org&quot;&gt;&lt;img src=x onerror=alert(1)&gt;");
+  expect(escapeHtml('reviewer@example.org"><img src=x onerror=alert(1)>')).toBe(
+    "reviewer@example.org&quot;&gt;&lt;img src=x onerror=alert(1)&gt;",
+  );
 });
 
 it("production copies go to both IT and CMD inboxes", () => {

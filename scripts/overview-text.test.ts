@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 
 import { overviewTextPath } from "../src/utils/overviewTextPath";
 
@@ -14,9 +14,9 @@ const afterDeadline = new Date("2026-03-23T12:00:00Z");
 it("publishing a completed phase replaces evaluation text with the saved decision", () => {
   const passed = { outcome: true, phase };
   const failed = { outcome: false, phase };
-  expect(
-    overviewTextPath(phase, [passed], afterDeadline),
-  ).toBe("phase-1/evaluating.md");
+  expect(overviewTextPath(phase, [passed], afterDeadline)).toBe(
+    "phase-1/evaluating.md",
+  );
 
   const completed = { ...phase, finished_evaluation: "2026-03-23T12:00:00Z" };
   expect(
