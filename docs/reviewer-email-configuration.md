@@ -2,13 +2,13 @@
 
 The reviewer email has two separate kinds of settings:
 
-| Setting | Where to change it | What it controls |
-| --- | --- | --- |
-| `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` headers; `replyTo` addresses also receive every production reviewer mail in CC |
-| `reviewEmailDefaults` | The same file | Annual subject prefix, deadlines, links or text, and phase note; round number and phase name are appended automatically |
-| `SMTP_HOST`, `SMTP_PORT` | Server environment | Which SMTP server sends the email |
-| `EMAIL`, `EMAIL_PASSWORD` | Server environment | Existing mailbox login used for SMTP authentication; explicit `SMTP_USER`/`SMTP_PASSWORD` can override these values |
-| `NEXT_PUBLIC_SITE_URL` | Server environment | Base URL for the review link in the message |
+| Setting                                        | Where to change it                         | What it controls                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `reviewEmailSender.name`, `.email`, `.replyTo` | `frontend/src/config/reviewEmailConfig.ts` | Public `From` and `Reply-To` headers; `replyTo` addresses also receive every production reviewer mail in CC             |
+| `reviewEmailDefaults`                          | The same file                              | Annual subject prefix, deadlines, links or text, and phase note; round number and phase name are appended automatically |
+| `SMTP_HOST`, `SMTP_PORT`                       | Server environment                         | Which SMTP server sends the email                                                                                       |
+| `EMAIL`, `EMAIL_PASSWORD`                      | Server environment                         | Existing mailbox login used for SMTP authentication; explicit `SMTP_USER`/`SMTP_PASSWORD` can override these values     |
+| `NEXT_PUBLIC_SITE_URL`                         | Server environment                         | Base URL for the review link in the message                                                                             |
 
 Changing the sender settings requires a frontend restart locally or a new
 deployment. They are deliberately versioned in code, not uploaded as JSON. The

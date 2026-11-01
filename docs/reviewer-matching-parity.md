@@ -24,12 +24,12 @@ the former repository's checked-in fixtures:
 The Python output `matched_teams.csv` was compared team by team and in slot
 order against the TypeScript result from the **same ordered inputs**:
 
-| Check | Result |
-| --- | ---: |
-| Teams | 1,000 |
-| Reviewers | 200 |
-| Assignments from each implementation | 2,000 |
-| Exact ordered reviewer pairs | 1,000 / 1,000 |
+| Check                                |        Result |
+| ------------------------------------ | ------------: |
+| Teams                                |         1,000 |
+| Reviewers                            |           200 |
+| Assignments from each implementation |         2,000 |
+| Exact ordered reviewer pairs         | 1,000 / 1,000 |
 
 The first comparison exposed a difference: the portal had sorted teams by ID
 and resolved equal reviewer loads by email, while Python used input order. That
