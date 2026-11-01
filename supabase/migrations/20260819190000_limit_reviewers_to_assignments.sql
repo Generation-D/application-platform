@@ -85,6 +85,7 @@ using (
   )
 );
 
+-- Typed answers inherit access from their parent answer and application through RLS.
 create policy "select_accessible_checkbox_answer"
 on public.checkbox_answer_table for select to authenticated
 using (exists (select 1 from public.answer_table answer where answer.answerid = checkbox_answer_table.answerid));

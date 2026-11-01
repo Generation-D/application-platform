@@ -46,8 +46,14 @@ Mailpit fängt sie lokal ab.
 - [ ] Ohne Login führt `/admin/evaluation` zur Anmeldung; Bewerber können
       diesen Bereich nicht öffnen.
 - [ ] Ein aktiver Bewerter sieht alle Bewerbungen und deren Uploads, ein
-      Bewerber oder inaktiver Bewerter nicht. Ein neues Slack-Konto braucht
-      dafür zunächst die aktive Bewerterrolle.
+      Bewerber sieht nur seine eigene Bewerbung; inaktive Bewerter haben keinen Zugriff.
+- [ ] Neue Slack-Konten erhalten automatisch die aktive Bewerterrolle;
+      reguläre Registrierungen die Bewerberrolle. Bestehende Rollen und
+      deaktivierte Konten bleiben unverändert. Externe Bewerter können im
+      Admin-Bereich manuell die Bewerterrolle erhalten.
+
+Vor produktiver Nutzung in der Slack-App-Konfiguration bestätigen, dass nur
+Mitglieder des Generation-D-Workspace den Slack-Login nutzen können.
 
 ### 2. Matching
 

@@ -95,8 +95,7 @@ begin
 end;
 $$;
 
--- A Slack login does not grant access to every application automatically.
--- Admins activate and promote trusted judges to Reviewer (role 2).
+-- Historical default, superseded by 20261101100000_restore_slack_reviewer_role.sql.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql security definer set search_path = public
