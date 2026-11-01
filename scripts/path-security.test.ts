@@ -1,25 +1,22 @@
-import assert from "node:assert/strict";
+import { it, expect } from "vitest";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import path from "node:path";
-import test from "node:test";
 import { resolvePathWithinRepository } from "./path-security";
 
-test("accepts existing paths within the repository", () => {
-  assert.equal(
-    resolvePathWithinRepository("package.json"),
+it("accepts existing paths within the repository", () => {
+  expect(resolvePathWithinRepository("package.json")).toBe(
     fs.realpathSync(path.resolve("package.json")),
   );
 });
 
-test("rejects paths outside the repository", () => {
+it("rejects paths outside the repository", () => {
   const outsideDirectory = fs.mkdtempSync(
     path.join(os.tmpdir(), "application-platform-path-test-"),
   );
 
   try {
-    assert.throws(
-      () => resolvePathWithinRepository(outsideDirectory),
+    expect(() => resolvePathWithinRepository(outsideDirectory)).toThrow(
       /Path must stay within the repository/,
     );
   } finally {
@@ -27,7 +24,7 @@ test("rejects paths outside the repository", () => {
   }
 });
 
-test("rejects repository symlinks that point outside the repository", () => {
+it("rejects repository symlinks that point outside the repository", () => {
   const outsideDirectory = fs.mkdtempSync(
     path.join(os.tmpdir(), "application-platform-path-test-"),
   );
@@ -38,8 +35,7 @@ test("rejects repository symlinks that point outside the repository", () => {
 
   try {
     fs.symlinkSync(outsideDirectory, symlinkPath, "dir");
-    assert.throws(
-      () => resolvePathWithinRepository(symlinkPath),
+    expect(() => resolvePathWithinRepository(symlinkPath)).toThrow(
       /Path must stay within the repository/,
     );
   } finally {
