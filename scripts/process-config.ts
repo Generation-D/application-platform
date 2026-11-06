@@ -18,6 +18,7 @@ import {
 } from "@/components/questiontypes/utils/questiontype_selector";
 import { getSupabase } from "./utils";
 import { resolvePathWithinRepository } from "./path-security";
+import { revalidateTag } from "next/cache";
 
 const log = {
   debug: console.debug,
@@ -431,6 +432,7 @@ export async function getPhasesConfig(
   }
 
   await processConfig(filePath, supabase);
+  revalidateTag('questions', 'max');
 })().catch((e) => {
   console.error(e);
   process.exitCode = 1;
