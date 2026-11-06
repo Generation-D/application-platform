@@ -549,8 +549,6 @@ async function getConditionalQuestion(supabase: SupabaseClient<Database>, phaseI
 export async function fetch_question_table(
   phaseId: string,
 ): Promise<Question[]> {
-  "use cache"
-  cacheTag('questions');
   const supabase = await getSupabaseCookiesUtilClient();
   const awaitedQuestions = (await Promise.all([getShortTextQuestion(supabase, phaseId), getLongTextQuestion(supabase, phaseId), getNumberPickerQuestion(supabase, phaseId), getDateTimePickerQuestion(supabase, phaseId), 
     getDatePickerQuestion(supabase, phaseId), getImageUploadQuestion(supabase, phaseId), getVideoUploadQuestion(supabase, phaseId), getPdfUploadQuestion(supabase, phaseId), getCheckBoxQuestion(supabase, phaseId),
