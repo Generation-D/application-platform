@@ -91,7 +91,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const dispatch = useAppDispatch();
   // need a copy, so I can modify it beneath
   const copyPhaseQuestions = [...phaseQuestions];
-  dispatch(
+  useEffect(() => {
+    dispatch(
     setPhase({
       phasename: phaseData.phasename,
       phasedata: phaseData,
@@ -99,6 +100,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     }),
   );
 
+  }, [dispatch, phaseData, phaseQuestions])
+  
   const updateAnswerState = useCallback(
     (questionid: string, answerid?: string, answervalue?: string | null) => {
       dispatch(
