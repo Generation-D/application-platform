@@ -432,7 +432,6 @@ export async function getPhasesConfig(
   }
 
   await processConfig(filePath, supabase);
-  revalidateTag('questions', 'max');
 })().catch((e) => {
   console.error(e);
   process.exitCode = 1;
