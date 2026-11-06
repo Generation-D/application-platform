@@ -68,4 +68,4 @@ jobs:
         if: failure() # Crucial! This ensures it only runs if the tests fail.
         with:
           name: cypress-screenshots
-          path: e2e/cypress/screenshots
+          path: cypress/screenshots

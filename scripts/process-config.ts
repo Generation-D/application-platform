@@ -4,12 +4,6 @@ import { REGEX_JS, REGEX_TO_DESCRIPTION } from "./consts";
 import { convertToTimezone } from "./datetime";
 import YAML from "yaml";
 import * as fs from "node:fs";
-import {
-  DEFAULT_PARAMS,
-  MANDATORY_PARAMS,
-  OPTIONAL_PARAMS,
-  QUESTION_TYPES_DB_TABLE,
-} from "./validate-config";
 import { parseArgs } from "util";
 import { Database } from "@/types/database.types";
 import {
@@ -20,9 +14,11 @@ import {
 import {
   QuestionType,
   questionTypeFromStr,
+  QuestionTypesTable,
 } from "@/components/questiontypes/utils/questiontype_selector";
 import { getSupabase } from "./utils";
 import { resolvePathWithinRepository } from "./path-security";
+import { revalidateTag } from "next/cache";
 
 const log = {
   debug: console.debug,
@@ -57,12 +53,12 @@ export async function processQuestion(
   supabase: SupabaseClient,
   dependsOn: string | null = null,
 ): Promise<void> {
-  const questionType = questionTypeFromStr(question["questionType"]);
+  const questionType = questionTypeFromStr(question.questionType);
   if (!questionType) {
-    throw new Error(`Invalid QuestionType: ${question["questionType"]}`);
+    throw new Error(`Invalid QuestionType: ${question.questionType}`);
   }
 
-  const sectionNumber = question["sectionNumber"];
+  const sectionNumber = question.sectionNumber;
   const dataQuestionTable = createDataQuestionsTable(
     questionType,
     question.order,
@@ -88,12 +84,11 @@ export async function processQuestion(
   const questionId = responseQuestionTable.data[0]["questionid"];
   const dataQuestionTypeTable = createDataQuestionTypeTable(
     questionId,
-    questionType,
     question,
   );
 
   const responseQuestionTypeTable = await supabase
-    .from(QUESTION_TYPES_DB_TABLE[questionType])
+    .from(QuestionTypesTable[questionType])
     .insert(dataQuestionTypeTable)
     .select();
   if (responseQuestionTypeTable.error) throw responseQuestionTypeTable.error;
@@ -296,38 +291,58 @@ export function createDataQuestionsTable(
 
 export function createDataQuestionTypeTable(
   questionId: string,
-  questionType: QuestionType,
   question: Question,
 ) {
   const dataQuestionTypeTable: Record<string, string> = {
     questionid: questionId,
   };
 
-  const mandatoryMap = MANDATORY_PARAMS[questionType] || {};
-  for (const param of Object.keys(mandatoryMap)) {
-    if (param !== "Answers" && !(param.toLowerCase() in DEFAULT_PARAMS)) {
-      const key = param as keyof typeof question;
-      const value = question[key] as unknown;
-      dataQuestionTypeTable[param.toLowerCase()] =
-        value instanceof Date ? value.toISOString() : String(value);
-    }
+  if (question.questionType === QuestionType.DatetimePicker) {
+    dataQuestionTypeTable["maxdatetime"] = question.maxDatetime.toISOString();
+    dataQuestionTypeTable["mindatetime"] = question.minDatetime.toISOString();
   }
 
-  const optionalMap = OPTIONAL_PARAMS[questionType] || {};
-  for (const optParam of Object.keys(optionalMap)) {
-    if (!(optParam in question)) {
-      continue;
-    }
-    if (
-      optParam === "formattingRegex" &&
-      question.questionType === QuestionType.ShortText
-    ) {
-      const regexKey = question.formattingRegex;
-      if (!regexKey) {
-        continue;
-      }
-      dataQuestionTypeTable[optParam.toLowerCase()] =
-        REGEX_JS[regexKey] ?? null;
+  if (
+    question.questionType === QuestionType.ShortText ||
+    question.questionType == QuestionType.LongText
+  ) {
+    dataQuestionTypeTable["maxtextlength"] = String(question.maxTextLength);
+  }
+
+  if (
+    question.questionType === QuestionType.VideoUpload ||
+    question.questionType === QuestionType.PDFUpload ||
+    question.questionType === QuestionType.ImageUpload
+  ) {
+    dataQuestionTypeTable["maxfilesizeinmb"] = String(question.maxFileSizeInMB);
+  }
+
+  if (question.questionType === QuestionType.DatePicker) {
+    dataQuestionTypeTable["mindate"] = String(question.minDate);
+    dataQuestionTypeTable["maxdate"] = String(question.maxDate);
+  }
+
+  if (question.questionType === QuestionType.NumberPicker) {
+    dataQuestionTypeTable["minnumber"] = String(question.minNumber);
+    dataQuestionTypeTable["maxnumber"] = String(question.maxNumber);
+  }
+
+  if (
+    question.questionType === QuestionType.Dropdown ||
+    question.questionType === QuestionType.MultipleChoice
+  ) {
+    dataQuestionTypeTable["minanswers"] = String(question.minAnswers);
+    dataQuestionTypeTable["maxanswers"] = String(question.maxAnswers);
+    dataQuestionTypeTable["userinput"] = String(question.userInput);
+  }
+
+  if (
+    question.questionType === QuestionType.ShortText &&
+    "formattingRegex" in question
+  ) {
+    const regexKey = question.formattingRegex;
+    if (regexKey) {
+      dataQuestionTypeTable["formattingregex"] = REGEX_JS[regexKey] ?? null;
       dataQuestionTypeTable["formattingdescription"] =
         REGEX_TO_DESCRIPTION[regexKey] ??
         question["formattingDescription"] ??
