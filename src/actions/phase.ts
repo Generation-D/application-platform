@@ -30,6 +30,7 @@ import { MultipleChoiceQuestionTypeExtraProps } from "@/components/questiontypes
 import { ChoiceProps } from "@/components/questiontypes/utils/multiplechoice_choice";
 import { DropdownQuestionTypeExtraProps } from "@/components/questiontypes/dropdown_questiontype";
 import { ConditionalQuestionTypeExtraProps } from "@/components/questiontypes/conditional_questiontype";
+import { cacheTag } from "next/cache";
 
 // type IdType = {
 //   questionid: string;
@@ -549,6 +550,7 @@ export async function fetch_question_table(
   phaseId: string,
 ): Promise<Question[]> {
   "use cache"
+  cacheTag('questions');
   const supabase = await getSupabaseCookiesUtilClient();
   const awaitedQuestions = (await Promise.all([getShortTextQuestion(supabase, phaseId), getLongTextQuestion(supabase, phaseId), getNumberPickerQuestion(supabase, phaseId), getDateTimePickerQuestion(supabase, phaseId), 
     getDatePickerQuestion(supabase, phaseId), getImageUploadQuestion(supabase, phaseId), getVideoUploadQuestion(supabase, phaseId), getPdfUploadQuestion(supabase, phaseId), getCheckBoxQuestion(supabase, phaseId),
