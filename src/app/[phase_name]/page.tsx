@@ -56,16 +56,16 @@ export default async function Page({
   const isEditable = currentDate >= startDate && currentDate <= endDate;
 
   const phase_questions = await cached_fetch_phase_questions(phaseData.phaseid);
-  let phase_sections = [] as SectionData[];
-  let mapQuestions = {} as SectionQuestionsMap;
+  let phase_sections: SectionData[] = [];
+  let mapQuestions: SectionQuestionsMap = {};
   if (phaseData.sectionsenabled) {
     phase_sections = await fetch_sections_by_phase(phaseData.phaseid);
-    mapQuestions = phase_sections.reduce((map, section) => {
+    mapQuestions = phase_sections.reduce<SectionQuestionsMap>((map, section) => {
       map[section.sectionid] = phase_questions.filter(
         (question) => question.sectionid === section.sectionid,
       );
       return map;
-    }, {} as SectionQuestionsMap);
+    }, {});
   }
 
   const supabase = await getSupabaseCookiesUtilClient();

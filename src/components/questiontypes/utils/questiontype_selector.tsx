@@ -11,6 +11,7 @@ import PDFUploadQuestionType from "@/components/questiontypes/pdfupload_question
 import ShortTextQuestionType from "@/components/questiontypes/shorttext_questiontype";
 import VideoUploadQuestionType from "@/components/questiontypes/videoupload_questiontype";
 import { Question } from "@/components/questions";
+  import { Database } from "@/types/database.types";
 
 export enum QuestionType {
   ShortText = "shortText",
@@ -31,28 +32,34 @@ export function listQuestionTypeValues(): QuestionType[] {
   return Object.values(QuestionType);
 }
 
+function isValidEnum<T extends Record<string, string>>(
+  enumObj: T,
+  value: string
+): value is T[keyof T] {
+  return Object.values(enumObj).includes(value);
+}
+
 export function questionTypeFromStr(value: string): QuestionType | null {
-  const values = Object.values(QuestionType) as string[];
-  if (values.includes(value)) {
-    return value as QuestionType;
+ if (isValidEnum(QuestionType, value)) {
+    return value;
   }
   return null;
 }
 
-export enum QuestionTypeTable {
-  ShortTextQuestionTable = "short_text_question_table",
-  LongTextQuestionTable = "long_text_question_table",
-  NumberPickerQuestionTable = "number_picker_question_table",
-  DatetimePickerQuestionTable = "datetime_picker_question_table",
-  DatePickerQuestionTable = "date_picker_question_table",
-  ImageUploadQuestionTable = "image_upload_question_table",
-  VideoUploadQuestionTable = "video_upload_question_table",
-  PdfUploadQuestionTable = "pdf_upload_question_table",
-  MultipleChoiceQuestionTable = "multiple_choice_question_table",
-  DropdownQuestionTable = "dropdown_question_table",
-  CheckBoxQuestionTable = "checkbox_question_table",
-  ConditionalQuestionTable = "conditional_question_table",
-}
+export const QuestionTypesTable = {
+  [QuestionType.ShortText]: "short_text_question_table",
+  [QuestionType.LongText]: "long_text_question_table",
+  [QuestionType.MultipleChoice]: "multiple_choice_question_table",
+  [QuestionType.VideoUpload]: "video_upload_question_table",
+  [QuestionType.DatePicker]: "date_picker_question_table",
+  [QuestionType.DatetimePicker]: "datetime_picker_question_table",
+  [QuestionType.NumberPicker]: "number_picker_question_table",
+  [QuestionType.PDFUpload]: "pdf_upload_question_table",
+  [QuestionType.ImageUpload]: "image_upload_question_table",
+  [QuestionType.Dropdown]: "dropdown_question_table",
+  [QuestionType.CheckBox]: "checkbox_question_table",
+  [QuestionType.Conditional]: "conditional_question_table",
+} as const;
 
 export enum AnswerTypeTable {
   ShortTextAnswerTable = "short_text_answer_table",
