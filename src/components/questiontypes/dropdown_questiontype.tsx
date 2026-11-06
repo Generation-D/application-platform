@@ -10,17 +10,22 @@ import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
-import { DropdownOption, DropdownOptionProps } from "./utils/dropdown_option";
+import { DropdownOption } from "./utils/dropdown_option";
 import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger("components/questiontypes/dropdown_questiontype");
 
 export interface DropdownQuestionTypeExtraProps {
   answerid: string | null;
-  options: DropdownOptionProps[];
+  options: DropdownOption[];
   minanswers: number;
   maxanswers: number;
   userinput: boolean;
+}
+
+interface DropdownOption {
+  optionid: string;
+  optiontext: string;
 }
 
 export type DropdownQuestionTypeProps = DropdownQuestionTypeExtraProps &

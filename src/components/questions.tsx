@@ -41,30 +41,33 @@ export interface DefaultQuestion {
   depends_on: string | null;
 }
 
-interface BaseQuestion<T extends QuestionType, P> extends DefaultQuestion {
+export interface BaseQuestion<T extends QuestionType, P>
+  extends DefaultQuestion {
   questiontype: T;
   params: P;
 }
 
-export type Question =
-  | BaseQuestion<QuestionType.ShortText, ShortTextQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.LongText, LongTextQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.NumberPicker, NumberPickerQuestionTypeExtraProps>
-  | BaseQuestion<
-      QuestionType.DatetimePicker,
-      DatetimePickerQuestionTypeExtraProps
-    >
-  | BaseQuestion<QuestionType.DatePicker, DatePickerQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.ImageUpload, ImageUploadQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.VideoUpload, VideoUploadQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.PDFUpload, PDFUploadQuestionTypeExtraProps>
-  | BaseQuestion<
-      QuestionType.MultipleChoice,
-      MultipleChoiceQuestionTypeExtraProps
-    >
-  | BaseQuestion<QuestionType.Dropdown, DropdownQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.CheckBox, CheckBoxQuestionTypeExtraProps>
-  | BaseQuestion<QuestionType.Conditional, ConditionalQuestionTypeExtraProps>;
+export type QuestionTypeMap = {
+  [QuestionType.ShortText]: ShortTextQuestionTypeExtraProps;
+  [QuestionType.LongText]: LongTextQuestionTypeExtraProps;
+  [QuestionType.NumberPicker]: NumberPickerQuestionTypeExtraProps;
+  [QuestionType.DatetimePicker]: DatetimePickerQuestionTypeExtraProps;
+  [QuestionType.DatePicker]: DatePickerQuestionTypeExtraProps;
+  [QuestionType.ImageUpload]: ImageUploadQuestionTypeExtraProps;
+  [QuestionType.VideoUpload]: VideoUploadQuestionTypeExtraProps;
+  [QuestionType.PDFUpload]: PDFUploadQuestionTypeExtraProps;
+  [QuestionType.MultipleChoice]: MultipleChoiceQuestionTypeExtraProps;
+  [QuestionType.Dropdown]: DropdownQuestionTypeExtraProps;
+  [QuestionType.CheckBox]: CheckBoxQuestionTypeExtraProps;
+  [QuestionType.Conditional]: ConditionalQuestionTypeExtraProps;
+};
+
+export type QuestionOfType<T extends QuestionType> =
+  BaseQuestion<T, QuestionTypeMap[T]>;
+
+export type Question = {
+  [T in QuestionType]: QuestionOfType<T>;
+}[QuestionType];
 
 interface QuestionnaireProps {
   phaseData: PhaseData;
