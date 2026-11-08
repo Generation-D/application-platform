@@ -18,7 +18,6 @@ import {
 } from "@/components/questiontypes/utils/questiontype_selector";
 import { getSupabase } from "./utils";
 import { resolvePathWithinRepository } from "./path-security";
-import { revalidateTag } from "next/cache";
 
 const log = {
   debug: console.debug,

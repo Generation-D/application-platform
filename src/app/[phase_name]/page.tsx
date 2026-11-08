@@ -60,12 +60,15 @@ export default async function Page({
   let mapQuestions: SectionQuestionsMap = {};
   if (phaseData.sectionsenabled) {
     phase_sections = await fetch_sections_by_phase(phaseData.phaseid);
-    mapQuestions = phase_sections.reduce<SectionQuestionsMap>((map, section) => {
-      map[section.sectionid] = phase_questions.filter(
-        (question) => question.sectionid === section.sectionid,
-      );
-      return map;
-    }, {});
+    mapQuestions = phase_sections.reduce<SectionQuestionsMap>(
+      (map, section) => {
+        map[section.sectionid] = phase_questions.filter(
+          (question) => question.sectionid === section.sectionid,
+        );
+        return map;
+      },
+      {},
+    );
   }
 
   const supabase = await getSupabaseCookiesUtilClient();

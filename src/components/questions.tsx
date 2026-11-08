@@ -41,8 +41,10 @@ export interface DefaultQuestion {
   depends_on: string | null;
 }
 
-export interface BaseQuestion<T extends QuestionType, P>
-  extends DefaultQuestion {
+export interface BaseQuestion<
+  T extends QuestionType,
+  P,
+> extends DefaultQuestion {
   questiontype: T;
   params: P;
 }
@@ -62,8 +64,10 @@ export type QuestionTypeMap = {
   [QuestionType.Conditional]: ConditionalQuestionTypeExtraProps;
 };
 
-export type QuestionOfType<T extends QuestionType> =
-  BaseQuestion<T, QuestionTypeMap[T]>;
+export type QuestionOfType<T extends QuestionType> = BaseQuestion<
+  T,
+  QuestionTypeMap[T]
+>;
 
 export type Question = {
   [T in QuestionType]: QuestionOfType<T>;
@@ -93,15 +97,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const copyPhaseQuestions = [...phaseQuestions];
   useEffect(() => {
     dispatch(
-    setPhase({
-      phasename: phaseData.phasename,
-      phasedata: phaseData,
-      phasequestions: phaseQuestions,
-    }),
-  );
+      setPhase({
+        phasename: phaseData.phasename,
+        phasedata: phaseData,
+        phasequestions: phaseQuestions,
+      }),
+    );
+  }, [dispatch, phaseData, phaseQuestions]);
 
-  }, [dispatch, phaseData, phaseQuestions])
-  
   const updateAnswerState = useCallback(
     (questionid: string, answerid?: string, answervalue?: string | null) => {
       dispatch(

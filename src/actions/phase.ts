@@ -2,7 +2,7 @@
 
 import { RedirectType, redirect } from "next/navigation";
 
-import { BaseQuestion, DefaultQuestion, Question, QuestionOfType } from "@/components/questions";
+import { BaseQuestion, Question, QuestionOfType } from "@/components/questions";
 import {
   QuestionType,
   QuestionTypesTable,
@@ -21,203 +21,18 @@ import {
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 import { createLogger } from "@/logger/logger";
-import { error } from "node:console";
 import { ShortTextQuestionTypeExtraProps } from "@/components/questiontypes/shorttext_questiontype";
 import { Database } from "@/types/database.types";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { LongTextQuestionTypeExtraProps } from "@/components/questiontypes/longtext_questiontype";
 import { MultipleChoiceQuestionTypeExtraProps } from "@/components/questiontypes/multiplechoice_questiontype";
-import { ChoiceProps } from "@/components/questiontypes/utils/multiplechoice_choice";
-import { DropdownQuestionTypeExtraProps } from "@/components/questiontypes/dropdown_questiontype";
-import { ConditionalQuestionTypeExtraProps } from "@/components/questiontypes/conditional_questiontype";
-import { cacheTag } from "next/cache";
 
-// type IdType = {
-//   questionid: string;
-//   // TODO
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   [key: string]: any;
-// };
-
-// type OptionsOrChoicesData = Record<
-//   string,
-//   {
-//     choiceid?: string;
-//     choicetext?: string;
-//     optionid?: string;
-//     optiontext?: string;
-//     choicevalue?: string;
-//   }[]
-// >;
-
-// export async function fetch_question_type_table(questions: DefaultQuestion[]) {
-//   const result = {
-//     [QuestionType.ShortText]: [{}],
-//     [QuestionType.LongText]: [{}],
-//     [QuestionType.NumberPicker]: [{}],
-//     [QuestionType.DatetimePicker]: [{}],
-//     [QuestionType.DatePicker]: [{}],
-//     [QuestionType.ImageUpload]: [{}],
-//     [QuestionType.VideoUpload]: [{}],
-//     [QuestionType.PDFUpload]: [{}],
-//     [QuestionType.MultipleChoice]: [{}],
-//     [QuestionType.Dropdown]: [{}],
-//     [QuestionType.CheckBox]: [{}],
-//     [QuestionType.Conditional]: [{}],
-//   };
-//   for (const questionType of Object.values(QuestionType)) {
-//     const tableName = QuestionTypesTable[questionType]
-
-//     if (!tableName) {
-//       log.error(
-//         `Table for question type "${questionType}" is missing. Skipping...`,
-//       );
-//       throw Error(
-//         `Table for question type "${questionType}" is missing. Skipping...`,
-//       );
-//     }
-//     const supabase = await getSupabaseCookiesUtilClient();
-
-//     const { data: questionTypeData, error: questionTypeError } = await supabase
-//       .from(tableName)
-//       .select("*")
-//       .in(
-//         "questionid",
-//         questions
-//           .filter((q) => q.questiontype === questionType)
-//           .map((q) => q.questionid),
-//       );
-
-//     if (questionTypeError) {
-//       log.error(JSON.stringify(questionTypeError));
-//       // result[questionType] = [{}];
-//     } else if (questionTypeData) {
-//       result[questionType] = questionTypeData;
-//     } else {
-//       log.debug(`No data found for question type: ${questionType}`);
-//       // result[questionType] = [{}];
-//     }
-//   }
-
-//   return result;
-// }
-
-
-// const AdditionalParamsTables = {
-//   [QuestionType.MultipleChoice]: "multiple_choice_question_choice_table",
-//   [QuestionType.Dropdown]: "dropdown_question_option_table",
-//   [QuestionType.Conditional]: "conditional_question_choice_table",
-// } as const;
-
-// export type AdditionalParamsQuestionType = keyof typeof AdditionalParamsTables;
-
-// export async function fetchAdditionalParams(questiontype: AdditionalParamsQuestionType) {
-//   const table_name = AdditionalParamsTables[questiontype];
-//   const supabase = await getSupabaseCookiesUtilClient();
-//   const { data: paramsData, error } = await supabase
-//     .from(table_name)
-//     .select("*");
-
-//   if (error) {
-//     log.error(JSON.stringify(error));
-//     return {};
-//   }
-
-//   const paramsDict: Record<
-//     string,
-//     Array<{
-//       choiceid?: string;
-//       choicetext?: string;
-//       optionid?: string;
-//       optiontext?: string;
-//       choicevalue?: string;
-//     }>
-//   > = {};
-
-//   paramsData.forEach((param) => {
-//     if (!paramsDict[param.questionid]) {
-//       paramsDict[param.questionid] = [];
-//     }
-
-//     paramsDict[param.questionid].push({
-//       optionid: "optionid" in param ? param.optionid : undefined,
-//       choiceid: "choiceid" in param ? param.choiceid : undefined,
-//       choicetext: "choicetext" in param ? param.choicetext : undefined,
-//       choicevalue: "choicevalue" in param ? param.choicevalue : undefined,
-//       optiontext: "optiontext" in param ? param.optiontext : undefined,
-//     });
-
-//     // if (
-//     //   questiontype === QuestionType.MultipleChoice &&
-//     //   "choiceid" in param &&
-//     //   "choicetext" in param
-//     // ) {
-//     //   paramsDict[param.questionid].push({
-//     //     choiceid: param.choiceid,
-//     //     choicetext: param.choicetext,
-//     //   });
-//     // } else if (
-//     //   questiontype === QuestionType.Dropdown &&
-//     //   "optionid" in param &&
-//     //   "optiontext" in param
-//     // ) {
-//     //   paramsDict[param.questionid].push({
-//     //     optionid: param.optionid,
-//     //     optiontext: param.optiontext,
-//     //   });
-//     // } else if (
-//     //   questiontype === QuestionType.Conditional &&
-//     //   "choiceid" in param &&
-//     //   "choicevalue" in param
-//     // ) {
-//     //   paramsDict[param.questionid].push({
-//     //     choiceid: param.choiceid,
-//     //     choicevalue: param.choicevalue,
-//     //   });
-//     // }
-//   });
-//   return paramsDict;
-// }
-
-// async function append_params(
-//   // TODO: fix any
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   question_types_questions: any,
-//   question: DefaultQuestion,
-//   choicesData: OptionsOrChoicesData,
-//   optionsData: OptionsOrChoicesData,
-//   conditionalChoicesData: OptionsOrChoicesData,
-// ) {
-//   const question_type_questions =
-//     question_types_questions[question.questiontype];
-//   const question_type_params =
-//     question_type_questions!.find(
-//       (params: IdType) => params.questionid === question.questionid,
-//     ) || {};
-//   // TODO: fix lint
-//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//   const { questionid, ...rest } = question_type_params;
-//   if (question.questiontype === QuestionType.MultipleChoice) {
-//     rest["choices"] = choicesData[question.questionid];
-//   } else if (question.questiontype === QuestionType.Dropdown) {
-//     rest["options"] = optionsData[question.questionid];
-//   } else if (question.questiontype === QuestionType.Conditional) {
-//     rest["choices"] = conditionalChoicesData[question.questionid];
-//   }
-//   return {
-//     ...question,
-//     params: rest,
-//   };
-// }
-
-type QuestionData = Database["public"]["Tables"]["question_table"]["Row"]
+type QuestionData = Database["public"]["Tables"]["question_table"]["Row"];
 
 function mapBaseQuestion(questionData: QuestionData) {
   return {
     questionid: questionData.questionid,
     questionorder: questionData.questionorder,
     // questionsuborder?: string;
-
     mandatory: questionData.mandatory,
     questiontext: questionData.questiontext,
     questionnote: questionData.questionnote || "",
@@ -228,18 +43,26 @@ function mapBaseQuestion(questionData: QuestionData) {
     selectedSection: null,
     // selectedCondChoice: string | null;
     selectedCondChoice: null,
-    depends_on: questionData.depends_on
-  }
+    depends_on: questionData.depends_on,
+  };
 }
 
-async function getShortTextQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<BaseQuestion<QuestionType.ShortText, ShortTextQuestionTypeExtraProps>[]> {
-  const { data: ShortTextquestionData, error: ShortTextquestionDataError } = await supabase
-    .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.ShortText]}!inner(*), answer_table(answerid)`)
-    .eq("phaseid", phaseId);
+async function getShortTextQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<
+  BaseQuestion<QuestionType.ShortText, ShortTextQuestionTypeExtraProps>[]
+> {
+  const { data: ShortTextquestionData, error: ShortTextquestionDataError } =
+    await supabase
+      .from("question_table")
+      .select(
+        `*, ${QuestionTypesTable[QuestionType.ShortText]}!inner(*), answer_table(answerid)`,
+      )
+      .eq("phaseid", phaseId);
 
   if (ShortTextquestionDataError) {
-    throw new Error("failed to load short text questions")
+    throw new Error("failed to load short text questions");
   }
 
   return ShortTextquestionData.map((questionData) => {
@@ -251,20 +74,26 @@ async function getShortTextQuestion(supabase: SupabaseClient<Database>, phaseId:
         answerid: questionData.answer_table[0]?.answerid,
         maxtextlength: questionData.short_text_question_table.maxtextlength,
         formattingregex: questionData.short_text_question_table.formattingregex,
-        formattingdescription: questionData.short_text_question_table.formattingdescription,
-      }
-    }
-  })
+        formattingdescription:
+          questionData.short_text_question_table.formattingdescription,
+      },
+    };
+  });
 }
 
-async function getLongTextQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.LongText>[]> {
+async function getLongTextQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.LongText>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.LongText]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.LongText]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load long text questions")
+    throw new Error("failed to load long text questions");
   }
 
   return data.map((questionData) => {
@@ -275,20 +104,24 @@ async function getLongTextQuestion(supabase: SupabaseClient<Database>, phaseId: 
       params: {
         answerid: questionData.answer_table[0]?.answerid,
         maxtextlength: questionData.long_text_question_table.maxtextlength,
-
-      }
-    }
-  })
+      },
+    };
+  });
 }
 
-async function getNumberPickerQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.NumberPicker>[]> {
+async function getNumberPickerQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.NumberPicker>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.NumberPicker]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.NumberPicker]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load numberpicker questions")
+    throw new Error("failed to load numberpicker questions");
   }
 
   return data.map((questionData) => {
@@ -299,20 +132,25 @@ async function getNumberPickerQuestion(supabase: SupabaseClient<Database>, phase
       params: {
         answerid: questionData.answer_table[0]?.answerid,
         minnumber: questionData.number_picker_question_table.minnumber,
-        maxnumber: questionData.number_picker_question_table.maxnumber
-      }
-    }
-  })
+        maxnumber: questionData.number_picker_question_table.maxnumber,
+      },
+    };
+  });
 }
 
-async function getDateTimePickerQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.DatetimePicker>[]> {
+async function getDateTimePickerQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.DatetimePicker>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.DatetimePicker]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.DatetimePicker]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load numberpicker questions")
+    throw new Error("failed to load numberpicker questions");
   }
 
   return data.map((questionData) => {
@@ -322,21 +160,30 @@ async function getDateTimePickerQuestion(supabase: SupabaseClient<Database>, pha
       questiontype: QuestionType.DatetimePicker,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        mindatetime: new Date(questionData.datetime_picker_question_table.mindatetime),
-        maxdatetime: new Date(questionData.datetime_picker_question_table.maxdatetime)
-      }
-    }
-  })
+        mindatetime: new Date(
+          questionData.datetime_picker_question_table.mindatetime,
+        ),
+        maxdatetime: new Date(
+          questionData.datetime_picker_question_table.maxdatetime,
+        ),
+      },
+    };
+  });
 }
 
-async function getDatePickerQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.DatePicker>[]> {
+async function getDatePickerQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.DatePicker>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.DatePicker]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.DatePicker]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load numberpicker questions")
+    throw new Error("failed to load numberpicker questions");
   }
 
   return data.map((questionData) => {
@@ -347,20 +194,25 @@ async function getDatePickerQuestion(supabase: SupabaseClient<Database>, phaseId
       params: {
         answerid: questionData.answer_table[0]?.answerid,
         mindate: new Date(questionData.date_picker_question_table.mindate),
-        maxdate: new Date(questionData.date_picker_question_table.maxdate)
-      }
-    }
-  })
+        maxdate: new Date(questionData.date_picker_question_table.maxdate),
+      },
+    };
+  });
 }
 
-async function getImageUploadQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.ImageUpload>[]> {
+async function getImageUploadQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.ImageUpload>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.ImageUpload]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.ImageUpload]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load numberpicker questions")
+    throw new Error("failed to load numberpicker questions");
   }
 
   return data.map((questionData) => {
@@ -370,20 +222,26 @@ async function getImageUploadQuestion(supabase: SupabaseClient<Database>, phaseI
       questiontype: QuestionType.ImageUpload,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        maxfilesizeinmb: questionData.image_upload_question_table.maxfilesizeinmb
-      }
-    }
-  })
+        maxfilesizeinmb:
+          questionData.image_upload_question_table.maxfilesizeinmb,
+      },
+    };
+  });
 }
 
-async function getVideoUploadQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.VideoUpload>[]> {
+async function getVideoUploadQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.VideoUpload>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.VideoUpload]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.VideoUpload]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to load video upload questions")
+    throw new Error("failed to load video upload questions");
   }
 
   return data.map((questionData) => {
@@ -393,20 +251,26 @@ async function getVideoUploadQuestion(supabase: SupabaseClient<Database>, phaseI
       questiontype: QuestionType.VideoUpload,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        maxfilesizeinmb: questionData.video_upload_question_table.maxfilesizeinmb
-      }
-    }
-  })
+        maxfilesizeinmb:
+          questionData.video_upload_question_table.maxfilesizeinmb,
+      },
+    };
+  });
 }
 
-async function getPdfUploadQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.PDFUpload>[]> {
+async function getPdfUploadQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.PDFUpload>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.PDFUpload]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.PDFUpload]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to pdf upload questions")
+    throw new Error("failed to pdf upload questions");
   }
 
   return data.map((questionData) => {
@@ -416,20 +280,25 @@ async function getPdfUploadQuestion(supabase: SupabaseClient<Database>, phaseId:
       questiontype: QuestionType.PDFUpload,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        maxfilesizeinmb: questionData.pdf_upload_question_table.maxfilesizeinmb
-      }
-    }
-  })
+        maxfilesizeinmb: questionData.pdf_upload_question_table.maxfilesizeinmb,
+      },
+    };
+  });
 }
 
-async function getCheckBoxQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.CheckBox>[]> {
+async function getCheckBoxQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.CheckBox>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`*, ${QuestionTypesTable[QuestionType.CheckBox]}!inner(*), answer_table(answerid)`)
+    .select(
+      `*, ${QuestionTypesTable[QuestionType.CheckBox]}!inner(*), answer_table(answerid)`,
+    )
     .eq("phaseid", phaseId);
 
   if (error) {
-    throw new Error("failed to checkbox upload questions")
+    throw new Error("failed to checkbox upload questions");
   }
 
   return data.map((questionData) => {
@@ -439,27 +308,36 @@ async function getCheckBoxQuestion(supabase: SupabaseClient<Database>, phaseId: 
       questiontype: QuestionType.CheckBox,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-      }
-    }
-  })
+      },
+    };
+  });
 }
 
-async function getMultipleChoiceQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<BaseQuestion<QuestionType.MultipleChoice, MultipleChoiceQuestionTypeExtraProps>[]> {
+async function getMultipleChoiceQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<
+  BaseQuestion<
+    QuestionType.MultipleChoice,
+    MultipleChoiceQuestionTypeExtraProps
+  >[]
+> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`
+    .select(
+      `
     *,
     multiple_choice_question_table!inner(
       *,
       multiple_choice_question_choice_table(*)
     ),
     answer_table(answerid)
-  `)
+  `,
+    )
     .eq("phaseid", phaseId);
 
-
   if (error) {
-    throw new Error("failed to load multiple choice questions")
+    throw new Error("failed to load multiple choice questions");
   }
 
   return data.map((questionData) => {
@@ -469,32 +347,37 @@ async function getMultipleChoiceQuestion(supabase: SupabaseClient<Database>, pha
       questiontype: QuestionType.MultipleChoice,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        choices: questionData.multiple_choice_question_table.multiple_choice_question_choice_table,
+        choices:
+          questionData.multiple_choice_question_table
+            .multiple_choice_question_choice_table,
         minanswers: questionData.multiple_choice_question_table.minanswers,
         maxanswers: questionData.multiple_choice_question_table.maxanswers,
         userinput: questionData.multiple_choice_question_table.userinput,
-
-      }
-    }
-  })
+      },
+    };
+  });
 }
 
-async function getDropdownQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.Dropdown>[]> {
+async function getDropdownQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.Dropdown>[]> {
   const { data, error } = await supabase
     .from("question_table")
-    .select(`
+    .select(
+      `
     *,
     ${QuestionTypesTable[QuestionType.Dropdown]}!inner(
       *,
       dropdown_question_option_table(*)
     ),
     answer_table(answerid)
-  `)
+  `,
+    )
     .eq("phaseid", phaseId);
 
-
   if (error) {
-    throw new Error("failed to load dropdown questions")
+    throw new Error("failed to load dropdown questions");
   }
 
   return data.map((questionData) => {
@@ -504,28 +387,34 @@ async function getDropdownQuestion(supabase: SupabaseClient<Database>, phaseId: 
       questiontype: QuestionType.Dropdown,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        options: questionData.dropdown_question_table.dropdown_question_option_table,
+        options:
+          questionData.dropdown_question_table.dropdown_question_option_table,
         minanswers: questionData.dropdown_question_table.maxanswers,
         maxanswers: questionData.dropdown_question_table.minanswers,
         userinput: questionData.dropdown_question_table.userinput,
-      }
-    }
-  })
+      },
+    };
+  });
 }
 
-async function getConditionalQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.Conditional>[]> {
-const { data, error } = await supabase
-  .from("question_table")
-  .select(`
+async function getConditionalQuestion(
+  supabase: SupabaseClient<Database>,
+  phaseId: string,
+): Promise<QuestionOfType<QuestionType.Conditional>[]> {
+  const { data, error } = await supabase
+    .from("question_table")
+    .select(
+      `
     *,
     conditional_question_choice_table(*),
     answer_table(answerid)
-  `)
-  .eq("phaseid", phaseId)
-  .eq("questiontype", QuestionType.Conditional);
+  `,
+    )
+    .eq("phaseid", phaseId)
+    .eq("questiontype", QuestionType.Conditional);
 
   if (error) {
-    throw new Error("failed to load conditional questions")
+    throw new Error("failed to load conditional questions");
   }
 
   return data.map((questionData) => {
@@ -535,21 +424,37 @@ const { data, error } = await supabase
       questiontype: QuestionType.Conditional,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        choices: questionData.conditional_question_choice_table.map(c => ({ choiceid: c.choiceid, choicevalue: c.choicevalue, questions: [] })),
-        phaseAnswers: []
-      }
-    }
-  })
+        choices: questionData.conditional_question_choice_table.map((c) => ({
+          choiceid: c.choiceid,
+          choicevalue: c.choicevalue,
+          questions: [],
+        })),
+        phaseAnswers: [],
+      },
+    };
+  });
 }
-
 
 export async function fetch_question_table(
   phaseId: string,
 ): Promise<Question[]> {
   const supabase = await getSupabaseCookiesUtilClient();
-  const awaitedQuestions = (await Promise.all([getShortTextQuestion(supabase, phaseId), getLongTextQuestion(supabase, phaseId), getNumberPickerQuestion(supabase, phaseId), getDateTimePickerQuestion(supabase, phaseId), 
-    getDatePickerQuestion(supabase, phaseId), getImageUploadQuestion(supabase, phaseId), getVideoUploadQuestion(supabase, phaseId), getPdfUploadQuestion(supabase, phaseId), getCheckBoxQuestion(supabase, phaseId),
-    getMultipleChoiceQuestion(supabase, phaseId), getDropdownQuestion(supabase, phaseId), getConditionalQuestion(supabase, phaseId)])).flat()
+  const awaitedQuestions = (
+    await Promise.all([
+      getShortTextQuestion(supabase, phaseId),
+      getLongTextQuestion(supabase, phaseId),
+      getNumberPickerQuestion(supabase, phaseId),
+      getDateTimePickerQuestion(supabase, phaseId),
+      getDatePickerQuestion(supabase, phaseId),
+      getImageUploadQuestion(supabase, phaseId),
+      getVideoUploadQuestion(supabase, phaseId),
+      getPdfUploadQuestion(supabase, phaseId),
+      getCheckBoxQuestion(supabase, phaseId),
+      getMultipleChoiceQuestion(supabase, phaseId),
+      getDropdownQuestion(supabase, phaseId),
+      getConditionalQuestion(supabase, phaseId),
+    ])
+  ).flat();
 
   // if (questionError) {
   //   log.error(JSON.stringify(questionError));
@@ -577,16 +482,16 @@ export async function fetch_question_table(
       params: {
         ...question.params,
         choices: question.params.choices.map((choice) => {
-          return ({
+          return {
             questions: dependingQuestions.filter(
               (q) => q.depends_on == choice.choiceid,
             ),
             choiceid: choice.choiceid,
-            choicevalue: choice.choicevalue
-          })
-        })
-      }
-    } satisfies QuestionOfType<QuestionType.Conditional>
+            choicevalue: choice.choicevalue,
+          };
+        }),
+      },
+    } satisfies QuestionOfType<QuestionType.Conditional>;
   });
 
   return finishedQuestions;

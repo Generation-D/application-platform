@@ -11,7 +11,7 @@ import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
-import { Choice, ChoiceProps } from "./utils/multiplechoice_choice";
+import { Choice } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger(
