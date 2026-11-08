@@ -470,8 +470,8 @@ async function getMultipleChoiceQuestion(supabase: SupabaseClient<Database>, pha
       params: {
         answerid: questionData.answer_table[0]?.answerid,
         choices: questionData.multiple_choice_question_table.multiple_choice_question_choice_table,
-        minanswers: questionData.multiple_choice_question_table.maxanswers,
-        maxanswers: questionData.multiple_choice_question_table.minanswers,
+        minanswers: questionData.multiple_choice_question_table.minanswers,
+        maxanswers: questionData.multiple_choice_question_table.maxanswers,
         userinput: questionData.multiple_choice_question_table.userinput,
 
       }
@@ -514,18 +514,15 @@ async function getDropdownQuestion(supabase: SupabaseClient<Database>, phaseId: 
 }
 
 async function getConditionalQuestion(supabase: SupabaseClient<Database>, phaseId: string): Promise<QuestionOfType<QuestionType.Conditional>[]> {
-  const { data, error } = await supabase
-    .from("question_table")
-    .select(`
+const { data, error } = await supabase
+  .from("question_table")
+  .select(`
     *,
-    ${QuestionTypesTable[QuestionType.Conditional]}!inner(
-      *,
-      conditional_question_choice_table(*)
-    ),
+    conditional_question_choice_table(*),
     answer_table(answerid)
   `)
-    .eq("phaseid", phaseId);
-
+  .eq("phaseid", phaseId)
+  .eq("questiontype", QuestionType.Conditional);
 
   if (error) {
     throw new Error("failed to load conditional questions")
@@ -538,7 +535,7 @@ async function getConditionalQuestion(supabase: SupabaseClient<Database>, phaseI
       questiontype: QuestionType.Conditional,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        choices: questionData.conditional_question_table.conditional_question_choice_table.map(c => ({ choiceid: c.choiceid, choicevalue: c.choicevalue, questions: [] })),
+        choices: questionData.conditional_question_choice_table.map(c => ({ choiceid: c.choiceid, choicevalue: c.choicevalue, questions: [] })),
         phaseAnswers: []
       }
     }

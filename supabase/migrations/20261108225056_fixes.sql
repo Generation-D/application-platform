@@ -1,0 +1,3 @@
+ALTER TABLE conditional_question_choice_table
+ADD CONSTRAINT fk_conditional_question_choice_question
+FOREIGN KEY (questionid) REFERENCES question_table(questionid);
