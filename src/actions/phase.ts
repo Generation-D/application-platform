@@ -297,7 +297,7 @@ async function getNumberPickerQuestion(supabase: SupabaseClient<Database>, phase
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.NumberPicker,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         minnumber: questionData.number_picker_question_table.minnumber,
         maxnumber: questionData.number_picker_question_table.maxnumber
       }
@@ -321,7 +321,7 @@ async function getDateTimePickerQuestion(supabase: SupabaseClient<Database>, pha
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.DatetimePicker,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         mindatetime: new Date(questionData.datetime_picker_question_table.mindatetime),
         maxdatetime: new Date(questionData.datetime_picker_question_table.maxdatetime)
       }
@@ -345,7 +345,7 @@ async function getDatePickerQuestion(supabase: SupabaseClient<Database>, phaseId
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.DatePicker,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         mindate: new Date(questionData.date_picker_question_table.mindate),
         maxdate: new Date(questionData.date_picker_question_table.maxdate)
       }
@@ -369,7 +369,7 @@ async function getImageUploadQuestion(supabase: SupabaseClient<Database>, phaseI
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.ImageUpload,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         maxfilesizeinmb: questionData.image_upload_question_table.maxfilesizeinmb
       }
     }
@@ -392,7 +392,7 @@ async function getVideoUploadQuestion(supabase: SupabaseClient<Database>, phaseI
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.VideoUpload,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         maxfilesizeinmb: questionData.video_upload_question_table.maxfilesizeinmb
       }
     }
@@ -415,7 +415,7 @@ async function getPdfUploadQuestion(supabase: SupabaseClient<Database>, phaseId:
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.PDFUpload,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         maxfilesizeinmb: questionData.pdf_upload_question_table.maxfilesizeinmb
       }
     }
@@ -438,7 +438,7 @@ async function getCheckBoxQuestion(supabase: SupabaseClient<Database>, phaseId: 
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.CheckBox,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
       }
     }
   })
@@ -468,7 +468,7 @@ async function getMultipleChoiceQuestion(supabase: SupabaseClient<Database>, pha
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.MultipleChoice,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         choices: questionData.multiple_choice_question_table.multiple_choice_question_choice_table,
         minanswers: questionData.multiple_choice_question_table.maxanswers,
         maxanswers: questionData.multiple_choice_question_table.minanswers,
@@ -503,7 +503,7 @@ async function getDropdownQuestion(supabase: SupabaseClient<Database>, phaseId: 
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.Dropdown,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         options: questionData.dropdown_question_table.dropdown_question_option_table,
         minanswers: questionData.dropdown_question_table.maxanswers,
         maxanswers: questionData.dropdown_question_table.minanswers,
@@ -537,7 +537,7 @@ async function getConditionalQuestion(supabase: SupabaseClient<Database>, phaseI
       ...mapBaseQuestion(questionData),
       questiontype: QuestionType.Conditional,
       params: {
-        answerid: questionData.answer_table[0].answerid,
+        answerid: questionData.answer_table[0]?.answerid,
         choices: questionData.conditional_question_table.conditional_question_choice_table.map(c => ({ choiceid: c.choiceid, choicevalue: c.choicevalue, questions: [] })),
         phaseAnswers: []
       }
