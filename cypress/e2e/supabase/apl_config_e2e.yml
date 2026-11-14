@@ -92,3 +92,10 @@ questions:
         maxFileSizeInMB: 50.0 # in Mega Byte
         sectionNumber: 1
         mandatory: true
+
+      - questionType: datePicker
+        order: 8
+        question: When is your birthday?
+        minDate: 1993-06-21 
+        maxDate: 2100-06-21
+        mandatory: false
