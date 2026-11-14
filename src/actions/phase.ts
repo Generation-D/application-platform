@@ -389,8 +389,8 @@ async function getDropdownQuestion(
         answerid: questionData.answer_table[0]?.answerid,
         options:
           questionData.dropdown_question_table.dropdown_question_option_table,
-        minanswers: questionData.dropdown_question_table.maxanswers,
-        maxanswers: questionData.dropdown_question_table.minanswers,
+        minanswers: questionData.dropdown_question_table.minanswers,
+        maxanswers: questionData.dropdown_question_table.maxanswers,
         userinput: questionData.dropdown_question_table.userinput,
       },
     };
