@@ -317,8 +317,8 @@ export function createDataQuestionTypeTable(
   }
 
   if (question.questionType === QuestionType.DatePicker) {
-    dataQuestionTypeTable["mindate"] = String(question.minDate);
-    dataQuestionTypeTable["maxdate"] = String(question.maxDate);
+    dataQuestionTypeTable["mindate"] = question.minDate.toISOString().slice(0, 10);
+    dataQuestionTypeTable["maxdate"] = question.maxDate.toISOString().slice(0, 10);
   }
 
   if (question.questionType === QuestionType.NumberPicker) {
