@@ -32,12 +32,12 @@ import {
 } from "@/utils/reviewerMatching";
 import { UserRole } from "@/utils/userRole";
 
-interface CsvReviewer {
-  name: string;
-  email: string;
-  new: string;
-  max: string;
-}
+const CsvReviewerSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  new: z.string(),
+  max: z.string(),
+});
 
 export interface EvaluationAssignment {
   phaseId: string;
@@ -305,7 +305,7 @@ export async function fetchEvaluationDashboardData(): Promise<EvaluationDashboar
   }
 
   return {
-    phases: (phasesResult.data ?? []) as PhaseData[],
+    phases: phasesResult.data ?? [],
     applications,
     eligibleApplicantIdsByPhase,
     assignments,
@@ -325,13 +325,15 @@ export async function previewReviewerMatching(
   reviewersPerApplication: number,
 ): Promise<ReviewerAssignment[]> {
   const { supabaseAdmin } = await requireAdmin();
-  const rows = parse(csvText, {
+  const rawRows = parse(csvText, {
     bom: true,
     columns: (headers: string[]) =>
       headers.map((header) => header.trim().toLowerCase()),
     skip_empty_lines: true,
     trim: true,
-  }) as CsvReviewer[];
+  });
+
+  const rows = z.array(CsvReviewerSchema).parse(rawRows);
 
   if (rows.length === 0) {
     throw new Error("Die Bewerter-CSV ist leer.");

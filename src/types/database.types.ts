@@ -42,6 +42,7 @@ export type Database = {
           lastupdated: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid?: string;
           applicationid: string;
@@ -79,6 +80,7 @@ export type Database = {
           team_name: string | null;
           userid: string;
         };
+        ComputedFields: never;
         Insert: {
           applicationid?: string;
           team_name?: string | null;
@@ -104,6 +106,7 @@ export type Database = {
           answerid: string;
           checked: boolean;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           checked: boolean;
@@ -126,6 +129,7 @@ export type Database = {
         Row: {
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           questionid?: string;
         };
@@ -147,6 +151,7 @@ export type Database = {
           answerid: string;
           selectedchoice: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           selectedchoice: string;
@@ -171,6 +176,7 @@ export type Database = {
           choicevalue: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           choiceid?: string;
           choicevalue: string;
@@ -189,12 +195,20 @@ export type Database = {
             referencedRelation: "conditional_question_table";
             referencedColumns: ["questionid"];
           },
+          {
+            foreignKeyName: "fk_conditional_question_choice_question";
+            columns: ["questionid"];
+            isOneToOne: false;
+            referencedRelation: "question_table";
+            referencedColumns: ["questionid"];
+          },
         ];
       };
       conditional_question_table: {
         Row: {
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           questionid?: string;
         };
@@ -216,6 +230,7 @@ export type Database = {
           answerid: string;
           pickeddate: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           pickeddate: string;
@@ -240,6 +255,7 @@ export type Database = {
           mindate: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxdate: string;
           mindate: string;
@@ -265,6 +281,7 @@ export type Database = {
           answerid: string;
           pickeddatetime: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           pickeddatetime: string;
@@ -289,6 +306,7 @@ export type Database = {
           mindatetime: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxdatetime: string;
           mindatetime: string;
@@ -314,6 +332,7 @@ export type Database = {
           answerid: string;
           selectedoptions: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           selectedoptions: string;
@@ -338,6 +357,7 @@ export type Database = {
           optiontext: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           optionid?: string;
           optiontext: string;
@@ -365,6 +385,7 @@ export type Database = {
           questionid: string;
           userinput: boolean;
         };
+        ComputedFields: never;
         Insert: {
           maxanswers: number;
           minanswers: number;
@@ -392,6 +413,7 @@ export type Database = {
           answerid: string;
           imagename: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           imagename: string;
@@ -415,6 +437,7 @@ export type Database = {
           maxfilesizeinmb: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
           questionid?: string;
@@ -438,6 +461,7 @@ export type Database = {
           answerid: string;
           answertext: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           answertext: string;
@@ -461,6 +485,7 @@ export type Database = {
           maxtextlength: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxtextlength: number;
           questionid?: string;
@@ -484,6 +509,7 @@ export type Database = {
           answerid: string;
           selectedchoice: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           selectedchoice: string;
@@ -508,6 +534,7 @@ export type Database = {
           choicetext: string;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           choiceid?: string;
           choicetext: string;
@@ -535,6 +562,7 @@ export type Database = {
           questionid: string;
           userinput: boolean;
         };
+        ComputedFields: never;
         Insert: {
           maxanswers: number;
           minanswers: number;
@@ -562,6 +590,7 @@ export type Database = {
           answerid: string;
           pickednumber: number;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           pickednumber: number;
@@ -586,6 +615,7 @@ export type Database = {
           minnumber: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxnumber: number;
           minnumber: number;
@@ -611,6 +641,7 @@ export type Database = {
           answerid: string;
           pdfname: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           pdfname: string;
@@ -634,6 +665,7 @@ export type Database = {
           maxfilesizeinmb: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
           questionid?: string;
@@ -659,6 +691,7 @@ export type Database = {
           user_role_1_id: string;
           user_role_2_id: string;
         };
+        ComputedFields: never;
         Insert: {
           assignment_id?: string;
           phase_id: string;
@@ -704,6 +737,7 @@ export type Database = {
           reviewed_by: string;
           user_id: string;
         };
+        ComputedFields: never;
         Insert: {
           outcome: boolean;
           outcome_id?: string;
@@ -755,6 +789,7 @@ export type Database = {
           sectionsenabled: boolean;
           startdate: string;
         };
+        ComputedFields: never;
         Insert: {
           enddate: string;
           finished_evaluation?: string | null;
@@ -784,6 +819,7 @@ export type Database = {
           path: string;
           updated_at: string | null;
         };
+        ComputedFields: never;
         Insert: {
           html_content: string;
           id?: never;
@@ -812,6 +848,7 @@ export type Database = {
           questiontype: string;
           sectionid: string | null;
         };
+        ComputedFields: never;
         Insert: {
           depends_on?: string | null;
           mandatory: boolean;
@@ -863,6 +900,7 @@ export type Database = {
           sectionname: string;
           sectionorder: number;
         };
+        ComputedFields: never;
         Insert: {
           phaseid: string;
           sectiondescription: string;
@@ -892,6 +930,7 @@ export type Database = {
           answerid: string;
           answertext: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           answertext: string;
@@ -917,6 +956,7 @@ export type Database = {
           maxtextlength: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           formattingdescription?: string | null;
           formattingregex?: string | null;
@@ -945,6 +985,7 @@ export type Database = {
           userid: string;
           userrole: number;
         };
+        ComputedFields: never;
         Insert: {
           isactive?: boolean | null;
           userid: string;
@@ -970,6 +1011,7 @@ export type Database = {
           userroleid: number;
           userrolename: string;
         };
+        ComputedFields: never;
         Insert: {
           userroleid?: number;
           userrolename: string;
@@ -985,6 +1027,7 @@ export type Database = {
           answerid: string;
           videoname: string;
         };
+        ComputedFields: never;
         Insert: {
           answerid: string;
           videoname: string;
@@ -1008,6 +1051,7 @@ export type Database = {
           maxfilesizeinmb: number;
           questionid: string;
         };
+        ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
           questionid?: string;
@@ -1045,11 +1089,11 @@ export type Database = {
           email_change_token_new: string | null;
           email_confirmed_at: string | null;
           encrypted_password: string | null;
-          id: string | null;
+          id: string;
           instance_id: string | null;
           invited_at: string | null;
-          is_anonymous: boolean | null;
-          is_sso_user: boolean | null;
+          is_anonymous: boolean;
+          is_sso_user: boolean;
           is_super_admin: boolean | null;
           last_sign_in_at: string | null;
           phone: string | null;
@@ -1066,6 +1110,7 @@ export type Database = {
           role: string | null;
           updated_at: string | null;
         };
+        ComputedFields: never;
         Insert: {
           aud?: string | null;
           banned_until?: string | null;

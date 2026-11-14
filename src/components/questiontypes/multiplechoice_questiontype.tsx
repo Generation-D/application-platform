@@ -11,7 +11,7 @@ import { UpdateAnswer } from "@/store/slices/answerSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
-import { Choice, ChoiceProps } from "./utils/multiplechoice_choice";
+import { Choice } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
 
 const log = createLogger(
@@ -20,10 +20,16 @@ const log = createLogger(
 
 export interface MultipleChoiceQuestionTypeExtraProps {
   answerid: string | null;
-  choices: ChoiceProps[];
+  choices: Choice[];
   minanswers: number;
   maxanswers: number;
   userinput: boolean;
+}
+
+interface Choice {
+  choiceid: string;
+  choicetext: string;
+  questionid: string;
 }
 
 export type MultipleChoiceQuestionTypeProps =
@@ -89,7 +95,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     updateAnswerState,
   ]);
 
-  const handleSingleChange = async (choice: ChoiceProps) => {
+  const handleSingleChange = async (choice: Choice) => {
     if (!iseditable) {
       return;
     }
@@ -102,7 +108,7 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
     }
   };
 
-  const handleMultiChange = async (choice: ChoiceProps) => {
+  const handleMultiChange = async (choice: Choice) => {
     if (!iseditable) {
       return;
     }
