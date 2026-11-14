@@ -8,8 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: supabase/setup-cli@v3
-        with:
-          version: v2.stable
       - uses: actions/setup-node@v5
         with:
           node-version: "24"
