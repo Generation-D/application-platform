@@ -96,6 +96,6 @@ questions:
       - questionType: datePicker
         order: 8
         question: When is your birthday?
-        minDate: 1993-06-21 
+        minDate: 1993-06-21
         maxDate: 2100-06-21
         mandatory: false
