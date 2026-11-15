@@ -2,7 +2,7 @@
 
 pkgs.mkShell {
   buildInputs = [
-    pkgs.nodejs_24
+    pkgs.nodejs_26
     pkgs.supabase-cli
   ];
 }
