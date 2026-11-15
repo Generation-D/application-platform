@@ -118,9 +118,7 @@ export async function saveUploadAnswer(
       log.error(JSON.stringify(oldError));
     }
     let updateObj:
-      | { imagename: string }
-      | { pdfname: string }
-      | { videoname: string };
+      { imagename: string } | { pdfname: string } | { videoname: string };
     if (options.fileName === "imagename") {
       updateObj = { imagename: uploadFile.name };
     } else if (options.fileName === "pdfname") {
