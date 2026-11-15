@@ -62,7 +62,7 @@ jobs:
         run: npm run test:e2e:chrome
 
       - name: Upload Cypress Screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure() # Crucial! This ensures it only runs if the tests fail.
         with:
           name: cypress-screenshots
