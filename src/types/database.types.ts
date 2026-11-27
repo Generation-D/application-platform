@@ -46,8 +46,8 @@ export type Database = {
         Insert: {
           answerid?: string;
           applicationid: string;
-          created: string;
-          lastupdated: string;
+          created?: string;
+          lastupdated?: string;
           questionid: string;
         };
         Update: {
@@ -91,15 +91,7 @@ export type Database = {
           team_name?: string | null;
           userid?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "application_table_userid_fkey";
-            columns: ["userid"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       checkbox_answer_table: {
         Row: {
@@ -131,7 +123,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           questionid?: string;
@@ -195,13 +187,6 @@ export type Database = {
             referencedRelation: "conditional_question_table";
             referencedColumns: ["questionid"];
           },
-          {
-            foreignKeyName: "fk_conditional_question_choice_question";
-            columns: ["questionid"];
-            isOneToOne: false;
-            referencedRelation: "question_table";
-            referencedColumns: ["questionid"];
-          },
         ];
       };
       conditional_question_table: {
@@ -210,7 +195,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           questionid?: string;
@@ -259,7 +244,7 @@ export type Database = {
         Insert: {
           maxdate: string;
           mindate: string;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxdate?: string;
@@ -310,7 +295,7 @@ export type Database = {
         Insert: {
           maxdatetime: string;
           mindatetime: string;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxdatetime?: string;
@@ -389,7 +374,7 @@ export type Database = {
         Insert: {
           maxanswers: number;
           minanswers: number;
-          questionid?: string;
+          questionid: string;
           userinput: boolean;
         };
         Update: {
@@ -440,7 +425,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxfilesizeinmb?: number;
@@ -488,7 +473,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           maxtextlength: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxtextlength?: number;
@@ -566,7 +551,7 @@ export type Database = {
         Insert: {
           maxanswers: number;
           minanswers: number;
-          questionid?: string;
+          questionid: string;
           userinput: boolean;
         };
         Update: {
@@ -619,7 +604,7 @@ export type Database = {
         Insert: {
           maxnumber: number;
           minnumber: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxnumber?: number;
@@ -668,7 +653,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxfilesizeinmb?: number;
@@ -734,7 +719,7 @@ export type Database = {
           outcome_id: string;
           phase_id: string;
           review_date: string;
-          reviewed_by: string;
+          reviewed_by: string | null;
           user_id: string;
         };
         ComputedFields: never;
@@ -743,7 +728,7 @@ export type Database = {
           outcome_id?: string;
           phase_id: string;
           review_date?: string;
-          reviewed_by: string;
+          reviewed_by?: string | null;
           user_id: string;
         };
         Update: {
@@ -751,7 +736,7 @@ export type Database = {
           outcome_id?: string;
           phase_id?: string;
           review_date?: string;
-          reviewed_by?: string;
+          reviewed_by?: string | null;
           user_id?: string;
         };
         Relationships: [
@@ -817,20 +802,20 @@ export type Database = {
           html_content: string;
           id: number;
           path: string;
-          updated_at: string | null;
+          updated_at: string;
         };
         ComputedFields: never;
         Insert: {
           html_content: string;
           id?: never;
           path: string;
-          updated_at?: string | null;
+          updated_at?: string;
         };
         Update: {
           html_content?: string;
           id?: never;
           path?: string;
-          updated_at?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -876,6 +861,13 @@ export type Database = {
           sectionid?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "question_table_depends_on_fkey";
+            columns: ["depends_on"];
+            isOneToOne: false;
+            referencedRelation: "conditional_question_choice_table";
+            referencedColumns: ["choiceid"];
+          },
           {
             foreignKeyName: "question_table_phaseid_fkey";
             columns: ["phaseid"];
@@ -961,7 +953,7 @@ export type Database = {
           formattingdescription?: string | null;
           formattingregex?: string | null;
           maxtextlength: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           formattingdescription?: string | null;
@@ -981,44 +973,20 @@ export type Database = {
       };
       user_profiles_table: {
         Row: {
-          isactive: boolean | null;
+          isactive: boolean;
           userid: string;
           userrole: number;
         };
         ComputedFields: never;
         Insert: {
-          isactive?: boolean | null;
+          isactive?: boolean;
           userid: string;
           userrole: number;
         };
         Update: {
-          isactive?: boolean | null;
+          isactive?: boolean;
           userid?: string;
           userrole?: number;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "user_profiles_table_userid_fkey";
-            columns: ["userid"];
-            isOneToOne: true;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      user_roles_table: {
-        Row: {
-          userroleid: number;
-          userrolename: string;
-        };
-        ComputedFields: never;
-        Insert: {
-          userroleid?: number;
-          userrolename: string;
-        };
-        Update: {
-          userroleid?: number;
-          userrolename?: string;
         };
         Relationships: [];
       };
@@ -1054,7 +1022,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           maxfilesizeinmb: number;
-          questionid?: string;
+          questionid: string;
         };
         Update: {
           maxfilesizeinmb?: number;
@@ -1072,127 +1040,14 @@ export type Database = {
       };
     };
     Views: {
-      users: {
-        Row: {
-          aud: string | null;
-          banned_until: string | null;
-          confirmation_sent_at: string | null;
-          confirmation_token: string | null;
-          confirmed_at: string | null;
-          created_at: string | null;
-          deleted_at: string | null;
-          email: string | null;
-          email_change: string | null;
-          email_change_confirm_status: number | null;
-          email_change_sent_at: string | null;
-          email_change_token_current: string | null;
-          email_change_token_new: string | null;
-          email_confirmed_at: string | null;
-          encrypted_password: string | null;
-          id: string;
-          instance_id: string | null;
-          invited_at: string | null;
-          is_anonymous: boolean;
-          is_sso_user: boolean;
-          is_super_admin: boolean | null;
-          last_sign_in_at: string | null;
-          phone: string | null;
-          phone_change: string | null;
-          phone_change_sent_at: string | null;
-          phone_change_token: string | null;
-          phone_confirmed_at: string | null;
-          raw_app_meta_data: Json | null;
-          raw_user_meta_data: Json | null;
-          reauthentication_sent_at: string | null;
-          reauthentication_token: string | null;
-          recovery_sent_at: string | null;
-          recovery_token: string | null;
-          role: string | null;
-          updated_at: string | null;
-        };
-        ComputedFields: never;
-        Insert: {
-          aud?: string | null;
-          banned_until?: string | null;
-          confirmation_sent_at?: string | null;
-          confirmation_token?: string | null;
-          confirmed_at?: string | null;
-          created_at?: string | null;
-          deleted_at?: string | null;
-          email?: string | null;
-          email_change?: string | null;
-          email_change_confirm_status?: number | null;
-          email_change_sent_at?: string | null;
-          email_change_token_current?: string | null;
-          email_change_token_new?: string | null;
-          email_confirmed_at?: string | null;
-          encrypted_password?: string | null;
-          id?: string | null;
-          instance_id?: string | null;
-          invited_at?: string | null;
-          is_anonymous?: boolean | null;
-          is_sso_user?: boolean | null;
-          is_super_admin?: boolean | null;
-          last_sign_in_at?: string | null;
-          phone?: string | null;
-          phone_change?: string | null;
-          phone_change_sent_at?: string | null;
-          phone_change_token?: string | null;
-          phone_confirmed_at?: string | null;
-          raw_app_meta_data?: Json | null;
-          raw_user_meta_data?: Json | null;
-          reauthentication_sent_at?: string | null;
-          reauthentication_token?: string | null;
-          recovery_sent_at?: string | null;
-          recovery_token?: string | null;
-          role?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          aud?: string | null;
-          banned_until?: string | null;
-          confirmation_sent_at?: string | null;
-          confirmation_token?: string | null;
-          confirmed_at?: string | null;
-          created_at?: string | null;
-          deleted_at?: string | null;
-          email?: string | null;
-          email_change?: string | null;
-          email_change_confirm_status?: number | null;
-          email_change_sent_at?: string | null;
-          email_change_token_current?: string | null;
-          email_change_token_new?: string | null;
-          email_confirmed_at?: string | null;
-          encrypted_password?: string | null;
-          id?: string | null;
-          instance_id?: string | null;
-          invited_at?: string | null;
-          is_anonymous?: boolean | null;
-          is_sso_user?: boolean | null;
-          is_super_admin?: boolean | null;
-          last_sign_in_at?: string | null;
-          phone?: string | null;
-          phone_change?: string | null;
-          phone_change_sent_at?: string | null;
-          phone_change_token?: string | null;
-          phone_confirmed_at?: string | null;
-          raw_app_meta_data?: Json | null;
-          raw_user_meta_data?: Json | null;
-          reauthentication_sent_at?: string | null;
-          reauthentication_token?: string | null;
-          recovery_sent_at?: string | null;
-          recovery_token?: string | null;
-          role?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
+      [_ in never]: never;
     };
     Functions: {
       count_reviewable_applications: {
         Args: Record<PropertyKey, never>;
         Returns: number;
       };
+      current_user_role: { Args: Record<PropertyKey, never>; Returns: number };
       fetch_applications_paginated: {
         Args: { page_number?: number; page_size?: number };
         Returns: {
@@ -1288,6 +1143,8 @@ export type Database = {
           videoname: string;
         }[];
       };
+      owns_answer: { Args: { answer_id: string }; Returns: boolean };
+      owns_application: { Args: { application_id: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

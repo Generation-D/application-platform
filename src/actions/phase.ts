@@ -406,7 +406,7 @@ async function getConditionalQuestion(
     .select(
       `
     *,
-    conditional_question_choice_table(*),
+    conditional_question_table(conditional_question_choice_table(*)),
     answer_table(answerid)
   `,
     )
@@ -424,7 +424,10 @@ async function getConditionalQuestion(
       questiontype: QuestionType.Conditional,
       params: {
         answerid: questionData.answer_table[0]?.answerid,
-        choices: questionData.conditional_question_choice_table.map((c) => ({
+        choices: (
+          questionData.conditional_question_table
+            ?.conditional_question_choice_table ?? []
+        ).map((c) => ({
           choiceid: c.choiceid,
           choicevalue: c.choicevalue,
           questions: [],

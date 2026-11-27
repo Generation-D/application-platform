@@ -137,6 +137,16 @@ supabase link
 supabase db reset --linked --no-seed
 ```
 
+#### Migrations
+
+Every competition year starts from an empty database, so
+`supabase/migrations/20261127000000_baseline.sql` describes the complete schema
+(tables, constraints, RLS, functions, storage) in its final state. Edit the
+baseline directly between competition years. During a running year, add small
+additional migrations on top instead, because the database then holds real data.
+Access rules are covered by `supabase/tests/database/access_matrix.test.sql`
+(`npx supabase test db`); extend it with every policy change.
+
 ### 3. Load Configurations and Texts to Remote / Staging
 
 Both the configuration seeding and text synchronization scripts run against whatever database is currently selected/active in **`frontend/.env`** (e.g. Test or Prod).
