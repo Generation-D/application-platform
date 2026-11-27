@@ -253,9 +253,13 @@ create index phase_outcome_table_reviewed_by_idx on public.phase_outcome_table (
 create index phase_assignment_table_user_role_1_id_idx on public.phase_assignment_table (user_role_1_id);
 create index phase_assignment_table_user_role_2_id_idx on public.phase_assignment_table (user_role_2_id);
 
+create schema private;
+grant usage on schema private to authenticated, service_role;
+
+-- In "private" so PostgREST does not expose them as RPC endpoints.
 -- SECURITY DEFINER avoids re-entering RLS on the looked-up tables; policies call these as
--- (select public.current_user_role()) so Postgres evaluates them once per query, not per row.
-create function public.current_user_role()
+-- (select private.current_user_role()) so Postgres evaluates them once per query, not per row.
+create function private.current_user_role()
 returns integer
 language sql stable security definer
 set search_path = ''
@@ -265,7 +269,7 @@ as $$
   where userid = auth.uid() and isactive
 $$;
 
-create function public.owns_application(application_id uuid)
+create function private.owns_application(application_id uuid)
 returns boolean
 language sql stable security definer
 set search_path = ''
@@ -276,7 +280,7 @@ as $$
   )
 $$;
 
-create function public.owns_answer(answer_id uuid)
+create function private.owns_answer(answer_id uuid)
 returns boolean
 language sql stable security definer
 set search_path = ''
@@ -289,12 +293,10 @@ as $$
   )
 $$;
 
-revoke execute on function public.current_user_role() from public, anon;
-revoke execute on function public.owns_application(uuid) from public, anon;
-revoke execute on function public.owns_answer(uuid) from public, anon;
-grant execute on function public.current_user_role() to authenticated, service_role;
-grant execute on function public.owns_application(uuid) to authenticated, service_role;
-grant execute on function public.owns_answer(uuid) to authenticated, service_role;
+revoke execute on all functions in schema private from public, anon;
+grant execute on function private.current_user_role() to authenticated, service_role;
+grant execute on function private.owns_application(uuid) to authenticated, service_role;
+grant execute on function private.owns_answer(uuid) to authenticated, service_role;
 
 do $$
 declare
@@ -316,35 +318,35 @@ create policy "read own or as reviewer" on public.application_table
   for select to authenticated
   using (
     userid = (select auth.uid())
-    or (select public.current_user_role()) in (2, 3)
+    or (select private.current_user_role()) in (2, 3)
   );
 create policy "admin inserts" on public.application_table
   for insert to authenticated
-  with check ((select public.current_user_role()) = 3);
+  with check ((select private.current_user_role()) = 3);
 create policy "admin updates" on public.application_table
   for update to authenticated
-  using ((select public.current_user_role()) = 3)
-  with check ((select public.current_user_role()) = 3);
+  using ((select private.current_user_role()) = 3)
+  with check ((select private.current_user_role()) = 3);
 create policy "admin deletes" on public.application_table
   for delete to authenticated
-  using ((select public.current_user_role()) = 3);
+  using ((select private.current_user_role()) = 3);
 
 create policy "read own or as reviewer" on public.answer_table
   for select to authenticated
   using (
-    (select public.current_user_role()) in (2, 3)
-    or public.owns_application(applicationid)
+    (select private.current_user_role()) in (2, 3)
+    or private.owns_application(applicationid)
   );
 create policy "owner or admin inserts" on public.answer_table
   for insert to authenticated
-  with check ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
+  with check ((select private.current_user_role()) = 3 or private.owns_application(applicationid));
 create policy "owner or admin updates" on public.answer_table
   for update to authenticated
-  using ((select public.current_user_role()) = 3 or public.owns_application(applicationid))
-  with check ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
+  using ((select private.current_user_role()) = 3 or private.owns_application(applicationid))
+  with check ((select private.current_user_role()) = 3 or private.owns_application(applicationid));
 create policy "owner or admin deletes" on public.answer_table
   for delete to authenticated
-  using ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
+  using ((select private.current_user_role()) = 3 or private.owns_application(applicationid));
 
 do $$
 declare
@@ -362,17 +364,17 @@ begin
     execute format($p$
       create policy "read own or as reviewer" on public.%1$I
         for select to authenticated
-        using ((select public.current_user_role()) in (2, 3) or public.owns_answer(answerid));
+        using ((select private.current_user_role()) in (2, 3) or private.owns_answer(answerid));
       create policy "owner or admin inserts" on public.%1$I
         for insert to authenticated
-        with check ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
+        with check ((select private.current_user_role()) = 3 or private.owns_answer(answerid));
       create policy "owner or admin updates" on public.%1$I
         for update to authenticated
-        using ((select public.current_user_role()) = 3 or public.owns_answer(answerid))
-        with check ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
+        using ((select private.current_user_role()) = 3 or private.owns_answer(answerid))
+        with check ((select private.current_user_role()) = 3 or private.owns_answer(answerid));
       create policy "owner or admin deletes" on public.%1$I
         for delete to authenticated
-        using ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
+        using ((select private.current_user_role()) = 3 or private.owns_answer(answerid));
     $p$, t);
   end loop;
 end
@@ -400,22 +402,18 @@ begin
         using (true);
       create policy "admin inserts" on public.%1$I
         for insert to authenticated
-        with check ((select public.current_user_role()) = 3);
+        with check ((select private.current_user_role()) = 3);
       create policy "admin updates" on public.%1$I
         for update to authenticated
-        using ((select public.current_user_role()) = 3)
-        with check ((select public.current_user_role()) = 3);
+        using ((select private.current_user_role()) = 3)
+        with check ((select private.current_user_role()) = 3);
       create policy "admin deletes" on public.%1$I
         for delete to authenticated
-        using ((select public.current_user_role()) = 3);
+        using ((select private.current_user_role()) = 3);
     $p$, t);
   end loop;
 end
 $$;
-
-create policy "visitors read" on public.phase_table
-  for select to anon
-  using (true);
 
 create policy "signed-in users read" on public.phase_texts
   for select to authenticated
@@ -424,7 +422,7 @@ create policy "signed-in users read" on public.phase_texts
 create policy "admin or own finished" on public.phase_outcome_table
   for select to authenticated
   using (
-    (select public.current_user_role()) = 3
+    (select private.current_user_role()) = 3
     or (
       user_id = (select auth.uid())
       and exists (
@@ -438,11 +436,19 @@ create policy "admin or own finished" on public.phase_outcome_table
 create policy "own as reviewer or admin" on public.phase_assignment_table
   for select to authenticated
   using (
-    (user_role_2_id = (select auth.uid()) and (select public.current_user_role()) = 2)
-    or (select public.current_user_role()) = 3
+    (user_role_2_id = (select auth.uid()) and (select private.current_user_role()) = 2)
+    or (select private.current_user_role()) = 3
   );
 
-revoke truncate, references, trigger on all tables in schema public from anon, authenticated;
+revoke truncate, references, trigger on all tables in schema public from authenticated;
+revoke all on all tables in schema public from anon;
+revoke all on all sequences in schema public from anon;
+alter default privileges in schema public revoke all on tables from anon;
+alter default privileges in schema public revoke all on sequences from anon;
+alter default privileges in schema public revoke execute on functions from anon;
+
+-- The app does not use GraphQL; without it table and column names are not discoverable there.
+drop extension if exists pg_graphql;
 
 create function public.handle_new_user()
 returns trigger
@@ -460,6 +466,8 @@ begin
 end;
 $$;
 
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
@@ -473,7 +481,7 @@ language plpgsql stable security definer
 set search_path = ''
 as $$
 begin
-  if coalesce(public.current_user_role(), 0) not in (2, 3) then
+  if coalesce(private.current_user_role(), 0) not in (2, 3) then
     raise exception 'Access Denied';
   end if;
 
@@ -494,7 +502,7 @@ language plpgsql stable security definer
 set search_path = ''
 as $$
 begin
-  if coalesce(public.current_user_role(), 0) not in (2, 3) then
+  if coalesce(private.current_user_role(), 0) not in (2, 3) then
     raise exception 'Access Denied';
   end if;
 

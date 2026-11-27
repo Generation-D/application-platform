@@ -1047,7 +1047,6 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: number;
       };
-      current_user_role: { Args: Record<PropertyKey, never>; Returns: number };
       fetch_applications_paginated: {
         Args: { page_number?: number; page_size?: number };
         Returns: {
@@ -1143,8 +1142,6 @@ export type Database = {
           videoname: string;
         }[];
       };
-      owns_answer: { Args: { answer_id: string }; Returns: boolean };
-      owns_application: { Args: { application_id: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

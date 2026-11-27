@@ -1,5 +1,5 @@
 begin;
-select plan(45);
+select plan(46);
 
 create function pg_temp.applicant_a() returns uuid language sql immutable as $$ select 'a0000000-0000-0000-0000-00000000000a'::uuid $$;
 create function pg_temp.applicant_b() returns uuid language sql immutable as $$ select 'a0000000-0000-0000-0000-00000000000b'::uuid $$;
@@ -183,8 +183,9 @@ select is_empty(
 reset role;
 
 set local role anon;
-select is((select count(*) from public.application_table), 0::bigint, 'anon: reads no applications');
-select is((select count(*) from public.question_table), 0::bigint, 'anon: reads no questions');
+select throws_ok($$ select * from public.application_table $$, pg_temp.rls_violation(), null, 'anon: cannot read applications');
+select throws_ok($$ select * from public.question_table $$, pg_temp.rls_violation(), null, 'anon: cannot read questions');
+select throws_ok($$ select * from public.phase_table $$, pg_temp.rls_violation(), null, 'anon: cannot read phases');
 reset role;
 
 select throws_ok(
