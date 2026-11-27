@@ -1,9 +1,6 @@
 "use server";
 import { createLogger } from "@/logger/logger";
-import {
-  getSupabaseCookiesUtilClient,
-  getSupabaseServiceRoleClient,
-} from "@/supabase-utils/cookiesUtilClient";
+import { requireRole } from "@/supabase-utils/requireRole";
 import { UserRole } from "@/utils/userRole";
 import { User } from "@supabase/supabase-js";
 
@@ -49,29 +46,8 @@ function mergeUserDatas(
 }
 
 async function requireAdminForUserManagement() {
-  const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-  if (userError || !user) throw new Error("Nicht angemeldet.");
-
-  const { data: profile, error: profileError } = await supabase
-    .from("user_profiles_table")
-    .select("userrole,isactive")
-    .eq("userid", user.id)
-    .single();
-  if (
-    profileError ||
-    !profile?.isactive ||
-    profile.userrole !== UserRole.Admin
-  ) {
-    throw new Error("Diese Aktion ist nur für Administratoren erlaubt.");
-  }
-  return {
-    supabaseAdmin: getSupabaseServiceRoleClient(),
-    adminUserId: user.id,
-  };
+  const { user, supabaseAdmin } = await requireRole(UserRole.Admin);
+  return { supabaseAdmin, adminUserId: user.id };
 }
 
 export async function fetchAllUsers() {

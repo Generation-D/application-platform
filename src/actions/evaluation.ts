@@ -19,10 +19,7 @@ import {
   escapeHtml,
 } from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
-import {
-  getSupabaseCookiesUtilClient,
-  getSupabaseServiceRoleClient,
-} from "@/supabase-utils/cookiesUtilClient";
+import { getSupabaseServiceRoleClient } from "@/supabase-utils/cookiesUtilClient";
 import { getURL, normalizeEmail } from "@/utils/helpers";
 import {
   assignReviewers,
@@ -30,6 +27,7 @@ import {
   MatchingReviewer,
   ReviewerAssignment,
 } from "@/utils/reviewerMatching";
+import { requireRole } from "@/supabase-utils/requireRole";
 import { UserRole } from "@/utils/userRole";
 
 const CsvReviewerSchema = z.object({
@@ -103,35 +101,8 @@ const emailSettingsSchema = z.object({
 });
 const emailCcSelectionSchema = z.object({ it: z.boolean(), cmd: z.boolean() });
 
-async function requireAdmin() {
-  const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    throw new Error("Nicht angemeldet.");
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("user_profiles_table")
-    .select("userrole,isactive")
-    .eq("userid", user.id)
-    .single();
-
-  if (
-    profileError ||
-    !profile?.isactive ||
-    profile.userrole !== UserRole.Admin
-  ) {
-    throw new Error("Diese Aktion ist nur für Administratoren erlaubt.");
-  }
-
-  return {
-    user,
-    supabaseAdmin: getSupabaseServiceRoleClient(),
-  };
+function requireAdmin() {
+  return requireRole(UserRole.Admin);
 }
 
 async function listAllAuthUsers(
