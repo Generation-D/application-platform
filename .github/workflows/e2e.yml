@@ -51,6 +51,12 @@ jobs:
       - name: Create additional env variables
         run: |
           echo "NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321" >> ./.env
+      # The URL above is baked into the browser bundle. The frontend container
+      # resolves host.docker.internal via extra_hosts; the browser running on
+      # the runner needs this entry, or every browser-side Supabase call
+      # (file uploads) fails.
+      - name: Resolve host.docker.internal on the runner
+        run: echo "127.0.0.1 host.docker.internal" | sudo tee -a /etc/hosts
       - name: build and start frontend
         run: docker compose up -d --build
       - name: Wait for server to be ready
