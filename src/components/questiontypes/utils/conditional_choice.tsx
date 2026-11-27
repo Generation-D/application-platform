@@ -27,7 +27,9 @@ export const ConditionalChoice: React.FC<ChoiceProps> = ({
           iseditable ? "cursor-pointer" : "cursor-not-allowed"
         }`}
         checked={isSelected}
-        onChange={onChange}
+        // Handled in onClick only: it also fires when clicking the selected
+        // option (to deselect it). Handling onChange too ran it twice per click.
+        onChange={() => {}}
         onClick={onChange}
       />
       <label
