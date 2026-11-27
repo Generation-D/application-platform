@@ -7,7 +7,7 @@ import { z } from "zod";
 import { getURL, isValidPassword, normalizeEmail } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
-  getSupabaseCookiesUtilClientAdmin,
+  getSupabaseServiceRoleClient,
 } from "@/supabase-utils/cookiesUtilClient";
 import { createLogger } from "@/logger/logger";
 import { messageType } from "@/components/forms/signin-form";
@@ -87,7 +87,7 @@ export async function signUpUser(
         status: "ERROR",
       };
     }
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+    const supabaseAdmin = getSupabaseServiceRoleClient();
     const sendData = { userid: userData!.user!.id };
     const { error: applicationError } = await supabaseAdmin
       .from("application_table")
@@ -240,7 +240,7 @@ export async function deleteUser(): Promise<{
       return { message: userError.message, status: "ERROR" };
     }
     log.info(`Deleting User ${userData.user.email}`);
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+    const supabaseAdmin = getSupabaseServiceRoleClient();
     const { error: deleteUserError } =
       await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
     if (deleteUserError) {
