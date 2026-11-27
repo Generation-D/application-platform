@@ -132,14 +132,6 @@ async function touchAnswer(supabase: SupabaseClient, answerid: string) {
   throwIfSaveFailed(error, log);
 }
 
-/**
- * Creates the answer row for the current user's application, or bumps
- * `lastupdated` if it already exists. Throws if anything fails.
- *
- * `answer_table` is unique on (questionid, applicationid). If a concurrent
- * request inserts the row between our read and our insert, the insert fails
- * with a unique violation and we fall back to updating that row.
- */
 export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
@@ -160,7 +152,6 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     return { supabase, answerid: existingAnswerId, reqtype: "updated" };
   }
 
-  // timestamptz columns: store real UTC instants, not Berlin wall-clock strings.
   const now = new Date().toISOString();
   const { data: inserted, error: insertError } = await supabase
     .from("answer_table")

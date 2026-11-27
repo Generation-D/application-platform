@@ -1,5 +1,3 @@
-// Server-only helper. Deliberately not a "use server" module, so it is never
-// exposed as a callable server action.
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseServiceRoleClient,
@@ -10,10 +8,6 @@ const ROLE_ERRORS: Partial<Record<UserRole, string>> = {
   [UserRole.Admin]: "Diese Aktion ist nur für Administratoren erlaubt.",
 };
 
-/**
- * Ensures the caller is signed in, active and has exactly `role`. Returns the
- * user and a service-role client that may only be used after this check.
- */
 export async function requireRole(role: UserRole) {
   const supabase = await getSupabaseCookiesUtilClient();
   const {

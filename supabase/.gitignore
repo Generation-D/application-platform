@@ -7,5 +7,4 @@
 .env.local
 .env.*.local
 
-# Supabase Studio scratch queries
 /snippets

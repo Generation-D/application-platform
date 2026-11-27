@@ -26,11 +26,6 @@ export const getSupabaseCookiesUtilClient = async () => {
   );
 };
 
-/**
- * Service-role client: bypasses RLS and never carries the user's session.
- * Only use it in server code after an explicit permission check, or for
- * system tasks such as creating a new user's application.
- */
 export const getSupabaseServiceRoleClient = () =>
   createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -94,8 +94,6 @@ export async function signUpUser(
       .insert(sendData);
     if (applicationError) {
       log.error(JSON.stringify(applicationError));
-      // Without an application the account is unusable. Remove it again so the
-      // person can simply register once more instead of being stuck.
       const { error: rollbackError } =
         await supabaseAdmin.auth.admin.deleteUser(userData!.user!.id);
       if (rollbackError) log.error(JSON.stringify(rollbackError));
@@ -342,8 +340,6 @@ export interface SendPasswordResetFormState {
 export async function sendResetPasswordLinkFromSettings(
   prevState: SendPasswordResetFormState,
 ) {
-  // Never trust prevState.email: it comes from the client. Only the signed-in
-  // user's own address may receive a reset link from the settings page.
   let email = prevState.email;
   try {
     const supabase = await getSupabaseCookiesUtilClient();

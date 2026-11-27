@@ -1,10 +1,6 @@
--- Access rules per role. Each block logs in as one user (role + JWT sub) and
--- checks what that user can read and write through RLS.
 begin;
 select plan(45);
 
--- ------------------------------------------------------------- constants
--- Every fixture id and expected error code is defined exactly once here.
 create function pg_temp.applicant_a() returns uuid language sql immutable as $$ select 'a0000000-0000-0000-0000-00000000000a'::uuid $$;
 create function pg_temp.applicant_b() returns uuid language sql immutable as $$ select 'a0000000-0000-0000-0000-00000000000b'::uuid $$;
 create function pg_temp.reviewer() returns uuid language sql immutable as $$ select 'a0000000-0000-0000-0000-000000000001'::uuid $$;
@@ -41,7 +37,6 @@ create function pg_temp.login(uid uuid) returns void language sql as $$
                     true);
 $$;
 
--- -------------------------------------------------------------- fixtures
 insert into auth.users (id, email, raw_app_meta_data) values
   (pg_temp.applicant_a(), 'applicant-a@matrix.invalid', pg_temp.email_signup()),
   (pg_temp.applicant_b(), 'applicant-b@matrix.invalid', pg_temp.email_signup()),
@@ -84,7 +79,6 @@ insert into public.phase_outcome_table (phase_id, user_id, outcome, reviewed_by)
   (pg_temp.finished_phase(), pg_temp.applicant_a(), true, pg_temp.admin()),
   (pg_temp.finished_phase(), pg_temp.applicant_b(), false, pg_temp.admin());
 
--- ------------------------------------------------------------ applicant A
 select pg_temp.login(pg_temp.applicant_a());
 
 select is((select count(*) from public.application_table), 1::bigint, 'applicant: reads only own application');
@@ -143,7 +137,6 @@ select throws_ok(
   pg_temp.rls_violation(), null, 'applicant: cannot create storage buckets');
 reset role;
 
--- --------------------------------------------------------------- reviewer
 select pg_temp.login(pg_temp.reviewer());
 select is((select count(*) from public.application_table where applicationid in (pg_temp.application_a(), pg_temp.application_b())), 2::bigint, 'reviewer: reads all applications');
 select is((select count(*) from public.answer_table where answerid in (pg_temp.answer_a(), pg_temp.answer_b())), 2::bigint, 'reviewer: reads all answers');
@@ -163,7 +156,6 @@ select ok(
 select ok(public.count_reviewable_applications() >= 2, 'reviewer: counts applications');
 reset role;
 
--- ------------------------------------------------------ inactive reviewer
 select pg_temp.login(pg_temp.inactive_reviewer());
 select is((select count(*) from public.application_table), 0::bigint, 'inactive reviewer: reads no applications');
 select is((select count(*) from public.answer_table), 0::bigint, 'inactive reviewer: reads no answers');
@@ -172,7 +164,6 @@ select throws_ok(
   pg_temp.raised_exception(), pg_temp.access_denied(), 'inactive reviewer: cannot list applications');
 reset role;
 
--- ------------------------------------------------------------------ admin
 select pg_temp.login(pg_temp.admin());
 select is((select count(*) from public.phase_outcome_table where user_id in (pg_temp.applicant_a(), pg_temp.applicant_b())), 3::bigint, 'admin: reads all outcomes');
 select is((select count(*) from public.phase_assignment_table where phase_id = pg_temp.open_phase()), 2::bigint, 'admin: reads all assignments');
@@ -184,7 +175,6 @@ select isnt_empty(
   'admin: can change answers');
 reset role;
 
--- ---------------------------------------------------------- inactive admin
 select pg_temp.login(pg_temp.inactive_admin());
 select is((select count(*) from public.phase_outcome_table), 0::bigint, 'inactive admin: reads no outcomes');
 select is_empty(
@@ -192,13 +182,11 @@ select is_empty(
   'inactive admin: cannot change phases');
 reset role;
 
--- ------------------------------------------------------------------- anon
 set local role anon;
 select is((select count(*) from public.application_table), 0::bigint, 'anon: reads no applications');
 select is((select count(*) from public.question_table), 0::bigint, 'anon: reads no questions');
 reset role;
 
--- ----------------------------------------------------- schema constraints
 select throws_ok(
   $$ insert into public.application_table (userid) values (pg_temp.applicant_a()) $$,
   pg_temp.unique_violation(), null, 'constraint: one application per user');
@@ -211,7 +199,6 @@ select throws_ok(
      values ('matrix-bad', 'Bad', 903, now(), now() - pg_temp.one_day(), false) $$,
   pg_temp.check_violation(), null, 'constraint: phases must end after they start');
 
--- ------------------------------------------------------- account deletion
 select lives_ok(
   $$ delete from auth.users where id in (pg_temp.applicant_a(), pg_temp.reviewer(), pg_temp.admin()) $$,
   'deletion: users with outcomes, assignments and decisions can be deleted');

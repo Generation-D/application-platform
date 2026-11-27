@@ -7,7 +7,6 @@ import { UserRole } from "./utils/userRole";
 
 const PUBLIC_PATHS = new Set(["/login", "/review/login", "/403"]);
 
-/** Where a user should go when they lack the role a path requires. */
 function homeForRole(role: number) {
   if (role === UserRole.Admin) return "/admin";
   if (role === UserRole.Reviewer) return "/review";
@@ -48,8 +47,6 @@ export async function proxy(request: NextRequest) {
     .eq("userid", user.id)
     .maybeSingle();
 
-  // Missing or inactive profiles may only see /403. Redirecting /403 to itself
-  // would loop, so it is served as is.
   if (profileError || !profile) {
     console.error(
       `No profile for user ${user.id}: ${JSON.stringify(profileError)}`,

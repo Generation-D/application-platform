@@ -89,8 +89,6 @@ export async function saveUploadAnswer(
     options.fileName
   ];
 
-  // Upload first, so the answer row never points at a file that isn't there.
-  // The object path must match the stored name: downloads build it from it.
   const { error: bucketError } = await supabase.storage
     .from(bucket_name)
     .upload(`${user.id}_${uploadFile.name}`, uploadFile, { upsert: true });

@@ -46,8 +46,6 @@ describe("template spec", () => {
         cy.contains("Nein").click();
       });
 
-    // Uploads are scoped to their own question and must report success, so a
-    // failed upload (e.g. Supabase unreachable from the browser) fails here.
     uploadFile("Upload an image (max. 2MB)", "files/file_example_PNG_1MB.png");
     uploadFile("Upload a pdf (max. 25MB)", "files/file_example_PDF_1MB.pdf");
     uploadFile(

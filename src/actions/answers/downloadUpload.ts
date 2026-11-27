@@ -15,14 +15,6 @@ const uploadTables = {
   video: { table: "video_upload_answer_table", column: "videoname" },
 } as const;
 
-/**
- * Returns a short-lived signed URL for an uploaded file.
- *
- * Access is decided by RLS: the answer, application and upload rows are read
- * with the caller's own client, so the action grants exactly what the database
- * policies grant (owner, active reviewer, admin). The service-role client is
- * only used to sign the URL after those reads succeeded.
- */
 export async function getApplicationUploadUrl(
   applicationId: string,
   questionId: string,
