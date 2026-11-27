@@ -181,7 +181,7 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
             data-input-counter
             className="bg-secondary border-x-0 border-primary h-11 text-center text-primary text-sm focus:ring-secondary focus:border-secondary block w-full py-2.5"
             onBlur={(event) =>
-              withSaveFeedback(
+              void withSaveFeedback(
                 saveNumberPickerAnswer(event.target.value, questionid),
               )
             }

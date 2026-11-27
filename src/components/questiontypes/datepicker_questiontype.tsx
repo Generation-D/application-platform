@@ -96,7 +96,7 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
     }
     if (event.target.value == "") {
       updateAnswerState("");
-      withSaveFeedback(saveDatePickerAnswer("", questionid));
+      void withSaveFeedback(saveDatePickerAnswer("", questionid));
       return;
     }
     const selectedDate = new Date(event.target.value);
@@ -106,10 +106,12 @@ const DatePickerQuestionType: React.FC<DatePickerQuestionTypeProps> = ({
       (minDate === null || selectedDate >= minDate) &&
       (maxDate === null || selectedDate <= maxDate)
     ) {
-      withSaveFeedback(saveDatePickerAnswer(event.target.value, questionid));
+      void withSaveFeedback(
+        saveDatePickerAnswer(event.target.value, questionid),
+      );
     } else {
       updateAnswerState("");
-      withSaveFeedback(saveDatePickerAnswer("", questionid));
+      void withSaveFeedback(saveDatePickerAnswer("", questionid));
       alert(
         `Dein ausgewähltes Datum ${selectedDate.toDateString()} liegt nicht zwischen ${mindate} und ${maxdate}`,
       );

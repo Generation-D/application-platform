@@ -83,7 +83,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    withSaveFeedback(saveCheckBoxAnswer(!answer, questionid));
+    void withSaveFeedback(saveCheckBoxAnswer(!answer, questionid));
     updateAnswerState(!answer);
   };
 

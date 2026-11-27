@@ -112,7 +112,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
       (minDateTime === null || selectedDate >= minDateTime) &&
       (maxDateTime === null || selectedDate <= maxDateTime)
     ) {
-      withSaveFeedback(
+      void withSaveFeedback(
         saveDateTimePickerAnswer(
           setToPrefferedTimeZone(event.target.value),
           questionid,

@@ -109,7 +109,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
       alert(`Dieses Format wird nicht unterstützt!`);
       return;
     }
-    withSaveFeedback(saveShortTextAnswer(textinput, questionid));
+    void withSaveFeedback(saveShortTextAnswer(textinput, questionid));
   };
 
   return (

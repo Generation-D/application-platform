@@ -117,7 +117,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       return;
     }
     if (answer === "") {
-      withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
+      void withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
       updateAnswerState(choice.choiceid);
       return;
     }
@@ -126,12 +126,12 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       dependingQuestions[choice.choiceid].length == 0 &&
       answer === choice.choiceid
     ) {
-      withSaveFeedback(saveConditionalAnswer("", questionid));
+      void withSaveFeedback(saveConditionalAnswer("", questionid));
       updateAnswerState("");
       return;
     }
     if (dependingQuestions[answer].length == 0) {
-      withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
+      void withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
       updateAnswerState(choice.choiceid);
       return;
     }

@@ -99,7 +99,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
     }
     const selectedOption =
       event.target.options[event.target.selectedIndex].text;
-    withSaveFeedback(saveDropdownAnswer(selectedOption, questionid));
+    void withSaveFeedback(saveDropdownAnswer(selectedOption, questionid));
     updateAnswerState(event.target.value);
   };
 
@@ -115,7 +115,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
       (!mandatory || (selectedOptions.length >= minanswers && mandatory)) &&
       selectedOptions.length <= maxanswers
     ) {
-      withSaveFeedback(
+      void withSaveFeedback(
         saveDropdownAnswer(selectedOptions.join(", "), questionid),
       );
       updateAnswerState(selectedOptions.join(", "));

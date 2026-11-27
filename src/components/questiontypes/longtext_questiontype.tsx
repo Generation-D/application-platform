@@ -110,7 +110,9 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
           aria-disabled={!iseditable}
           style={{ minHeight: "200px" }}
           onBlur={(event) =>
-            withSaveFeedback(saveLongTextAnswer(event.target.value, questionid))
+            void withSaveFeedback(
+              saveLongTextAnswer(event.target.value, questionid),
+            )
           }
           onChange={handleChange}
           value={answer}

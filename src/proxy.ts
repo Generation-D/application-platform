@@ -5,7 +5,7 @@ import { UserRole } from "./utils/userRole";
 
 // Can't use own Logger in middleware, because of https://nextjs.org/docs/messages/node-module-in-edge-runtime
 
-const PUBLIC_PATHS = ["/login", "/review/login", "/403"];
+const PUBLIC_PATHS = new Set(["/login", "/review/login", "/403"]);
 
 /** Where a user should go when they lack the role a path requires. */
 function homeForRole(role: number) {
@@ -33,10 +33,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    if (
-      PUBLIC_PATHS.includes(pathname) ||
-      pathname.startsWith("/auth/callback")
-    ) {
+    if (PUBLIC_PATHS.has(pathname) || pathname.startsWith("/auth/callback")) {
       return response.value;
     }
     console.log("Not logged in! Redirect to login");
