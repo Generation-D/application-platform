@@ -104,7 +104,7 @@ export async function signUpUser(
         status: "ERROR",
       };
     }
-    log.info(`Signed Up the following User: ${userData.user?.email}`);
+    log.info(`Signed up user ${userData.user?.id}`);
     return {
       message: `Wir haben dir eine Email geschickt!`,
       status: "SUCCESS",
@@ -162,7 +162,7 @@ export async function signInUser(prevState: messageType, formData: FormData) {
       return { message: `Fehler: ${profileError.message}` };
     }
     if (profileData && !profileData.isactive) {
-      log.error(`Deactivated User (${userData.user.email}) tried to login`);
+      log.error(`Deactivated user ${userData.user.id} tried to log in`);
       await supabase.auth.signOut();
       return {
         message:
@@ -214,7 +214,7 @@ export async function sendResetPasswordLink(
       return { message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    log.info("Password reset requested");
     return {
       message: `Wenn du einen Account bei uns besitzt wurde dir ein Passwort Zurücksetzen Link gesendet!`,
       status: "SUCCESS",
@@ -239,7 +239,7 @@ export async function deleteUser(): Promise<{
       log.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
-    log.info(`Deleting User ${userData.user.email}`);
+    log.info(`Deleting user ${userData.user.id}`);
     const supabaseAdmin = getSupabaseServiceRoleClient();
     const { error: deleteUserError } =
       await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
@@ -364,7 +364,7 @@ export async function sendResetPasswordLinkFromSettings(
       return { email, message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    log.info(`Password reset requested by user ${user.id}`);
     return {
       email,
       message: `Dir wurde ein Passwort Zurücksetzen Link gesendet!`,
