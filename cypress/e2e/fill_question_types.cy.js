@@ -1,33 +1,8 @@
 import "cypress-file-upload";
 
-// Questions show a spinner while they load their saved answer, and reload when
-// a conditional choice changes. Interacting before that finishes lets the late
-// load overwrite the input, so every step waits for the form to be idle.
-function waitUntilLoaded() {
-  cy.get('[aria-label="Loading..."]').should("not.exist");
-}
-
-function question(questionLabel) {
-  waitUntilLoaded();
-  return cy.contains("label", questionLabel).next("div.mt-1");
-}
-
-function fillText(questionLabel, field, text) {
-  question(questionLabel).find(field).type(text).blur();
-}
-
-function choose(questionLabel, optionText) {
-  question(questionLabel).within(() => {
-    cy.contains("label", optionText).click();
-    cy.contains("label", optionText)
-      .parent()
-      .find("input")
-      .should("be.checked");
-  });
-}
-
 function uploadFile(questionLabel, fixturePath) {
-  question(questionLabel)
+  cy.contains("label", questionLabel)
+    .next("div.mt-1")
     .find("form")
     .within(() => {
       cy.get('input[type="file"]').attachFile(fixturePath);
@@ -45,17 +20,31 @@ describe("template spec", () => {
     cy.get(".apl-button-fixed-short").click();
 
     // Fill short text question: "What is your name?"
-    fillText("What is your name?", "input", "Testuser");
+    cy.contains("label", "What is your name?")
+      .next("div.mt-1")
+      .find("input")
+      .type("Testuser");
 
     // Fill long text question: "What is your mission?"
-    fillText("What is your mission?", "textarea", "Test mission text");
+    cy.contains("label", "What is your mission?")
+      .next("div.mt-1")
+      .find("textarea")
+      .type("Test mission text");
 
     // Select multiple choice options: "Choose one to three options."
-    choose("Choose one to three options.", "1. Keine Armut");
-    choose("Choose one to three options.", "2. Kein Hunger");
+    cy.contains("label", "Choose one to three options.")
+      .next("div.mt-1")
+      .within(() => {
+        cy.contains("1. Keine Armut").click();
+        cy.contains("2. Kein Hunger").click();
+      });
 
     // Handle conditional question: "Chose either yes or no"
-    choose("Chose either yes or no", "Nein");
+    cy.contains("label", "Chose either yes or no")
+      .next("div.mt-1")
+      .within(() => {
+        cy.contains("Nein").click();
+      });
 
     // Uploads are scoped to their own question and must report success, so a
     // failed upload (e.g. Supabase unreachable from the browser) fails here.
@@ -66,7 +55,6 @@ describe("template spec", () => {
       "files/file_example_MP4_1280_10MB.mp4",
     );
 
-    waitUntilLoaded();
     cy.get(".items-start > :nth-child(4)").click();
 
     // Add debugging and wait for progress calculation
