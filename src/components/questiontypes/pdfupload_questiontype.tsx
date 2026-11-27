@@ -16,6 +16,7 @@ import {
   fetchUploadAnswer,
   saveUploadAnswer,
 } from "@/utils/uploadHelpers";
+import { alertSaveFailed } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/pdfupload_questiontype");
 
@@ -197,6 +198,9 @@ const PDFUploadQuestionType: React.FC<PDFUploadQuestionTypeProps> = ({
       await savePdfUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
+      alertSaveFailed(error);
+      setIsLoading(false);
+      return;
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

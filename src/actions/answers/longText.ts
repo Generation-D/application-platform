@@ -2,6 +2,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/longText");
@@ -14,28 +15,15 @@ export async function saveLongTextAnswer(
     await deleteAnswer(questionid);
     return "";
   }
-  const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-  if (reqtype == "created") {
-    const { error: insertAnswerError } = await supabase
-      .from("long_text_answer_table")
-      .insert({
-        answerid: answerid,
-        answertext: answertext,
-      });
-    if (insertAnswerError) {
-      log.error(JSON.stringify(insertAnswerError));
-    }
-  } else if (reqtype == "updated") {
-    const { error: updateAnswerError } = await supabase
-      .from("long_text_answer_table")
-      .update({
-        answertext: answertext,
-      })
-      .eq("answerid", answerid);
-    if (updateAnswerError) {
-      log.error(JSON.stringify(updateAnswerError));
-    }
-  }
+  const { supabase, answerid } = await saveAnswer(questionid);
+  const { error } = await supabase.from("long_text_answer_table").upsert(
+    {
+      answerid: answerid,
+      answertext: answertext,
+    },
+    { onConflict: "answerid" },
+  );
+  throwIfSaveFailed(error, log);
   return answerid;
 }
 

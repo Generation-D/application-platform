@@ -16,9 +16,9 @@ insert into public.application_table (applicationid, userid) values
   ('e0000000-0000-0000-0000-000000000002', 'd0000000-0000-0000-0000-000000000002'),
   ('e0000000-0000-0000-0000-000000000003', 'd0000000-0000-0000-0000-000000000003');
 insert into public.phase_table (phaseid, phasename, phaselabel, phaseorder, startdate, enddate, sectionsenabled)
-values ('f0000000-0000-0000-0000-000000000001', 'review-access-test', 'Test', 999, now(), now(), false);
+values ('f0000000-0000-0000-0000-000000000001', 'review-access-test', 'Test', 999, now(), now() + interval '1 day', false);
 insert into public.question_table (questionid, questiontype, questionorder, phaseid, mandatory, questiontext)
-values ('f0000000-0000-0000-0000-000000000002', 'short_text', 0, 'f0000000-0000-0000-0000-000000000001', false, 'Test');
+values ('f0000000-0000-0000-0000-000000000002', 'shortText', 0, 'f0000000-0000-0000-0000-000000000001', false, 'Test');
 insert into public.answer_table (answerid, questionid, applicationid, created, lastupdated)
 select applicationid, 'f0000000-0000-0000-0000-000000000002', applicationid, now(), now()
 from public.application_table where applicationid in ('e0000000-0000-0000-0000-000000000002', 'e0000000-0000-0000-0000-000000000003');

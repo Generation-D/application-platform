@@ -18,6 +18,7 @@ import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
 import { SubmitButton } from "../submitButton";
 import { deleteImageUploadAnswer } from "@/actions/answers/deleteUpload";
+import { alertSaveFailed } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/imageupload_questiontype");
 
@@ -197,6 +198,9 @@ const ImageUploadQuestionType: React.FC<ImageUploadQuestionTypeProps> = ({
       await saveImageUploadAnswer(questionid, formData, maxfilesizeinmb);
     } catch (error) {
       log.error(JSON.stringify(error));
+      alertSaveFailed(error);
+      setIsLoading(false);
+      return;
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");

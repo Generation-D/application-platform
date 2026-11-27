@@ -3,6 +3,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/checkBox");
@@ -12,28 +13,15 @@ export async function saveCheckBoxAnswer(checked: boolean, questionid: string) {
     await deleteAnswer(questionid);
     return;
   } else {
-    const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("checkbox_answer_table")
-        .insert({
-          answerid: answerid,
-          checked: checked,
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-    } else if (reqtype == "updated") {
-      const { error: updateAnswerError } = await supabase
-        .from("checkbox_answer_table")
-        .update({
-          checked: checked,
-        })
-        .eq("answerid", answerid);
-      if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
-      }
-    }
+    const { supabase, answerid } = await saveAnswer(questionid);
+    const { error } = await supabase.from("checkbox_answer_table").upsert(
+      {
+        answerid: answerid,
+        checked: checked,
+      },
+      { onConflict: "answerid" },
+    );
+    throwIfSaveFailed(error, log);
   }
 }
 

@@ -19,17 +19,15 @@ import {
   escapeHtml,
 } from "@/emails/reviewerAssignmentEmail";
 import { PhaseData } from "@/store/slices/phaseSlice";
-import {
-  getSupabaseCookiesUtilClient,
-  getSupabaseServiceRoleClient,
-} from "@/supabase-utils/cookiesUtilClient";
-import { getURL } from "@/utils/helpers";
+import { getSupabaseServiceRoleClient } from "@/supabase-utils/cookiesUtilClient";
+import { getURL, normalizeEmail } from "@/utils/helpers";
 import {
   assignReviewers,
   MatchingApplication,
   MatchingReviewer,
   ReviewerAssignment,
 } from "@/utils/reviewerMatching";
+import { requireRole } from "@/supabase-utils/requireRole";
 import { UserRole } from "@/utils/userRole";
 
 const CsvReviewerSchema = z.object({
@@ -103,39 +101,8 @@ const emailSettingsSchema = z.object({
 });
 const emailCcSelectionSchema = z.object({ it: z.boolean(), cmd: z.boolean() });
 
-function normalizeEmail(email: string) {
-  return email.trim().toLowerCase().replace("@googlemail.com", "@gmail.com");
-}
-
-async function requireAdmin() {
-  const supabase = await getSupabaseCookiesUtilClient();
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    throw new Error("Nicht angemeldet.");
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("user_profiles_table")
-    .select("userrole,isactive")
-    .eq("userid", user.id)
-    .single();
-
-  if (
-    profileError ||
-    !profile?.isactive ||
-    profile.userrole !== UserRole.Admin
-  ) {
-    throw new Error("Diese Aktion ist nur für Administratoren erlaubt.");
-  }
-
-  return {
-    user,
-    supabaseAdmin: getSupabaseServiceRoleClient(),
-  };
+function requireAdmin() {
+  return requireRole(UserRole.Admin);
 }
 
 async function listAllAuthUsers(
@@ -552,34 +519,17 @@ export async function savePhaseDecision(
     );
   }
 
-  const { data: existingOutcomes, error: selectError } = await supabaseAdmin
-    .from("phase_outcome_table")
-    .select("outcome_id")
-    .eq("phase_id", phaseId)
-    .eq("user_id", applicantUserId);
-  if (selectError) throw selectError;
-
-  if (existingOutcomes && existingOutcomes.length > 0) {
-    const { error } = await supabaseAdmin
-      .from("phase_outcome_table")
-      .update({
-        outcome,
-        reviewed_by: user.id,
-        review_date: new Date().toISOString(),
-      })
-      .eq("phase_id", phaseId)
-      .eq("user_id", applicantUserId);
-    if (error) throw error;
-  } else {
-    const { error } = await supabaseAdmin.from("phase_outcome_table").insert({
+  const { error } = await supabaseAdmin.from("phase_outcome_table").upsert(
+    {
       phase_id: phaseId,
       user_id: applicantUserId,
       outcome,
       reviewed_by: user.id,
       review_date: new Date().toISOString(),
-    });
-    if (error) throw error;
-  }
+    },
+    { onConflict: "phase_id,user_id" },
+  );
+  if (error) throw error;
 
   revalidatePath("/admin/evaluation");
   return { outcome };

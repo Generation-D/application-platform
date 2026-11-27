@@ -1,5 +1,16 @@
 import "cypress-file-upload";
 
+function uploadFile(questionLabel, fixturePath) {
+  cy.contains("label", questionLabel)
+    .next("div.mt-1")
+    .find("form")
+    .within(() => {
+      cy.get('input[type="file"]').attachFile(fixturePath);
+      cy.get(".apl-button-fixed").click();
+      cy.contains(".text-green-600", "war erfolgreich", { timeout: 30000 });
+    });
+}
+
 describe("template spec", () => {
   it("fill_question_types", function () {
     cy.visit("/login");
@@ -35,33 +46,12 @@ describe("template spec", () => {
         cy.contains("Nein").click();
       });
 
-    // Upload image: "Upload an image (max. 2MB)"
-    cy.contains("label", "Upload an image (max. 2MB)")
-      .next("div.mt-1")
-      .find("form")
-      .find('input[type="file"]')
-      .attachFile("files/file_example_PNG_1MB.png");
-    cy.get(
-      ":nth-child(5) > :nth-child(2) > form > .mt-4 > .apl-button-fixed",
-    ).click();
-
-    // Upload PDF: "Upload a pdf (max. 25MB)"
-    cy.contains("label", "Upload a pdf (max. 25MB)")
-      .next("div.mt-1")
-      .find("form")
-      .find('input[type="file"]')
-      .attachFile("files/file_example_PDF_1MB.pdf");
-    cy.get(
-      ":nth-child(6) > :nth-child(2) > form > .mt-4 > .apl-button-fixed",
-    ).click();
-
-    // Upload video: "Uplaod a video (max. 50MB)"
-    cy.contains("label", "Uplaod a video (max. 50MB)")
-      .next("div.mt-1")
-      .find("form")
-      .find('input[type="file"]')
-      .attachFile("files/file_example_MP4_1280_10MB.mp4");
-    cy.get(".mt-4 > .apl-button-fixed").click();
+    uploadFile("Upload an image (max. 2MB)", "files/file_example_PNG_1MB.png");
+    uploadFile("Upload a pdf (max. 25MB)", "files/file_example_PDF_1MB.pdf");
+    uploadFile(
+      "Uplaod a video (max. 50MB)",
+      "files/file_example_MP4_1280_10MB.mp4",
+    );
 
     cy.get(".items-start > :nth-child(4)").click();
 

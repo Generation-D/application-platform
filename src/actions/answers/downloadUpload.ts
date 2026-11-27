@@ -6,17 +6,22 @@ import {
   getSupabaseCookiesUtilClient,
   getSupabaseServiceRoleClient,
 } from "@/supabase-utils/cookiesUtilClient";
-import { UserRole } from "@/utils/userRole";
 
 const uploadTypeSchema = z.enum(["image", "pdf", "video"]);
+
+const uploadTables = {
+  image: { table: "image_upload_answer_table", column: "imagename" },
+  pdf: { table: "pdf_upload_answer_table", column: "pdfname" },
+  video: { table: "video_upload_answer_table", column: "videoname" },
+} as const;
 
 export async function getApplicationUploadUrl(
   applicationId: string,
   questionId: string,
   uploadTypeInput: "image" | "pdf" | "video",
 ) {
-  z.string().uuid().parse(applicationId);
-  z.string().uuid().parse(questionId);
+  z.uuid().parse(applicationId);
+  z.uuid().parse(questionId);
   const uploadType = uploadTypeSchema.parse(uploadTypeInput);
 
   const supabase = await getSupabaseCookiesUtilClient();
@@ -28,67 +33,43 @@ export async function getApplicationUploadUrl(
 
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles_table")
-    .select("userrole,isactive")
+    .select("isactive")
     .eq("userid", user.id)
     .single();
   if (profileError || !profile?.isactive) {
     throw new Error("Kein Zugriff auf diese Datei.");
   }
 
-  const supabaseAdmin = getSupabaseServiceRoleClient();
-  const { data: answer, error: answerError } = await supabaseAdmin
-    .from("answer_table")
-    .select("answerid,applicationid,questionid")
-    .eq("applicationid", applicationId)
-    .eq("questionid", questionId)
-    .single();
-  if (answerError) throw answerError;
-
-  const { data: application, error: applicationError } = await supabaseAdmin
+  const { data: application } = await supabase
     .from("application_table")
     .select("userid")
     .eq("applicationid", applicationId)
-    .single();
-  if (applicationError) throw applicationError;
-
-  let isAllowed =
-    profile.userrole === UserRole.Admin || application.userid === user.id;
-  if (profile.userrole === UserRole.Reviewer) isAllowed = true;
-
-  if (!isAllowed) throw new Error("Kein Zugriff auf diese Datei.");
-
-  let storedFileName: string | null = null;
-  if (uploadType === "image") {
-    const { data, error } = await supabaseAdmin
-      .from("image_upload_answer_table")
-      .select("imagename")
-      .eq("answerid", answer.answerid)
-      .single();
-    if (error) throw error;
-    storedFileName = data.imagename;
-  } else if (uploadType === "pdf") {
-    const { data, error } = await supabaseAdmin
-      .from("pdf_upload_answer_table")
-      .select("pdfname")
-      .eq("answerid", answer.answerid)
-      .single();
-    if (error) throw error;
-    storedFileName = data.pdfname;
-  } else {
-    const { data, error } = await supabaseAdmin
-      .from("video_upload_answer_table")
-      .select("videoname")
-      .eq("answerid", answer.answerid)
-      .single();
-    if (error) throw error;
-    storedFileName = data.videoname;
+    .maybeSingle();
+  const { data: answer } = await supabase
+    .from("answer_table")
+    .select("answerid")
+    .eq("applicationid", applicationId)
+    .eq("questionid", questionId)
+    .maybeSingle();
+  if (!application || !answer) {
+    throw new Error("Kein Zugriff auf diese Datei.");
   }
+
+  const { table, column } = uploadTables[uploadType];
+  const { data: upload } = await supabase
+    .from(table)
+    .select(column)
+    .eq("answerid", answer.answerid)
+    .maybeSingle();
+  const storedFileName = (upload as Record<string, string> | null)?.[column];
+  if (!storedFileName) throw new Error("Datei nicht gefunden.");
 
   const bucket = `${uploadType}-${questionId}`;
   const path = `${application.userid}_${storedFileName}`;
-  const { data: signedUrl, error: signedUrlError } = await supabaseAdmin.storage
-    .from(bucket)
-    .createSignedUrl(path, 60 * 10);
+  const { data: signedUrl, error: signedUrlError } =
+    await getSupabaseServiceRoleClient()
+      .storage.from(bucket)
+      .createSignedUrl(path, 60 * 10);
   if (signedUrlError) throw signedUrlError;
   return signedUrl.signedUrl;
 }

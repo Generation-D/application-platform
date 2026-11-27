@@ -2,6 +2,7 @@
 import Image from "next/image";
 
 import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
+import { getURL } from "@/utils/helpers";
 import Link from "next/link";
 
 const supabase = getSupabaseBrowserClient();
@@ -11,7 +12,7 @@ export default function Home() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "slack_oidc",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
+        redirectTo: `${getURL()}auth/callback`,
       },
     });
 

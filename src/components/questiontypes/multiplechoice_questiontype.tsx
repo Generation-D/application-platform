@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { Choice } from "./utils/multiplechoice_choice";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger(
   "components/questiontypes/multiplechoice_questiontype",
@@ -100,10 +101,12 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
       return;
     }
     if (answer === choice.choiceid) {
-      await saveMultipleChoiceAnswer("", questionid);
+      await withSaveFeedback(saveMultipleChoiceAnswer("", questionid));
       updateAnswerState("");
     } else {
-      await saveMultipleChoiceAnswer(choice.choiceid, questionid);
+      await withSaveFeedback(
+        saveMultipleChoiceAnswer(choice.choiceid, questionid),
+      );
       updateAnswerState(choice.choiceid);
     }
   };
@@ -140,7 +143,9 @@ const MultipleChoiceQuestionType: React.FC<MultipleChoiceQuestionTypeProps> = ({
         (choice) => choice,
       );
     }
-    await saveMultipleChoiceAnswer(newChoices.join(", "), questionid);
+    await withSaveFeedback(
+      saveMultipleChoiceAnswer(newChoices.join(", "), questionid),
+    );
     updateAnswerState(newChoices.join(", "));
   };
   return (

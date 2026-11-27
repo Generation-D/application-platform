@@ -2,13 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getURL, isValidPassword } from "@/utils/helpers";
+import { getURL, isValidPassword, normalizeEmail } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
-  getSupabaseCookiesUtilClientAdmin,
+  getSupabaseServiceRoleClient,
 } from "@/supabase-utils/cookiesUtilClient";
 import { createLogger } from "@/logger/logger";
 import { messageType } from "@/components/forms/signin-form";
@@ -21,7 +20,7 @@ export async function signUpUser(
   formData: FormData,
 ) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     password: z.string().min(1),
     passwordConfirmation: z.string().min(1),
     legalConfirmation: z.string(),
@@ -64,10 +63,10 @@ export async function signUpUser(
   try {
     const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } = await supabase.auth.signUp({
-      email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
+      email: signUpFormData.data.email,
       password: signUpFormData.data.password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
+        emailRedirectTo: `${getURL()}auth/callback`,
         captchaToken: signUpFormData.data.captchaToken,
       },
     });
@@ -88,16 +87,22 @@ export async function signUpUser(
         status: "ERROR",
       };
     }
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+    const supabaseAdmin = getSupabaseServiceRoleClient();
     const sendData = { userid: userData!.user!.id };
     const { error: applicationError } = await supabaseAdmin
       .from("application_table")
       .insert(sendData);
     if (applicationError) {
       log.error(JSON.stringify(applicationError));
-      return { message: applicationError.message, status: "ERROR" };
+      const { error: rollbackError } =
+        await supabaseAdmin.auth.admin.deleteUser(userData!.user!.id);
+      if (rollbackError) log.error(JSON.stringify(rollbackError));
+      return {
+        message: "Etwas ist schief gelaufen, bitte probiere es nocheinmal.",
+        status: "ERROR",
+      };
     }
-    log.info(`Signed Up the following User: ${userData.user?.email}`);
+    log.info(`Signed up user ${userData.user?.id}`);
     return {
       message: `Wir haben dir eine Email geschickt!`,
       status: "SUCCESS",
@@ -113,7 +118,7 @@ export async function signUpUser(
 
 export async function signInUser(prevState: messageType, formData: FormData) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     password: z.string().min(1),
     captchaToken: z.string().min(1),
   });
@@ -132,10 +137,7 @@ export async function signInUser(prevState: messageType, formData: FormData) {
     const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
-        email: signInFormData.data.email.replace(
-          "@googlemail.com",
-          "@gmail.com",
-        ),
+        email: signInFormData.data.email,
         password: signInFormData.data.password,
         options: { captchaToken: signInFormData.data.captchaToken },
       });
@@ -158,7 +160,7 @@ export async function signInUser(prevState: messageType, formData: FormData) {
       return { message: `Fehler: ${profileError.message}` };
     }
     if (profileData && !profileData.isactive) {
-      log.error(`Deactivated User (${userData.user.email}) tried to login`);
+      log.error(`Deactivated user ${userData.user.id} tried to log in`);
       await supabase.auth.signOut();
       return {
         message:
@@ -185,7 +187,7 @@ export async function sendResetPasswordLink(
   formData: FormData,
 ) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     captchaToken: z.string().min(1),
   });
   const resetPasswordFormData = schema.safeParse({
@@ -199,13 +201,10 @@ export async function sendResetPasswordLink(
   }
   try {
     const supabase = await getSupabaseCookiesUtilClient();
-    const email = resetPasswordFormData.data.email.replace(
-      "@googlemail.com",
-      "@gmail.com",
-    );
+    const email = resetPasswordFormData.data.email;
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${getURL()}/auth/callback?next=login/update-password`,
+        redirectTo: `${getURL()}auth/callback?next=login/update-password`,
         captchaToken: resetPasswordFormData.data.captchaToken,
       });
     if (PasswordResetError) {
@@ -213,7 +212,7 @@ export async function sendResetPasswordLink(
       return { message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    log.info("Password reset requested");
     return {
       message: `Wenn du einen Account bei uns besitzt wurde dir ein Passwort Zurücksetzen Link gesendet!`,
       status: "SUCCESS",
@@ -238,8 +237,8 @@ export async function deleteUser(): Promise<{
       log.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
-    log.info(`Deleting User ${userData.user.email}`);
-    const supabaseAdmin = await getSupabaseCookiesUtilClientAdmin();
+    log.info(`Deleting user ${userData.user.id}`);
+    const supabaseAdmin = getSupabaseServiceRoleClient();
     const { error: deleteUserError } =
       await supabaseAdmin.auth.admin.deleteUser(userData.user!.id);
     if (deleteUserError) {
@@ -248,7 +247,7 @@ export async function deleteUser(): Promise<{
     }
     revalidatePath("/");
   } catch (error) {
-    log.info(JSON.stringify(error));
+    log.error(JSON.stringify(error));
     return {
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",
@@ -317,7 +316,7 @@ export async function updatePassword(
           status: "ERROR",
         };
       }
-      JSON.stringify(userError);
+      log.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
     revalidatePath("/");
@@ -332,51 +331,6 @@ export async function updatePassword(
   redirect("/");
 }
 
-export async function signInWithSlack() {
-  const supabase = await getSupabaseCookiesUtilClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "slack_oidc",
-    options: {
-      redirectTo: `${getURL()}auth/admin/callback/`,
-    },
-  });
-
-  if (error) {
-    log.error(JSON.stringify(error));
-    throw error;
-  }
-  if (data && data.url) {
-    NextResponse.redirect(data.url);
-  }
-}
-
-export async function signInWithMagicLink(
-  prevState: unknown,
-  formData: FormData,
-) {
-  const schema = z.object({
-    magicLinkEmail: z.string().min(1),
-  });
-
-  const signInFormData = schema.parse({
-    magicLinkEmail: formData.get("magicLinkEmail"),
-  });
-
-  const supabase = await getSupabaseCookiesUtilClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email: signInFormData.magicLinkEmail!,
-    options: {
-      shouldCreateUser: false,
-      emailRedirectTo: `${getURL()}auth/admin/callback/`,
-    },
-  });
-  if (error) {
-    log.error(JSON.stringify(error));
-    throw error;
-  }
-}
-
 export interface SendPasswordResetFormState {
   message: string;
   status: string;
@@ -386,22 +340,28 @@ export interface SendPasswordResetFormState {
 export async function sendResetPasswordLinkFromSettings(
   prevState: SendPasswordResetFormState,
 ) {
-  const email = prevState.email;
+  // prevState comes from the client; only the signed-in user's own email may get a reset link.
+  let email = prevState.email;
   try {
     const supabase = await getSupabaseCookiesUtilClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user?.email) {
+      return { email, message: "Nicht angemeldet.", status: "ERROR" };
+    }
+    email = user.email;
     const { error: PasswordResetError } =
-      await supabase.auth.resetPasswordForEmail(
-        email.replace("@googlemail.com", "@gmail.com"),
-        {
-          redirectTo: `${getURL()}/auth/callback?next=login/update-password`,
-        },
-      );
+      await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
+        redirectTo: `${getURL()}auth/callback?next=login/update-password`,
+      });
     if (PasswordResetError) {
       log.error(JSON.stringify(PasswordResetError));
       return { email, message: PasswordResetError.message, status: "ERROR" };
     }
     revalidatePath("/login");
-    log.info(`Reset Password for ${email}`);
+    log.info(`Password reset requested by user ${user.id}`);
     return {
       email,
       message: `Dir wurde ein Passwort Zurücksetzen Link gesendet!`,

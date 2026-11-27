@@ -12,6 +12,7 @@ import { setToPrefferedTimeZone } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger(
   "components/questiontypes/datetimepicker_questiontype",
@@ -101,7 +102,7 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
     }
     if (event.target.value == "") {
       updateAnswerState("");
-      await saveDateTimePickerAnswer("", questionid);
+      await withSaveFeedback(saveDateTimePickerAnswer("", questionid));
       return;
     }
     const selectedDate = new Date(event.target.value);
@@ -111,13 +112,15 @@ const DatetimePickerQuestionType: React.FC<DatetimePickerQuestionTypeProps> = ({
       (minDateTime === null || selectedDate >= minDateTime) &&
       (maxDateTime === null || selectedDate <= maxDateTime)
     ) {
-      saveDateTimePickerAnswer(
-        setToPrefferedTimeZone(event.target.value),
-        questionid,
+      void withSaveFeedback(
+        saveDateTimePickerAnswer(
+          setToPrefferedTimeZone(event.target.value),
+          questionid,
+        ),
       );
     } else {
       updateAnswerState("");
-      await saveDateTimePickerAnswer("", questionid);
+      await withSaveFeedback(saveDateTimePickerAnswer("", questionid));
       alert(
         `Dein ausgewählter Zeitpunkt ${selectedDate.toDateString()} liegt nicht zwischen ${mindatetime} und ${maxdatetime}`,
       );

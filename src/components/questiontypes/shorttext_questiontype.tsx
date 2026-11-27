@@ -12,6 +12,7 @@ import { checkRegex } from "@/utils/helpers";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/shorttext_questiontype");
 
@@ -108,7 +109,7 @@ const ShortTextQuestionType: React.FC<ShortTextQuestionTypeProps> = ({
       alert(`Dieses Format wird nicht unterstützt!`);
       return;
     }
-    saveShortTextAnswer(textinput, questionid);
+    void withSaveFeedback(saveShortTextAnswer(textinput, questionid));
   };
 
   return (

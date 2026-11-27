@@ -10,6 +10,19 @@ export const getURL = () => {
   return url;
 };
 
+export const safeRelativePath = (next: string | null | undefined) => {
+  if (!next) return "";
+  const path = next.replace(/^\/+/, "");
+  return /^[A-Za-z0-9\-_/]*$/.test(path) ? path : "";
+};
+
+export function normalizeEmail(email: string) {
+  return email
+    .trim()
+    .toLowerCase()
+    .replace(/@googlemail\.com$/, "@gmail.com");
+}
+
 const TIMEZONE = "Europe/Berlin";
 
 export function createCurrentTimestamp() {

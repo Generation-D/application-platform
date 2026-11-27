@@ -16,6 +16,7 @@ import {
   saveUploadAnswer,
 } from "@/utils/uploadHelpers";
 import { deleteVideoUploadAnswer } from "@/actions/answers/deleteUpload";
+import { alertSaveFailed } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/videoupload_questiontype");
 
@@ -194,9 +195,11 @@ const VideoUploadQuestionType: React.FC<VideoUploadQuestionTypeProps> = ({
     setIsLoading(true);
     try {
       await saveVideoUploadAnswer(questionid, formData, maxfilesizeinmb);
-      // Handle success (e.g., showing a success message, resetting states)
     } catch (error) {
       log.error(JSON.stringify(error));
+      alertSaveFailed(error);
+      setIsLoading(false);
+      return;
     }
     updateAnswerState(tempAnswer);
     setTempAnswer("");
