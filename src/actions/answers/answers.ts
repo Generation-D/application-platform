@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 import { Question } from "@/components/questions";
 import { QuestionType } from "@/components/questiontypes/utils/questiontype_selector";
 import { createLogger } from "@/logger/logger";
-import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 import { SAVE_FAILED_MESSAGE, throwIfSaveFailed } from "./saveErrors";
@@ -128,7 +127,7 @@ export async function fetchAllAnswersOfApplication(
 async function touchAnswer(supabase: SupabaseClient, answerid: string) {
   const { error } = await supabase
     .from("answer_table")
-    .update({ lastupdated: createCurrentTimestamp() })
+    .update({ lastupdated: new Date().toISOString() })
     .eq("answerid", answerid);
   throwIfSaveFailed(error, log);
 }
@@ -161,7 +160,8 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     return { supabase, answerid: existingAnswerId, reqtype: "updated" };
   }
 
-  const now = createCurrentTimestamp();
+  // timestamptz columns: store real UTC instants, not Berlin wall-clock strings.
+  const now = new Date().toISOString();
   const { data: inserted, error: insertError } = await supabase
     .from("answer_table")
     .insert({
