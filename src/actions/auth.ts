@@ -67,7 +67,7 @@ export async function signUpUser(
       email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
       password: signUpFormData.data.password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/auth/callback`,
+        emailRedirectTo: `${getURL()}auth/callback`,
         captchaToken: signUpFormData.data.captchaToken,
       },
     });
@@ -205,7 +205,7 @@ export async function sendResetPasswordLink(
     );
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${getURL()}/auth/callback?next=login/update-password`,
+        redirectTo: `${getURL()}auth/callback?next=login/update-password`,
         captchaToken: resetPasswordFormData.data.captchaToken,
       });
     if (PasswordResetError) {
@@ -393,7 +393,7 @@ export async function sendResetPasswordLinkFromSettings(
       await supabase.auth.resetPasswordForEmail(
         email.replace("@googlemail.com", "@gmail.com"),
         {
-          redirectTo: `${getURL()}/auth/callback?next=login/update-password`,
+          redirectTo: `${getURL()}auth/callback?next=login/update-password`,
         },
       );
     if (PasswordResetError) {

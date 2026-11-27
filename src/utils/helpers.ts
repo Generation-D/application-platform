@@ -10,6 +10,17 @@ export const getURL = () => {
   return url;
 };
 
+/**
+ * Turns an untrusted redirect target (e.g. a `?next=` param) into a path that
+ * can be appended to `getURL()`. Only plain relative paths are allowed, so the
+ * result can never point to another host.
+ */
+export const safeRelativePath = (next: string | null | undefined) => {
+  if (!next) return "";
+  const path = next.replace(/^\/+/, "");
+  return /^[A-Za-z0-9\-_/]*$/.test(path) ? path : "";
+};
+
 const TIMEZONE = "Europe/Berlin";
 
 export function createCurrentTimestamp() {
