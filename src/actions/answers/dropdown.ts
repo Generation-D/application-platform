@@ -3,6 +3,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/dropdown");
@@ -15,28 +16,15 @@ export async function saveDropdownAnswer(
     await deleteAnswer(questionid);
     return;
   } else {
-    const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("dropdown_answer_table")
-        .insert({
-          answerid: answerid,
-          selectedoptions: answertext,
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-    } else if (reqtype == "updated") {
-      const { error: updateAnswerError } = await supabase
-        .from("dropdown_answer_table")
-        .update({
-          selectedoptions: answertext,
-        })
-        .eq("answerid", answerid);
-      if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
-      }
-    }
+    const { supabase, answerid } = await saveAnswer(questionid);
+    const { error } = await supabase.from("dropdown_answer_table").upsert(
+      {
+        answerid: answerid,
+        selectedoptions: answertext,
+      },
+      { onConflict: "answerid" },
+    );
+    throwIfSaveFailed(error, log);
   }
 }
 

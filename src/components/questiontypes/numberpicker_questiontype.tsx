@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/numberpicker_questiontype");
 
@@ -180,7 +181,9 @@ const NumberPickerQuestionType: React.FC<NumberPickerQuestionTypeProps> = ({
             data-input-counter
             className="bg-secondary border-x-0 border-primary h-11 text-center text-primary text-sm focus:ring-secondary focus:border-secondary block w-full py-2.5"
             onBlur={(event) =>
-              saveNumberPickerAnswer(event.target.value, questionid)
+              withSaveFeedback(
+                saveNumberPickerAnswer(event.target.value, questionid),
+              )
             }
             onChange={handleChange}
             min={minnumber}

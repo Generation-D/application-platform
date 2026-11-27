@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/checkbox_questiontype");
 
@@ -82,7 +83,7 @@ const CheckBoxQuestionType: React.FC<CheckBoxQuestionTypeProps> = ({
     if (!iseditable) {
       return;
     }
-    saveCheckBoxAnswer(!answer, questionid);
+    withSaveFeedback(saveCheckBoxAnswer(!answer, questionid));
     updateAnswerState(!answer);
   };
 

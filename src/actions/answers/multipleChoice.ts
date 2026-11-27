@@ -3,6 +3,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/multipleChoice");
@@ -15,28 +16,17 @@ export async function saveMultipleChoiceAnswer(
     await deleteAnswer(questionid);
     return;
   } else {
-    const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("multiple_choice_answer_table")
-        .insert({
+    const { supabase, answerid } = await saveAnswer(questionid);
+    const { error } = await supabase
+      .from("multiple_choice_answer_table")
+      .upsert(
+        {
           answerid: answerid,
           selectedchoice: answertext,
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-    } else if (reqtype == "updated") {
-      const { error: updateAnswerError } = await supabase
-        .from("multiple_choice_answer_table")
-        .update({
-          selectedchoice: answertext,
-        })
-        .eq("answerid", answerid);
-      if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
-      }
-    }
+        },
+        { onConflict: "answerid" },
+      );
+    throwIfSaveFailed(error, log);
   }
 }
 

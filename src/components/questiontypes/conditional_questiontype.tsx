@@ -23,6 +23,7 @@ import { AwaitingChild } from "../layout/awaiting";
 import Popup from "../layout/popup";
 import { Question } from "../questions";
 import { SubmitButton } from "../submitButton";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/conditional_questiontype");
 
@@ -116,7 +117,7 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       return;
     }
     if (answer === "") {
-      saveConditionalAnswer(choice.choiceid, questionid);
+      withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
       updateAnswerState(choice.choiceid);
       return;
     }
@@ -125,12 +126,12 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
       dependingQuestions[choice.choiceid].length == 0 &&
       answer === choice.choiceid
     ) {
-      saveConditionalAnswer("", questionid);
+      withSaveFeedback(saveConditionalAnswer("", questionid));
       updateAnswerState("");
       return;
     }
     if (dependingQuestions[answer].length == 0) {
-      saveConditionalAnswer(choice.choiceid, questionid);
+      withSaveFeedback(saveConditionalAnswer(choice.choiceid, questionid));
       updateAnswerState(choice.choiceid);
       return;
     }
@@ -173,9 +174,11 @@ const ConditionalQuestionType: React.FC<ConditionalQuestionTypeProps> = ({
   const togglePopup = async () => {
     setPopupOpen(!isPopupOpen);
     setIsLoading(true);
-    await deleteAnswersOfQuestions(dependingQuestions[answer], applicationid);
+    await withSaveFeedback(
+      deleteAnswersOfQuestions(dependingQuestions[answer], applicationid),
+    );
     resetDependingAnswers();
-    await saveConditionalAnswer(choiceHelper, questionid);
+    await withSaveFeedback(saveConditionalAnswer(choiceHelper, questionid));
     updateAnswerState(choiceHelper);
     setIsLoading(false);
   };

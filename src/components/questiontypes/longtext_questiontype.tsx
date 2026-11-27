@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/longtext_questiontype");
 
@@ -108,7 +109,9 @@ const LongTextQuestionType: React.FC<LongTextQuestionTypeProps> = ({
           disabled={!iseditable}
           aria-disabled={!iseditable}
           style={{ minHeight: "200px" }}
-          onBlur={(event) => saveLongTextAnswer(event.target.value, questionid)}
+          onBlur={(event) =>
+            withSaveFeedback(saveLongTextAnswer(event.target.value, questionid))
+          }
           onChange={handleChange}
           value={answer}
         />

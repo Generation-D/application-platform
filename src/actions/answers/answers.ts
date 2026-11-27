@@ -9,6 +9,7 @@ import { createLogger } from "@/logger/logger";
 import { createCurrentTimestamp } from "@/utils/helpers";
 
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
+import { SAVE_FAILED_MESSAGE, throwIfSaveFailed } from "./saveErrors";
 import {
   deleteImageUploadAnswer,
   deleteVideoUploadAnswer,
@@ -16,6 +17,8 @@ import {
 } from "./deleteUpload";
 
 const log = createLogger("actions/answers/answers");
+
+const UNIQUE_VIOLATION = "23505";
 
 export interface saveAnswerType {
   supabase: SupabaseClient;
@@ -66,15 +69,10 @@ export async function fetchAnswerId(
     .from("answer_table")
     .select("answerid")
     .eq("questionid", questionid)
-    .eq("applicationid", applicationid);
-
-  if (answerError) {
-    log.error(JSON.stringify(answerError));
-  }
-  if (answerData!.length == 0) {
-    return "";
-  }
-  return answerData![0].answerid;
+    .eq("applicationid", applicationid)
+    .maybeSingle();
+  throwIfSaveFailed(answerError, log);
+  return answerData?.answerid ?? "";
 }
 
 export interface ExtendedAnswerType extends Answer {
@@ -127,47 +125,67 @@ export async function fetchAllAnswersOfApplication(
   );
 }
 
+async function touchAnswer(supabase: SupabaseClient, answerid: string) {
+  const { error } = await supabase
+    .from("answer_table")
+    .update({ lastupdated: createCurrentTimestamp() })
+    .eq("answerid", answerid);
+  throwIfSaveFailed(error, log);
+}
+
+/**
+ * Creates the answer row for the current user's application, or bumps
+ * `lastupdated` if it already exists. Throws if anything fails.
+ *
+ * `answer_table` is unique on (questionid, applicationid). If a concurrent
+ * request inserts the row between our read and our insert, the insert fails
+ * with a unique violation and we fall back to updating that row.
+ */
 export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
   const supabase = await getSupabaseCookiesUtilClient();
   const user = await getCurrentUser(supabase);
   const applicationid = await getApplicationIdOfCurrentUser(supabase, user);
-  let answerid = await fetchAnswerId(supabase, user, applicationid, questionid);
-  const now = createCurrentTimestamp();
-
-  let reqtype = "";
-  if (answerid == "") {
-    const { data: insertAnswerData, error: insertAnswerError } = await supabase
-      .from("answer_table")
-      .insert({
-        questionid: questionid,
-        applicationid: applicationid,
-        created: now,
-        lastupdated: now,
-      })
-      .select()
-      .single();
-    if (insertAnswerError) {
-      log.error(JSON.stringify(insertAnswerError));
-    }
-    answerid = insertAnswerData?.answerid;
-    reqtype = "created";
-  } else {
-    const { data: updateAnswerData, error: updateAnswerError } = await supabase
-      .from("answer_table")
-      .update({
-        lastupdated: now,
-      })
-      .eq("questionid", questionid)
-      .eq("applicationid", applicationid)
-      .select()
-      .single();
-    if (updateAnswerError) {
-      log.error(JSON.stringify(updateAnswerError));
-    }
-    answerid = updateAnswerData?.answerid;
-    reqtype = "updated";
+  if (!applicationid) {
+    log.error(`No application found for user ${user.id}`);
+    throw new Error(SAVE_FAILED_MESSAGE);
   }
-  return { supabase: supabase, answerid: answerid, reqtype: reqtype };
+
+  const existingAnswerId = await fetchAnswerId(
+    supabase,
+    user,
+    applicationid,
+    questionid,
+  );
+  if (existingAnswerId) {
+    await touchAnswer(supabase, existingAnswerId);
+    return { supabase, answerid: existingAnswerId, reqtype: "updated" };
+  }
+
+  const now = createCurrentTimestamp();
+  const { data: inserted, error: insertError } = await supabase
+    .from("answer_table")
+    .insert({
+      questionid: questionid,
+      applicationid: applicationid,
+      created: now,
+      lastupdated: now,
+    })
+    .select("answerid")
+    .single();
+
+  if (insertError?.code === UNIQUE_VIOLATION) {
+    const answerid = await fetchAnswerId(
+      supabase,
+      user,
+      applicationid,
+      questionid,
+    );
+    if (!answerid) throw new Error(SAVE_FAILED_MESSAGE);
+    await touchAnswer(supabase, answerid);
+    return { supabase, answerid, reqtype: "updated" };
+  }
+  throwIfSaveFailed(insertError, log);
+  return { supabase, answerid: inserted!.answerid, reqtype: "created" };
 }
 
 // necessary because we cannot return server objects (here: supabase) to the client
@@ -192,9 +210,7 @@ export async function deleteAnswer(questionid: string) {
       .delete()
       .eq("questionid", questionid)
       .eq("applicationid", applicationid);
-    if (deleteAnswerError) {
-      log.error(JSON.stringify(deleteAnswerError));
-    }
+    throwIfSaveFailed(deleteAnswerError, log);
   }
 }
 

@@ -2,6 +2,11 @@ import { getSupabaseBrowserClient } from "@/supabase-utils/browserClient";
 import { saveAnswerClient } from "@/actions/answers/answers";
 import { getApplicationUploadUrl } from "@/actions/answers/downloadUpload";
 import { createLogger } from "@/logger/logger";
+import {
+  SAVE_FAILED_MESSAGE,
+  throwIfSaveFailed,
+} from "@/actions/answers/saveErrors";
+import { UserFacingError } from "@/utils/saveFeedback";
 
 const log = createLogger("utils/uploadHelpers");
 
@@ -53,102 +58,80 @@ export async function saveUploadAnswer(
         ", ",
       )}`,
     );
-    return;
+    throw new UserFacingError("Dieser Dateityp wird nicht unterstützt.");
   }
   if (fileSizeInMB > options.maxfilesizeinmb) {
     log.error(
       `File too large: ${fileSizeInMB} MB. Max: ${options.maxfilesizeinmb} MB.`,
     );
-    return;
+    throw new UserFacingError(
+      `Die Datei ist zu groß (maximal ${options.maxfilesizeinmb} MB).`,
+    );
   }
   const uploadFile = new File([file], options.storageSaveName(file.name), {
     type: file.type,
     lastModified: file.lastModified,
   });
   const bucket_name = `${options.bucketPrefix}-${questionid}`;
-  const { answerid, reqtype } = await saveAnswerClient(questionid);
+  const { answerid } = await saveAnswerClient(questionid);
   const supabase = getSupabaseBrowserClient();
-  if (reqtype == "created") {
-    let insertAnswerError;
-    if (
-      options.fileName === "imagename" &&
-      options.table === "image_upload_answer_table"
-    ) {
-      const insertObj = { answerid, imagename: uploadFile.name };
-      const { error } = await supabase.from(options.table).insert(insertObj);
-      insertAnswerError = error;
-    } else if (
-      options.fileName === "pdfname" &&
-      options.table === "pdf_upload_answer_table"
-    ) {
-      const insertObj = { answerid, pdfname: uploadFile.name };
-      const { error } = await supabase.from(options.table).insert(insertObj);
-      insertAnswerError = error;
-    } else if (
-      options.fileName === "videoname" &&
-      options.table === "video_upload_answer_table"
-    ) {
-      const insertObj = { answerid, videoname: uploadFile.name };
-      const { error } = await supabase.from(options.table).insert(insertObj);
-      insertAnswerError = error;
-    } else {
-      log.error(`Invalid fileName option: ${options.fileName}`);
-      return;
-    }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error(SAVE_FAILED_MESSAGE);
 
-    if (insertAnswerError) {
-      log.error(JSON.stringify(insertAnswerError));
-    }
-    const { error: bucketError } = await supabase.storage
+  const { data: oldData } = await supabase
+    .from(options.table)
+    .select(options.fileName)
+    .eq("answerid", answerid)
+    .maybeSingle();
+  const oldFileName = (oldData as Record<string, string> | null)?.[
+    options.fileName
+  ];
+
+  // Upload first, so the answer row never points at a file that isn't there.
+  // The object path must match the stored name: downloads build it from it.
+  const { error: bucketError } = await supabase.storage
+    .from(bucket_name)
+    .upload(`${user.id}_${uploadFile.name}`, uploadFile, { upsert: true });
+  throwIfSaveFailed(bucketError, log);
+
+  const { error: rowError } = await upsertUploadRow(
+    supabase,
+    options.table,
+    answerid,
+    uploadFile.name,
+  );
+  throwIfSaveFailed(rowError, log);
+
+  if (oldFileName && oldFileName !== uploadFile.name) {
+    const { error: removeError } = await supabase.storage
       .from(bucket_name)
-      .upload(
-        `${(await supabase.auth.getUser()).data.user!.id}_${uploadFile.name}`,
-        uploadFile,
-      );
-    if (bucketError) {
-      log.error(JSON.stringify(bucketError));
-    }
-  } else if (reqtype == "updated") {
-    const { data: oldData, error: oldError } = await supabase
-      .from(options.table)
-      .select(options.fileName)
-      .eq("answerid", answerid)
-      .single();
-    if (oldError) {
-      log.error(JSON.stringify(oldError));
-    }
-    let updateObj:
-      { imagename: string } | { pdfname: string } | { videoname: string };
-    if (options.fileName === "imagename") {
-      updateObj = { imagename: uploadFile.name };
-    } else if (options.fileName === "pdfname") {
-      updateObj = { pdfname: uploadFile.name };
-    } else if (options.fileName === "videoname") {
-      updateObj = { videoname: uploadFile.name };
-    } else {
-      log.error(`Invalid fileName option: ${options.fileName}`);
-      return;
-    }
-    const { error: updatedError } = await supabase
-      .from(options.table)
-      .update(updateObj)
-      .eq("answerid", answerid);
-    if (updatedError) {
-      log.error(JSON.stringify(updatedError));
-    }
-    let oldFileName = "";
-    if (oldData && typeof oldData === "object" && options.fileName in oldData) {
-      oldFileName = (oldData as Record<string, string>)[options.fileName];
-    }
-    const { error: updatedBucketError } = await supabase.storage
-      .from(bucket_name)
-      .update(
-        `${(await supabase.auth.getUser()).data.user!.id}_${oldFileName}`,
-        uploadFile,
-      );
-    if (updatedBucketError) {
-      log.error(JSON.stringify(updatedBucketError));
-    }
+      .remove([`${user.id}_${oldFileName}`]);
+    if (removeError) log.error(JSON.stringify(removeError));
+  }
+}
+
+function upsertUploadRow(
+  supabase: ReturnType<typeof getSupabaseBrowserClient>,
+  table: UploadTableName,
+  answerid: string,
+  name: string,
+) {
+  const onConflict = { onConflict: "answerid" };
+  switch (table) {
+    case "image_upload_answer_table":
+      return supabase
+        .from(table)
+        .upsert({ answerid, imagename: name }, onConflict);
+    case "pdf_upload_answer_table":
+      return supabase
+        .from(table)
+        .upsert({ answerid, pdfname: name }, onConflict);
+    case "video_upload_answer_table":
+      return supabase
+        .from(table)
+        .upsert({ answerid, videoname: name }, onConflict);
   }
 }
 

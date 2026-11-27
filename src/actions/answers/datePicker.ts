@@ -2,6 +2,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/datePicker");
@@ -14,28 +15,15 @@ export async function saveDatePickerAnswer(
     await deleteAnswer(questionid);
     return;
   } else {
-    const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("date_picker_answer_table")
-        .insert({
-          answerid: answerid,
-          pickeddate: new Date(pickeddate),
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-    } else if (reqtype == "updated") {
-      const { error: updateAnswerError } = await supabase
-        .from("date_picker_answer_table")
-        .update({
-          pickeddate: new Date(pickeddate),
-        })
-        .eq("answerid", answerid);
-      if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
-      }
-    }
+    const { supabase, answerid } = await saveAnswer(questionid);
+    const { error } = await supabase.from("date_picker_answer_table").upsert(
+      {
+        answerid: answerid,
+        pickeddate: new Date(pickeddate),
+      },
+      { onConflict: "answerid" },
+    );
+    throwIfSaveFailed(error, log);
   }
 }
 

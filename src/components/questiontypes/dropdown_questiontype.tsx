@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 import QuestionTypes, { DefaultQuestionTypeProps } from "./questiontypes";
 import { DropdownOption } from "./utils/dropdown_option";
 import { AwaitingChild } from "../layout/awaiting";
+import { withSaveFeedback } from "@/utils/saveFeedback";
 
 const log = createLogger("components/questiontypes/dropdown_questiontype");
 
@@ -98,7 +99,7 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
     }
     const selectedOption =
       event.target.options[event.target.selectedIndex].text;
-    saveDropdownAnswer(selectedOption, questionid);
+    withSaveFeedback(saveDropdownAnswer(selectedOption, questionid));
     updateAnswerState(event.target.value);
   };
 
@@ -114,7 +115,9 @@ const DropdownQuestionType: React.FC<DropdownQuestionTypeProps> = ({
       (!mandatory || (selectedOptions.length >= minanswers && mandatory)) &&
       selectedOptions.length <= maxanswers
     ) {
-      saveDropdownAnswer(selectedOptions.join(", "), questionid);
+      withSaveFeedback(
+        saveDropdownAnswer(selectedOptions.join(", "), questionid),
+      );
       updateAnswerState(selectedOptions.join(", "));
     } else {
       updateAnswerState(selectedOptions.join(", "));

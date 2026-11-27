@@ -2,6 +2,7 @@
 import { createLogger } from "@/logger/logger";
 
 import { deleteAnswer, saveAnswer } from "./answers";
+import { throwIfSaveFailed } from "./saveErrors";
 import { getSupabaseCookiesUtilClient } from "@/supabase-utils/cookiesUtilClient";
 
 const log = createLogger("actions/answers/numberPicker");
@@ -14,28 +15,15 @@ export async function saveNumberPickerAnswer(
     await deleteAnswer(questionid);
     return;
   } else {
-    const { supabase, answerid, reqtype } = await saveAnswer(questionid);
-    if (reqtype == "created") {
-      const { error: insertAnswerError } = await supabase
-        .from("number_picker_answer_table")
-        .insert({
-          answerid: answerid,
-          pickednumber: Number(pickednumber),
-        });
-      if (insertAnswerError) {
-        log.error(JSON.stringify(insertAnswerError));
-      }
-    } else if (reqtype == "updated") {
-      const { error: updateAnswerError } = await supabase
-        .from("number_picker_answer_table")
-        .update({
-          pickednumber: pickednumber,
-        })
-        .eq("answerid", answerid);
-      if (updateAnswerError) {
-        log.error(JSON.stringify(updateAnswerError));
-      }
-    }
+    const { supabase, answerid } = await saveAnswer(questionid);
+    const { error } = await supabase.from("number_picker_answer_table").upsert(
+      {
+        answerid: answerid,
+        pickednumber: Number(pickednumber),
+      },
+      { onConflict: "answerid" },
+    );
+    throwIfSaveFailed(error, log);
   }
 }
 
