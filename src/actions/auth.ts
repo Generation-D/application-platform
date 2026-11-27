@@ -249,7 +249,7 @@ export async function deleteUser(): Promise<{
     }
     revalidatePath("/");
   } catch (error) {
-    log.info(JSON.stringify(error));
+    log.error(JSON.stringify(error));
     return {
       message: "Es ist ein Fehler aufgetreten, probiere es nocheinmal!",
       status: "ERROR",
