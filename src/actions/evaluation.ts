@@ -519,34 +519,17 @@ export async function savePhaseDecision(
     );
   }
 
-  const { data: existingOutcomes, error: selectError } = await supabaseAdmin
-    .from("phase_outcome_table")
-    .select("outcome_id")
-    .eq("phase_id", phaseId)
-    .eq("user_id", applicantUserId);
-  if (selectError) throw selectError;
-
-  if (existingOutcomes && existingOutcomes.length > 0) {
-    const { error } = await supabaseAdmin
-      .from("phase_outcome_table")
-      .update({
-        outcome,
-        reviewed_by: user.id,
-        review_date: new Date().toISOString(),
-      })
-      .eq("phase_id", phaseId)
-      .eq("user_id", applicantUserId);
-    if (error) throw error;
-  } else {
-    const { error } = await supabaseAdmin.from("phase_outcome_table").insert({
+  const { error } = await supabaseAdmin.from("phase_outcome_table").upsert(
+    {
       phase_id: phaseId,
       user_id: applicantUserId,
       outcome,
       reviewed_by: user.id,
       review_date: new Date().toISOString(),
-    });
-    if (error) throw error;
-  }
+    },
+    { onConflict: "phase_id,user_id" },
+  );
+  if (error) throw error;
 
   revalidatePath("/admin/evaluation");
   return { outcome };
