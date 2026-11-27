@@ -33,6 +33,7 @@ export const Choice: React.FC<ChoiceProps> = ({
             iseditable ? "cursor-pointer" : "cursor-not-allowed"
           }`}
           checked={isSelected}
+          // onClick only: it also fires for the selected option (deselect); onChange too ran the handler twice.
           onChange={() => {}}
           onClick={onSingleChange}
         />

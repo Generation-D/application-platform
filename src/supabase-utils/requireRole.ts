@@ -1,3 +1,4 @@
+// Not a "use server" module on purpose: exports here must not become callable server actions.
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseServiceRoleClient,

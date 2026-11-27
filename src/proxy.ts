@@ -47,6 +47,7 @@ export async function proxy(request: NextRequest) {
     .eq("userid", user.id)
     .maybeSingle();
 
+  // /403 is served instead of redirected to itself, which looped.
   if (profileError || !profile) {
     console.error(
       `No profile for user ${user.id}: ${JSON.stringify(profileError)}`,

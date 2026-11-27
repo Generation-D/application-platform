@@ -1,3 +1,6 @@
+-- Roles (user_profiles_table.userrole): 1 = applicant, 2 = reviewer, 3 = admin.
+-- Writes to profiles, applications, phases, questions, outcomes and assignments go through the service role.
+
 create table public.user_profiles_table (
   userid uuid primary key references auth.users (id) on delete cascade,
   userrole integer not null check (userrole between 1 and 3),
@@ -250,6 +253,8 @@ create index phase_outcome_table_reviewed_by_idx on public.phase_outcome_table (
 create index phase_assignment_table_user_role_1_id_idx on public.phase_assignment_table (user_role_1_id);
 create index phase_assignment_table_user_role_2_id_idx on public.phase_assignment_table (user_role_2_id);
 
+-- SECURITY DEFINER avoids re-entering RLS on the looked-up tables; policies call these as
+-- (select public.current_user_role()) so Postgres evaluates them once per query, not per row.
 create function public.current_user_role()
 returns integer
 language sql stable security definer

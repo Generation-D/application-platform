@@ -89,6 +89,7 @@ export async function saveUploadAnswer(
     options.fileName
   ];
 
+  // Upload before writing the row; downloads build the object path from the stored name.
   const { error: bucketError } = await supabase.storage
     .from(bucket_name)
     .upload(`${user.id}_${uploadFile.name}`, uploadFile, { upsert: true });

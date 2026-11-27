@@ -340,6 +340,7 @@ export interface SendPasswordResetFormState {
 export async function sendResetPasswordLinkFromSettings(
   prevState: SendPasswordResetFormState,
 ) {
+  // prevState comes from the client; only the signed-in user's own email may get a reset link.
   let email = prevState.email;
   try {
     const supabase = await getSupabaseCookiesUtilClient();

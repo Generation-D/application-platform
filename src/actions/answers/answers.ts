@@ -164,6 +164,7 @@ export async function saveAnswer(questionid: string): Promise<saveAnswerType> {
     .select("answerid")
     .single();
 
+  // A concurrent save inserted the row between our read and insert.
   if (insertError?.code === UNIQUE_VIOLATION) {
     const answerid = await fetchAnswerId(
       supabase,

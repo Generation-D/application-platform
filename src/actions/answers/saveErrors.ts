@@ -1,3 +1,4 @@
+// Not a "use server" module on purpose: exports here must not become callable server actions.
 export const SAVE_FAILED_MESSAGE =
   "Deine Antwort konnte nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut.";
 
