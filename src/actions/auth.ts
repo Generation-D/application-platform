@@ -386,9 +386,19 @@ export interface SendPasswordResetFormState {
 export async function sendResetPasswordLinkFromSettings(
   prevState: SendPasswordResetFormState,
 ) {
-  const email = prevState.email;
+  // Never trust prevState.email: it comes from the client. Only the signed-in
+  // user's own address may receive a reset link from the settings page.
+  let email = prevState.email;
   try {
     const supabase = await getSupabaseCookiesUtilClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user?.email) {
+      return { email, message: "Nicht angemeldet.", status: "ERROR" };
+    }
+    email = user.email;
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(
         email.replace("@googlemail.com", "@gmail.com"),
