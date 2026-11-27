@@ -1,87 +1,82 @@
 import { getSupabaseReqResClient } from "@/supabase-utils/reqResClient";
 import { NextRequest, NextResponse } from "next/server";
 
-import { isAuthorized } from "./actions/middleware";
 import { UserRole } from "./utils/userRole";
 
 // Can't use own Logger in middleware, because of https://nextjs.org/docs/messages/node-module-in-edge-runtime
 
+const PUBLIC_PATHS = ["/login", "/review/login", "/403"];
+
+/** Where a user should go when they lack the role a path requires. */
+function homeForRole(role: number) {
+  if (role === UserRole.Admin) return "/admin";
+  if (role === UserRole.Reviewer) return "/review";
+  return "/";
+}
+
+function requiredRoleFor(pathname: string) {
+  if (pathname.startsWith("/admin")) return UserRole.Admin;
+  if (pathname.startsWith("/review")) return UserRole.Reviewer;
+  return null;
+}
+
 export async function proxy(request: NextRequest) {
   const { supabase, response } = getSupabaseReqResClient({ request: request });
+  const pathname = request.nextUrl.pathname;
+  const redirectTo = (path: string) =>
+    path === pathname
+      ? response.value
+      : NextResponse.redirect(new URL(path, request.url));
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-
   if (!user) {
     if (
-      pathname != "/login" &&
-      pathname != "/review/login" &&
-      !pathname.startsWith("/auth/callback")
+      PUBLIC_PATHS.includes(pathname) ||
+      pathname.startsWith("/auth/callback")
     ) {
-      console.log("Not logged in! Redirect to /login");
-
-      if (pathname.startsWith("/review")) {
-        return NextResponse.redirect(new URL("/review/login", request.url));
-      }
-
-      return NextResponse.redirect(new URL("/login", request.url));
+      return response.value;
     }
-
-    return response.value;
-  }
-
-  let redirectUrl = null;
-
-  if (pathname.startsWith("/review")) {
-    redirectUrl = await isAuthorized(supabase, UserRole.Reviewer);
-  } else if (pathname.startsWith("/admin")) {
-    redirectUrl = await isAuthorized(supabase, UserRole.Admin);
-  }
-
-  const { data: userRoleData } = await supabase
-    .from("user_profiles_table")
-    .select("userrole")
-    .eq("userid", user!.id)
-    .single();
-
-  if (pathname == "/" && userRoleData?.userrole == 2) {
-    redirectUrl = "/review";
-  }
-
-  if (pathname == "/" && userRoleData?.userrole == 3) {
-    redirectUrl = "/admin";
-  }
-
-  if (redirectUrl) {
-    console.log(
-      `The User ${user.email} is not authorized to access ${pathname}. Redirect to ${redirectUrl}`,
+    console.log("Not logged in! Redirect to login");
+    return redirectTo(
+      pathname.startsWith("/review") ? "/review/login" : "/login",
     );
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
-  if (user) {
-    const { data: roleData, error: roleError } = await supabase
-      .from("user_profiles_table")
-      .select("isactive")
-      .eq("userid", user!.id)
-      .single();
-    if (roleError) {
-      console.error(roleError);
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    if (roleData && !roleData.isactive) {
-      console.log(`The User ${user.email} is not active. Redirect to /403`);
-      return NextResponse.redirect(new URL("/403", request.url));
-    }
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles_table")
+    .select("userrole,isactive")
+    .eq("userid", user.id)
+    .maybeSingle();
 
-    // if user is signed in and the current path is /login redirect the user to /
-    if (request.nextUrl.pathname === "/login") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  // Missing or inactive profiles may only see /403. Redirecting /403 to itself
+  // would loop, so it is served as is.
+  if (profileError || !profile) {
+    console.error(
+      `No profile for user ${user.id}: ${JSON.stringify(profileError)}`,
+    );
+    return redirectTo("/403");
   }
+  if (!profile.isactive) {
+    console.log(`The User ${user.id} is not active. Redirect to /403`);
+    return redirectTo("/403");
+  }
+
+  if (pathname === "/" || pathname === "/login") {
+    return redirectTo(homeForRole(profile.userrole));
+  }
+
+  const requiredRole = requiredRoleFor(pathname);
+  if (requiredRole !== null && profile.userrole < requiredRole) {
+    const target = homeForRole(profile.userrole);
+    console.log(
+      `The User ${user.id} is not authorized to access ${pathname}. Redirect to ${target}`,
+    );
+    return redirectTo(target);
+  }
+
   return response.value;
 }
 

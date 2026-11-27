@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { getURL, isValidPassword } from "@/utils/helpers";
+import { getURL, isValidPassword, normalizeEmail } from "@/utils/helpers";
 import {
   getSupabaseCookiesUtilClient,
   getSupabaseCookiesUtilClientAdmin,
@@ -20,7 +20,7 @@ export async function signUpUser(
   formData: FormData,
 ) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     password: z.string().min(1),
     passwordConfirmation: z.string().min(1),
     legalConfirmation: z.string(),
@@ -63,7 +63,7 @@ export async function signUpUser(
   try {
     const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } = await supabase.auth.signUp({
-      email: signUpFormData.data.email.replace("@googlemail.com", "@gmail.com"),
+      email: signUpFormData.data.email,
       password: signUpFormData.data.password,
       options: {
         emailRedirectTo: `${getURL()}auth/callback`,
@@ -94,7 +94,15 @@ export async function signUpUser(
       .insert(sendData);
     if (applicationError) {
       log.error(JSON.stringify(applicationError));
-      return { message: applicationError.message, status: "ERROR" };
+      // Without an application the account is unusable. Remove it again so the
+      // person can simply register once more instead of being stuck.
+      const { error: rollbackError } =
+        await supabaseAdmin.auth.admin.deleteUser(userData!.user!.id);
+      if (rollbackError) log.error(JSON.stringify(rollbackError));
+      return {
+        message: "Etwas ist schief gelaufen, bitte probiere es nocheinmal.",
+        status: "ERROR",
+      };
     }
     log.info(`Signed Up the following User: ${userData.user?.email}`);
     return {
@@ -112,7 +120,7 @@ export async function signUpUser(
 
 export async function signInUser(prevState: messageType, formData: FormData) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     password: z.string().min(1),
     captchaToken: z.string().min(1),
   });
@@ -131,10 +139,7 @@ export async function signInUser(prevState: messageType, formData: FormData) {
     const supabase = await getSupabaseCookiesUtilClient();
     const { data: userData, error: userError } =
       await supabase.auth.signInWithPassword({
-        email: signInFormData.data.email.replace(
-          "@googlemail.com",
-          "@gmail.com",
-        ),
+        email: signInFormData.data.email,
         password: signInFormData.data.password,
         options: { captchaToken: signInFormData.data.captchaToken },
       });
@@ -184,7 +189,7 @@ export async function sendResetPasswordLink(
   formData: FormData,
 ) {
   const schema = z.object({
-    email: z.string().min(1),
+    email: z.string().transform(normalizeEmail).pipe(z.email()),
     captchaToken: z.string().min(1),
   });
   const resetPasswordFormData = schema.safeParse({
@@ -198,10 +203,7 @@ export async function sendResetPasswordLink(
   }
   try {
     const supabase = await getSupabaseCookiesUtilClient();
-    const email = resetPasswordFormData.data.email.replace(
-      "@googlemail.com",
-      "@gmail.com",
-    );
+    const email = resetPasswordFormData.data.email;
     const { error: PasswordResetError } =
       await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${getURL()}auth/callback?next=login/update-password`,
@@ -316,7 +318,7 @@ export async function updatePassword(
           status: "ERROR",
         };
       }
-      JSON.stringify(userError);
+      log.error(JSON.stringify(userError));
       return { message: userError.message, status: "ERROR" };
     }
     revalidatePath("/");
@@ -354,12 +356,9 @@ export async function sendResetPasswordLinkFromSettings(
     }
     email = user.email;
     const { error: PasswordResetError } =
-      await supabase.auth.resetPasswordForEmail(
-        email.replace("@googlemail.com", "@gmail.com"),
-        {
-          redirectTo: `${getURL()}auth/callback?next=login/update-password`,
-        },
-      );
+      await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
+        redirectTo: `${getURL()}auth/callback?next=login/update-password`,
+      });
     if (PasswordResetError) {
       log.error(JSON.stringify(PasswordResetError));
       return { email, message: PasswordResetError.message, status: "ERROR" };

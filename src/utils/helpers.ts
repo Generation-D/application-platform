@@ -21,6 +21,14 @@ export const safeRelativePath = (next: string | null | undefined) => {
   return /^[A-Za-z0-9\-_/]*$/.test(path) ? path : "";
 };
 
+/** Lowercases, trims and maps googlemail.com to gmail.com (same mailbox). */
+export function normalizeEmail(email: string) {
+  return email
+    .trim()
+    .toLowerCase()
+    .replace(/@googlemail\.com$/, "@gmail.com");
+}
+
 const TIMEZONE = "Europe/Berlin";
 
 export function createCurrentTimestamp() {

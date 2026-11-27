@@ -23,7 +23,7 @@ import {
   getSupabaseCookiesUtilClient,
   getSupabaseServiceRoleClient,
 } from "@/supabase-utils/cookiesUtilClient";
-import { getURL } from "@/utils/helpers";
+import { getURL, normalizeEmail } from "@/utils/helpers";
 import {
   assignReviewers,
   MatchingApplication,
@@ -102,10 +102,6 @@ const emailSettingsSchema = z.object({
   phaseNote: z.string().trim().min(1),
 });
 const emailCcSelectionSchema = z.object({ it: z.boolean(), cmd: z.boolean() });
-
-function normalizeEmail(email: string) {
-  return email.trim().toLowerCase().replace("@googlemail.com", "@gmail.com");
-}
 
 async function requireAdmin() {
   const supabase = await getSupabaseCookiesUtilClient();
