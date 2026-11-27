@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getURL, isValidPassword } from "@/utils/helpers";
@@ -330,51 +329,6 @@ export async function updatePassword(
   }
   log.info("Successfully updated Password.");
   redirect("/");
-}
-
-export async function signInWithSlack() {
-  const supabase = await getSupabaseCookiesUtilClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "slack_oidc",
-    options: {
-      redirectTo: `${getURL()}auth/admin/callback/`,
-    },
-  });
-
-  if (error) {
-    log.error(JSON.stringify(error));
-    throw error;
-  }
-  if (data && data.url) {
-    NextResponse.redirect(data.url);
-  }
-}
-
-export async function signInWithMagicLink(
-  prevState: unknown,
-  formData: FormData,
-) {
-  const schema = z.object({
-    magicLinkEmail: z.string().min(1),
-  });
-
-  const signInFormData = schema.parse({
-    magicLinkEmail: formData.get("magicLinkEmail"),
-  });
-
-  const supabase = await getSupabaseCookiesUtilClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email: signInFormData.magicLinkEmail!,
-    options: {
-      shouldCreateUser: false,
-      emailRedirectTo: `${getURL()}auth/admin/callback/`,
-    },
-  });
-  if (error) {
-    log.error(JSON.stringify(error));
-    throw error;
-  }
 }
 
 export interface SendPasswordResetFormState {
