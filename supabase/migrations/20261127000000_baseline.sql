@@ -318,10 +318,16 @@ create policy "read own or as reviewer" on public.application_table
     userid = (select auth.uid())
     or (select public.current_user_role()) in (2, 3)
   );
-create policy "admin writes" on public.application_table
-  for all to authenticated
+create policy "admin inserts" on public.application_table
+  for insert to authenticated
+  with check ((select public.current_user_role()) = 3);
+create policy "admin updates" on public.application_table
+  for update to authenticated
   using ((select public.current_user_role()) = 3)
   with check ((select public.current_user_role()) = 3);
+create policy "admin deletes" on public.application_table
+  for delete to authenticated
+  using ((select public.current_user_role()) = 3);
 
 create policy "read own or as reviewer" on public.answer_table
   for select to authenticated
@@ -329,20 +335,16 @@ create policy "read own or as reviewer" on public.answer_table
     (select public.current_user_role()) in (2, 3)
     or public.owns_application(applicationid)
   );
-create policy "owner inserts" on public.answer_table
+create policy "owner or admin inserts" on public.answer_table
   for insert to authenticated
-  with check (public.owns_application(applicationid));
-create policy "owner updates" on public.answer_table
+  with check ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
+create policy "owner or admin updates" on public.answer_table
   for update to authenticated
-  using (public.owns_application(applicationid))
-  with check (public.owns_application(applicationid));
-create policy "owner deletes" on public.answer_table
+  using ((select public.current_user_role()) = 3 or public.owns_application(applicationid))
+  with check ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
+create policy "owner or admin deletes" on public.answer_table
   for delete to authenticated
-  using (public.owns_application(applicationid));
-create policy "admin writes" on public.answer_table
-  for all to authenticated
-  using ((select public.current_user_role()) = 3)
-  with check ((select public.current_user_role()) = 3);
+  using ((select public.current_user_role()) = 3 or public.owns_application(applicationid));
 
 do $$
 declare
@@ -361,20 +363,16 @@ begin
       create policy "read own or as reviewer" on public.%1$I
         for select to authenticated
         using ((select public.current_user_role()) in (2, 3) or public.owns_answer(answerid));
-      create policy "owner inserts" on public.%1$I
+      create policy "owner or admin inserts" on public.%1$I
         for insert to authenticated
-        with check (public.owns_answer(answerid));
-      create policy "owner updates" on public.%1$I
+        with check ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
+      create policy "owner or admin updates" on public.%1$I
         for update to authenticated
-        using (public.owns_answer(answerid))
-        with check (public.owns_answer(answerid));
-      create policy "owner deletes" on public.%1$I
+        using ((select public.current_user_role()) = 3 or public.owns_answer(answerid))
+        with check ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
+      create policy "owner or admin deletes" on public.%1$I
         for delete to authenticated
-        using (public.owns_answer(answerid));
-      create policy "admin writes" on public.%1$I
-        for all to authenticated
-        using ((select public.current_user_role()) = 3)
-        with check ((select public.current_user_role()) = 3);
+        using ((select public.current_user_role()) = 3 or public.owns_answer(answerid));
     $p$, t);
   end loop;
 end
@@ -400,10 +398,16 @@ begin
       create policy "signed-in users read" on public.%1$I
         for select to authenticated
         using (true);
-      create policy "admin writes" on public.%1$I
-        for all to authenticated
+      create policy "admin inserts" on public.%1$I
+        for insert to authenticated
+        with check ((select public.current_user_role()) = 3);
+      create policy "admin updates" on public.%1$I
+        for update to authenticated
         using ((select public.current_user_role()) = 3)
         with check ((select public.current_user_role()) = 3);
+      create policy "admin deletes" on public.%1$I
+        for delete to authenticated
+        using ((select public.current_user_role()) = 3);
     $p$, t);
   end loop;
 end
